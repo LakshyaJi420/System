@@ -1,58 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kirmada App</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solo Leveling System</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <div id="app">
-        <header>
-            <h1>Kirmada</h1>
-        </header>
-        
-        <main id="main-content">
-            <section id="profile" class="hidden">
-                <h2>Profile</h2>
-                <img id="avatar" src="images/default-avatar.png" alt="Avatar">
-                <button onclick="setAvatar()">Set Avatar</button>
-                <p id="username">Username: <span id="user-name"></span></p>
-            </section>
-            
-            <section id="tasks" class="">
-                <h2>Daily Tasks</h2>
-                <div id="task-list"></div>
-                <p id="task-timer"></p>
-            </section>
-            
-            <section id="leaderboard" class="hidden">
-                <h2>Leaderboard</h2>
-                <div id="leaderboard-list"></div>
-            </section>
-            
-            <section id="settings" class="hidden">
-                <h2>Settings</h2>
-                <button onclick="changeName()">Change Name</button>
-                <button onclick="changePassword()">Change Password</button>
-                <button onclick="logout()">Logout</button>
-                <button onclick="deleteAccount()">Delete Account</button>
-            </section>
-        </main>
-
-        <nav>
-            <button onclick="showSection('profile')">Profile</button>
-            <button onclick="showSection('tasks')">Tasks</button>
-            <button onclick="showSection('leaderboard')">Leaderboard</button>
-            <button onclick="showSection('settings')">Settings</button>
-        </nav>
-
-        <div id="admin-buttons" class="hidden">
-            <button class="admin-btn">Admin Control 1</button>
-            <button class="admin-btn">Admin Control 2</button>
-        </div>
+  <!-- Authentication Section -->
+  <section id="auth-section">
+    <h2>Login / Register</h2>
+    <input type="text" id="authName" placeholder="Enter your username" />
+    <input type="password" id="authPassword" placeholder="Enter your password" />
+    <div class="auth-buttons">
+      <button id="registerBtn">Register</button>
+      <button id="loginBtn">Login</button>
     </div>
+  </section>
 
-    <script src="script.js"></script>
+  <!-- Main Content Section (hidden until login) -->
+  <section id="main-content" class="hidden">
+    <!-- Profile Section -->
+    <section id="profile-section">
+      <h2>Profile</h2>
+      <img id="avatar" src="images/default-avatar.png" alt="Avatar" />
+      <button id="setAvatarBtn" class="action-btn">Set Avatar</button>
+      <p>Username: <span id="user-name"></span></p>
+      <p>Level: <span id="level"></span></p>
+      <p>XP: <span id="xp"></span></p>
+      <p>Rank: <span id="rank"></span></p>
+      <p>Title: <span id="title"></span></p>
+    </section>
+
+    <!-- Task Section -->
+    <section id="tasks-section">
+      <h2>Daily Task</h2>
+      <p id="dailyTask"></p>
+      <p>Time remaining: <span id="taskTimer"></span></p>
+      <button id="completeTaskBtn" class="action-btn">Complete Task</button>
+    </section>
+
+    <!-- Leaderboard Section -->
+    <section id="leaderboard-section">
+      <h2>Global Leaderboard</h2>
+      <ul id="leaderboardList"></ul>
+    </section>
+
+    <!-- Settings Section -->
+    <section id="settings-section">
+      <h2>Settings</h2>
+      <button id="changeNameBtn" class="action-btn">Change Name</button>
+      <button id="changePasswordBtn" class="action-btn">Change Password</button>
+      <button id="deleteAccountBtn" class="action-btn">Delete Account</button>
+      <button id="settingsLogoutBtn" class="action-btn">Logout</button>
+    </section>
+
+    <!-- Admin Panel (visible only for admin user Kirmada) -->
+    <section id="admin-panel" class="hidden">
+      <h2>Admin Panel</h2>
+      <div id="adminControls"></div>
+    </section>
+  </section>
+
+  <!-- Navigation Bar -->
+  <nav id="nav-bar" class="hidden">
+    <button class="nav-btn" data-section="profile-section">Profile</button>
+    <button class="nav-btn" data-section="tasks-section">Task</button>
+    <button class="nav-btn" data-section="leaderboard-section">Leaderboard</button>
+    <button class="nav-btn" data-section="settings-section">Settings</button>
+  </nav>
+
+  <!-- Footer -->
+  <footer>
+    <small>
+      Contact: <a href="mailto:lakshyatyagi178@gmail.com">lakshyatyagi178@gmail.com</a> |
+      <a href="https://t.me/sololevelingsystem" target="_blank">Telegram</a>
+    </small>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
