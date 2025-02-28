@@ -1,26 +1,26 @@
 document.addEventListener("DOMContentLoaded", () => {
   // Element References
-  const loginSection = document.getElementById("login-section");
-  const profileSection = document.getElementById("profile-section");
-  const tasksSection = document.getElementById("tasks-section");
-  const leaderboardSection = document.getElementById("leaderboard-section");
-
-  const loginName = document.getElementById("loginName");
-  const loginPassword = document.getElementById("loginPassword");
+  const authSection = document.getElementById("auth-section");
+  const authName = document.getElementById("authName");
+  const authPassword = document.getElementById("authPassword");
+  const registerBtn = document.getElementById("registerBtn");
   const loginBtn = document.getElementById("loginBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
 
+  const profileSection = document.getElementById("profile-section");
   const welcomeMsg = document.getElementById("welcomeMsg");
   const levelDisplay = document.getElementById("level");
   const xpDisplay = document.getElementById("xp");
   const rankDisplay = document.getElementById("rank");
   const titleDisplay = document.getElementById("title");
+  const logoutBtn = document.getElementById("logoutBtn");
 
+  const tasksSection = document.getElementById("tasks-section");
   const dailyTaskDisplay = document.getElementById("dailyTask");
   const taskTimerDisplay = document.getElementById("taskTimer");
   const completeTaskBtn = document.getElementById("completeTaskBtn");
   const taskWarning = document.getElementById("taskWarning");
 
+  const leaderboardSection = document.getElementById("leaderboard-section");
   const leaderboardList = document.getElementById("leaderboardList");
 
   // Constants
@@ -158,33 +158,49 @@ document.addEventListener("DOMContentLoaded", () => {
     saveUsers(users);
   }
   
-  // Login / Register Event
-  loginBtn.addEventListener("click", () => {
-    const name = loginName.value.trim();
-    const password = loginPassword.value; // In a real app, use proper hashing!
+  // Registration event
+  registerBtn.addEventListener("click", () => {
+    const name = authName.value.trim();
+    const password = authPassword.value;
     if (!name || !password) {
-      alert("Please enter a name and password.");
+      alert("Please enter a name and password to register.");
+      return;
+    }
+    let users = loadUsers();
+    if (users[name]) {
+      alert("User already exists! Please use the login button.");
+      return;
+    }
+    // Create a new user
+    users[name] = {
+      name,
+      password, // In real apps, use secure hashing!
+      level: 1,
+      xp: 0,
+      rank: "E Rank",
+      title: "Novice Hunter",
+      dailyTask: null
+    };
+    saveUsers(users);
+    alert("Registration successful! Now please login.");
+  });
+  
+  // Login event
+  loginBtn.addEventListener("click", () => {
+    const name = authName.value.trim();
+    const password = authPassword.value;
+    if (!name || !password) {
+      alert("Please enter a name and password to login.");
       return;
     }
     let users = loadUsers();
     if (!users[name]) {
-      // Register new user
-      users[name] = {
-        name,
-        password, // Not secure! For demo purposes only.
-        level: 1,
-        xp: 0,
-        rank: "E Rank",
-        title: "Novice Hunter",
-        dailyTask: null
-      };
-      saveUsers(users);
-    } else {
-      // Login: check password
-      if (users[name].password !== password) {
-        alert("Incorrect password.");
-        return;
-      }
+      alert("User not found! Please register first.");
+      return;
+    }
+    if (users[name].password !== password) {
+      alert("Incorrect password.");
+      return;
     }
     currentUser = users[name];
     updateUserStats(currentUser);
@@ -192,8 +208,8 @@ document.addEventListener("DOMContentLoaded", () => {
     assignDailyTask();
     updateLeaderboard();
     
-    // Show/Hide sections
-    loginSection.style.display = "none";
+    // Show the main sections and hide the auth section
+    authSection.style.display = "none";
     profileSection.style.display = "block";
     tasksSection.style.display = "block";
     leaderboardSection.style.display = "block";
@@ -201,12 +217,12 @@ document.addEventListener("DOMContentLoaded", () => {
   
   logoutBtn.addEventListener("click", () => {
     currentUser = null;
-    loginSection.style.display = "block";
+    authSection.style.display = "block";
     profileSection.style.display = "none";
     tasksSection.style.display = "none";
     leaderboardSection.style.display = "none";
-    loginName.value = "";
-    loginPassword.value = "";
+    authName.value = "";
+    authPassword.value = "";
   });
   
   // Complete Task Button with Warning
@@ -229,5 +245,5 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
   
-  // (Optional) You can add more features here such as viewing task history, achievements, etc.
+  // (Optional) More features (e.g., task history, achievements) can be added here.
 });
