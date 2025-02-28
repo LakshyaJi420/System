@@ -39,11 +39,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Utility Functions
   function saveUsers(users) {
-    localStorage.setItem("users", JSON.stringify(users));
+    try {
+      localStorage.setItem("users", JSON.stringify(users));
+    } catch (e) {
+      console.error("Error saving users to localStorage:", e);
+    }
   }
   
   function loadUsers() {
-    return JSON.parse(localStorage.getItem("users")) || {};
+    try {
+      return JSON.parse(localStorage.getItem("users")) || {};
+    } catch (e) {
+      console.error("Error loading users from localStorage:", e);
+      return {};
+    }
   }
   
   // Assign a title and rank based on level
@@ -61,12 +70,12 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       user.rank = "S Rank";
     }
-    // Title logic (you can expand this list)
+    // Title logic (expand as needed)
     if (user.level === 1) user.title = "Novice Hunter";
     else if (user.level < 5) user.title = "Rookie Hunter";
     else if (user.level < 9) user.title = "Seasoned Hunter";
     else if (user.level < 12) user.title = "Elite Hunter";
-    else user.title = "Sung Jin-Woo"; // Ultimate title for high levels
+    else user.title = "Sung Jin-Woo";
   }
   
   function updateProfileDisplay() {
@@ -77,7 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
     titleDisplay.textContent = currentUser.title;
   }
   
-  // Leaderboard update: sorts all users by level and XP
+  // Leaderboard update: sorts users by level and XP
   function updateLeaderboard() {
     const users = loadUsers();
     const userArray = Object.values(users).sort((a, b) => {
@@ -94,10 +103,8 @@ document.addEventListener("DOMContentLoaded", () => {
   
   // Daily Task Handling
   function assignDailyTask() {
-    // Check if there's already an active daily task for the user
     const now = Date.now();
     if (!currentUser.dailyTask || now - currentUser.dailyTask.assignedAt > TASK_DURATION) {
-      // Assign a random task from dailyTasks
       const task = dailyTasks[Math.floor(Math.random() * dailyTasks.length)];
       currentUser.dailyTask = {
         task: task.task,
@@ -114,22 +121,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const now = Date.now();
     const remaining = TASK_DURATION - (now - currentUser.dailyTask.assignedAt);
     if (remaining <= 0) {
-      // Task expired; if not completed, penalize user.
       if (!currentUser.dailyTask.completed) {
-        currentUser.xp = Math.max(0, currentUser.xp - 5); // Deduct 5 XP for failing
+        currentUser.xp = Math.max(0, currentUser.xp - 5);
         alert("You missed your daily task! You lost 5 XP.");
         updateUserStats(currentUser);
         saveCurrentUser();
         updateProfileDisplay();
       }
-      // Reassign a new daily task
       assignDailyTask();
       return;
     }
     dailyTaskDisplay.textContent = `Task: ${currentUser.dailyTask.task} (XP Reward: ${currentUser.dailyTask.xp})`;
     taskTimerDisplay.textContent = formatTime(remaining);
-    
-    // Update timer every second
     if (taskInterval) clearInterval(taskInterval);
     taskInterval = setInterval(() => {
       const now = Date.now();
@@ -151,14 +154,13 @@ document.addEventListener("DOMContentLoaded", () => {
     return `${hours}h ${minutes}m ${seconds}s`;
   }
   
-  // Save current user data to localStorage
   function saveCurrentUser() {
     const users = loadUsers();
     users[currentUser.name] = currentUser;
     saveUsers(users);
   }
   
-  // Registration event
+  // Registration Event
   registerBtn.addEventListener("click", () => {
     const name = authName.value.trim();
     const password = authPassword.value;
@@ -171,10 +173,9 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("User already exists! Please use the login button.");
       return;
     }
-    // Create a new user
     users[name] = {
       name,
-      password, // In real apps, use secure hashing!
+      password,
       level: 1,
       xp: 0,
       rank: "E Rank",
@@ -182,10 +183,11 @@ document.addEventListener("DOMContentLoaded", () => {
       dailyTask: null
     };
     saveUsers(users);
+    console.log("User registered:", name);
     alert("Registration successful! Now please login.");
   });
   
-  // Login event
+  // Login Event
   loginBtn.addEventListener("click", () => {
     const name = authName.value.trim();
     const password = authPassword.value;
@@ -207,12 +209,11 @@ document.addEventListener("DOMContentLoaded", () => {
     updateProfileDisplay();
     assignDailyTask();
     updateLeaderboard();
-    
-    // Show the main sections and hide the auth section
     authSection.style.display = "none";
     profileSection.style.display = "block";
     tasksSection.style.display = "block";
     leaderboardSection.style.display = "block";
+    console.log("User logged in:", name);
   });
   
   logoutBtn.addEventListener("click", () => {
@@ -225,10 +226,8 @@ document.addEventListener("DOMContentLoaded", () => {
     authPassword.value = "";
   });
   
-  // Complete Task Button with Warning
   completeTaskBtn.addEventListener("click", () => {
     if (!currentUser.dailyTask || currentUser.dailyTask.completed) return;
-    // Show a confirmation with a warning message.
     const confirmComplete = confirm(
       "Are you sure you've completed the task? If you lie to yourself, you'll lose XP and weaken your stats!"
     );
@@ -239,11 +238,8 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Task completed! Great job and keep pushing forward!");
       saveCurrentUser();
       updateProfileDisplay();
-      // After task completion, assign a new task for the next day.
       assignDailyTask();
       updateLeaderboard();
     }
   });
-  
-  // (Optional) More features (e.g., task history, achievements) can be added here.
 });
