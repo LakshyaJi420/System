@@ -3,101 +3,75 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gamified Dashboard</title>
+  <title>Solo Leveling System</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Header -->
   <header>
-    <h1>Gamified Dashboard</h1>
+    <h1>Solo Leveling System</h1>
   </header>
 
-  <!-- Main Container -->
-  <div class="container">
-    <!-- User Profile Section -->
+  <!-- Authentication Section -->
+  <section id="auth-section">
+    <h2>Login / Register</h2>
+    <input type="text" id="authName" placeholder="Enter your username" />
+    <input type="password" id="authPassword" placeholder="Enter your password" />
+    <div class="auth-buttons">
+      <button id="registerBtn">Register</button>
+      <button id="loginBtn">Login</button>
+    </div>
+  </section>
+
+  <!-- Main Content Section (hidden until login) -->
+  <section id="main-content" style="display: none;">
+    <!-- Profile Section -->
     <section id="profile-section">
-      <div id="user-info">
-        <img id="avatar" src="default-avatar.png" alt="Avatar" />
-        <h2 id="nickname">Guest</h2>
-        <p>Level: <span id="level">1</span> | XP: <span id="xp">0</span></p>
-        <p>
-          Rank: <span id="rank">F</span> | Title:
-          <span id="title">Newbie</span>
-        </p>
-      </div>
-      <div id="profile-edit">
-        <input type="text" id="nickname-input" placeholder="Enter nickname" />
-        <input type="text" id="avatar-input" placeholder="Enter avatar URL" />
-        <button id="update-profile">Update Profile</button>
-      </div>
+      <h2>Profile</h2>
+      <p id="welcomeMsg"></p>
+      <p>Level: <span id="level"></span></p>
+      <p>XP: <span id="xp"></span></p>
+      <p>Rank: <span id="rank"></span></p>
+      <p>Title: <span id="title"></span></p>
     </section>
 
-    <!-- Tasks Section -->
+    <!-- Task Section -->
     <section id="tasks-section">
-      <h2>Daily Tasks</h2>
-      <ul id="daily-tasks">
-        <li data-xp="50">
-          <label>
-            <input type="checkbox" class="task-checkbox" />
-            10 Push Ups (50 XP)
-          </label>
-        </li>
-        <li data-xp="100">
-          <label>
-            <input type="checkbox" class="task-checkbox" />
-            Run 1 Km (100 XP)
-          </label>
-        </li>
-        <li data-xp="150">
-          <label>
-            <input type="checkbox" class="task-checkbox" />
-            Walk 1 Hour (150 XP)
-          </label>
-        </li>
-      </ul>
-      <h2>Mini Tasks</h2>
-      <ul id="mini-tasks">
-        <li data-xp="10">
-          <label>
-            <input type="checkbox" class="task-checkbox" />
-            Drink Water (10 XP)
-          </label>
-        </li>
-      </ul>
-      <button id="reset-tasks">Reset Tasks</button>
+      <h2>Daily Task</h2>
+      <p id="dailyTask"></p>
+      <p>Time remaining: <span id="taskTimer"></span></p>
+      <button id="completeTaskBtn">Complete Task</button>
     </section>
 
     <!-- Leaderboard Section -->
     <section id="leaderboard-section">
-      <h2>Leaderboard</h2>
-      <ul id="leaderboard">
-        <!-- Leaderboard entries will appear here -->
-      </ul>
+      <h2>Global Leaderboard</h2>
+      <ul id="leaderboardList"></ul>
     </section>
 
-    <!-- Admin Panel (Hidden by default) -->
-    <section id="admin-section" class="hidden">
-      <h2>Admin Panel</h2>
-      <div id="admin-login">
-        <input type="text" id="admin-username" placeholder="Admin Username" />
-        <input type="password" id="admin-password" placeholder="Admin Password" />
-        <button id="admin-login-btn">Login</button>
-      </div>
-      <div id="admin-controls" class="hidden">
-        <h3>Admin Controls</h3>
-        <button id="admin-add-xp">Add XP to User</button>
-        <button id="admin-delete-user">Delete User</button>
-        <!-- More admin controls can be added here -->
-      </div>
+    <!-- Settings Section -->
+    <section id="settings-section">
+      <h2>Settings</h2>
+      <button id="changeNameBtn">Change Name</button>
+      <button id="changePasswordBtn">Change Password</button>
+      <button id="deleteAccountBtn">Delete Account</button>
+      <button id="logoutBtn">Logout</button>
     </section>
-  </div>
+
+    <!-- Navigation Bar -->
+    <nav id="nav-bar">
+      <button class="nav-btn" data-section="profile-section">Profile</button>
+      <button class="nav-btn" data-section="tasks-section">Task</button>
+      <button class="nav-btn" data-section="leaderboard-section">Leaderboard</button>
+      <button class="nav-btn" data-section="settings-section">Settings</button>
+    </nav>
+  </section>
 
   <!-- Footer -->
   <footer>
-    <p>
-      Contact: lakshyatyagi178@gmail.com | 
-      <a href="https://t.me/Monarch_OfShadow" target="_blank">t.me/Monarch_OfShadow</a>
-    </p>
+    <small>
+      Contact: <a href="mailto:lakshyatyagi178@gmail.com">lakshyatyagi178@gmail.com</a> | 
+      <a href="https://t.me/sololevelingsystem" target="_blank">Telegram</a>
+    </small>
   </footer>
 
   <script src="script.js"></script>
