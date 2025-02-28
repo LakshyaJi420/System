@@ -9,12 +9,15 @@
 <body>
   <h1>Solo Leveling System</h1>
 
-  <!-- Login/Register Section -->
-  <div id="login-section">
-    <h2>Login / Register</h2>
-    <input type="text" id="loginName" placeholder="Enter your name" />
-    <input type="password" id="loginPassword" placeholder="Enter a password" />
-    <button id="loginBtn">Login / Register</button>
+  <!-- Login / Register Section -->
+  <div id="auth-section">
+    <h2>Authentication</h2>
+    <input type="text" id="authName" placeholder="Enter your name" />
+    <input type="password" id="authPassword" placeholder="Enter a password" />
+    <div>
+      <button id="registerBtn">Register</button>
+      <button id="loginBtn">Login</button>
+    </div>
   </div>
 
   <!-- Profile Section -->
@@ -42,6 +45,14 @@
     <h2>Global Leaderboard</h2>
     <ul id="leaderboardList"></ul>
   </div>
+
+  <!-- Footer with Contact Information -->
+  <footer>
+    <small>
+      Contact: <a href="mailto:lakshyatyagi178@gmail.com">lakshyatyagi178@gmail.com</a> | 
+      <a href="https://t.me/sololevelingsystem" target="_blank">Telegram</a>
+    </small>
+  </footer>
 
   <script src="script.js"></script>
 </body>
