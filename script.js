@@ -22,6 +22,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const leaderboardSection = document.getElementById("leaderboard-section");
   const leaderboardList = document.getElementById("leaderboardList");
 
+  const adminSection = document.getElementById("admin-section");
+  const adminUsersList = document.getElementById("adminUsersList");
+
   // Constants
   const TASK_DURATION = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
 
@@ -44,14 +47,14 @@ document.addEventListener("DOMContentLoaded", () => {
     return JSON.parse(localStorage.getItem("users")) || {};
   }
 
-  // Function to update user's stats based on XP and level thresholds
+  // Update user stats: level up, rank, and assign title based on XP and level
   function updateUserStats(user) {
-    // Level up: every (current level * 50) XP is needed to level up
+    // Level up: every (current level * 50) XP needed to level up
     while (user.xp >= user.level * 50) {
       user.xp -= user.level * 50;
       user.level++;
     }
-    // Rank determination: E Rank for low, A Rank for mid, S Rank for high
+    // Rank determination
     if (user.level < 5) {
       user.rank = "E Rank";
     } else if (user.level < 9) {
@@ -59,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       user.rank = "S Rank";
     }
-    // Title assignment based on level (inspired by Solo Leveling)
+    // Title assignment (inspired by Solo Leveling)
     if (user.level === 1) {
       user.title = "Novice Hunter";
     } else if (user.level < 5) {
@@ -83,13 +86,15 @@ document.addEventListener("DOMContentLoaded", () => {
     titleDisplay.textContent = currentUser.title;
   }
 
-  // Update the global leaderboard
+  // Update global leaderboard (exclude admin "Kirmada")
   function updateLeaderboard() {
     const users = loadUsers();
-    const userArray = Object.values(users).sort((a, b) => {
-      if (b.level === a.level) return b.xp - a.xp;
-      return b.level - a.level;
-    });
+    const userArray = Object.values(users)
+      .filter(user => user.username !== "Kirmada")
+      .sort((a, b) => {
+        if (b.level === a.level) return b.xp - a.xp;
+        return b.level - a.level;
+      });
     leaderboardList.innerHTML = "";
     userArray.forEach(user => {
       const li = document.createElement("li");
@@ -98,11 +103,95 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Admin Panel: List all users (except admin) with options to delete, award XP, or assign an urgent task
+  function updateAdminPanel() {
+    const users = loadUsers();
+    const userArray = Object.values(users).filter(user => user.username !== "Kirmada");
+    adminUsersList.innerHTML = "";
+    userArray.forEach(user => {
+      const userDiv = document.createElement("div");
+      userDiv.className = "admin-user";
+      userDiv.innerHTML = `<strong>${user.username}</strong> - Level: ${user.level}, XP: ${user.xp}`;
+      
+      // Delete user button
+      const deleteBtn = document.createElement("button");
+      deleteBtn.textContent = "Delete User";
+      deleteBtn.addEventListener("click", () => {
+        if (confirm(`Are you sure you want to delete user ${user.username}?`)) {
+          deleteUser(user.username);
+          updateAdminPanel();
+          updateLeaderboard();
+        }
+      });
+      userDiv.appendChild(deleteBtn);
+      
+      // Award XP button
+      const awardBtn = document.createElement("button");
+      awardBtn.textContent = "Award XP";
+      awardBtn.addEventListener("click", () => {
+        const xpAmount = parseInt(prompt(`Enter XP amount to award to ${user.username}:`));
+        if (!isNaN(xpAmount)) {
+          awardXP(user.username, xpAmount);
+          updateAdminPanel();
+          updateLeaderboard();
+        }
+      });
+      userDiv.appendChild(awardBtn);
+      
+      // Assign Urgent Task button
+      const urgentBtn = document.createElement("button");
+      urgentBtn.textContent = "Assign Urgent Task";
+      urgentBtn.addEventListener("click", () => {
+        assignUrgentTask(user.username);
+        updateAdminPanel();
+        updateLeaderboard();
+        alert(`Urgent task assigned to ${user.username} by Kirmada!`);
+      });
+      userDiv.appendChild(urgentBtn);
+      
+      adminUsersList.appendChild(userDiv);
+    });
+  }
+
+  // Delete a user
+  function deleteUser(username) {
+    let users = loadUsers();
+    delete users[username];
+    saveUsers(users);
+    alert(`User ${username} deleted.`);
+  }
+
+  // Award XP to a user and update their stats
+  function awardXP(username, xpAmount) {
+    let users = loadUsers();
+    if (users[username]) {
+      users[username].xp += xpAmount;
+      updateUserStats(users[username]);
+      saveUsers(users);
+      alert(`Awarded ${xpAmount} XP to ${username}.`);
+    }
+  }
+
+  // Assign an urgent task to a user (override their daily task)
+  function assignUrgentTask(username) {
+    let users = loadUsers();
+    if (users[username]) {
+      const urgentTask = {
+        task: "URGENT: Complete your urgent quest immediately! (Message from Kirmada)",
+        xp: 50,
+        assignedAt: Date.now(),
+        completed: false,
+        urgent: true
+      };
+      users[username].dailyTask = urgentTask;
+      saveUsers(users);
+    }
+  }
+
   // Daily Task (Quest) Handling
   function assignDailyTask() {
     const now = Date.now();
     if (!currentUser.dailyTask || now - currentUser.dailyTask.assignedAt > TASK_DURATION) {
-      // Assign a random task from dailyTasks
       const task = dailyTasks[Math.floor(Math.random() * dailyTasks.length)];
       currentUser.dailyTask = {
         task: task.task,
@@ -119,7 +208,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const now = Date.now();
     const remaining = TASK_DURATION - (now - currentUser.dailyTask.assignedAt);
     if (remaining <= 0) {
-      // If task expired and not completed, apply penalty
       if (!currentUser.dailyTask.completed) {
         currentUser.xp = Math.max(0, currentUser.xp - 5);
         alert("You missed your daily task! You lost 5 XP.");
@@ -144,7 +232,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }, 1000);
   }
-
+  
   function formatTime(ms) {
     const totalSeconds = Math.floor(ms / 1000);
     const hours = Math.floor(totalSeconds / 3600);
@@ -154,7 +242,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function saveCurrentUser() {
-    const users = loadUsers();
+    let users = loadUsers();
     users[currentUser.username] = currentUser;
     saveUsers(users);
   }
@@ -210,11 +298,20 @@ document.addEventListener("DOMContentLoaded", () => {
     updateProfileDisplay();
     assignDailyTask();
     updateLeaderboard();
-    // Show main sections and hide authentication
+
+    // Hide authentication and show main sections
     authSection.style.display = "none";
     profileSection.style.display = "block";
     tasksSection.style.display = "block";
     leaderboardSection.style.display = "block";
+
+    // If the logged-in user is the admin "Kirmada", show the admin panel
+    if (currentUser.username === "Kirmada") {
+      adminSection.style.display = "block";
+      updateAdminPanel();
+    } else {
+      adminSection.style.display = "none";
+    }
   });
 
   // Logout event
@@ -224,11 +321,12 @@ document.addEventListener("DOMContentLoaded", () => {
     profileSection.style.display = "none";
     tasksSection.style.display = "none";
     leaderboardSection.style.display = "none";
+    adminSection.style.display = "none";
     authName.value = "";
     authPassword.value = "";
   });
 
-  // Complete Daily Task (Quest) event with confirmation warning
+  // Complete Daily Task (Quest) Event with confirmation warning
   completeTaskBtn.addEventListener("click", () => {
     if (!currentUser.dailyTask || currentUser.dailyTask.completed) return;
     const confirmComplete = confirm("Are you sure you've completed the task? If you lie to yourself, you'll lose XP and weaken your stats!");
