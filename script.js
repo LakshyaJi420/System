@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+Document.addEventListener("DOMContentLoaded", () => {
   // Element References
   const authSection = document.getElementById("auth-section");
   const authName = document.getElementById("authName");
@@ -18,11 +18,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const dailyTaskDisplay = document.getElementById("dailyTask");
   const taskTimerDisplay = document.getElementById("taskTimer");
   const completeTaskBtn = document.getElementById("completeTaskBtn");
-  
-  // NEW: Mini Task elements – initially hidden
-  const miniTaskDisplay = document.getElementById("miniTask");
-  const completeMiniTaskBtn = document.getElementById("completeMiniTaskBtn");
-  completeMiniTaskBtn.style.display = "none"; // hide mini task button initially
 
   const leaderboardSection = document.getElementById("leaderboard-section");
   const leaderboardList = document.getElementById("leaderboardList");
@@ -33,17 +28,12 @@ document.addEventListener("DOMContentLoaded", () => {
   // Constants
   const TASK_DURATION = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
 
-  // Daily tasks – at least three tasks as required
+  // Sample Daily Tasks (quests)
   const dailyTasks = [
-    { task: "Read a book for 30 minutes", xp: 20 },
+    { task: "Do 10 push-ups", xp: 10 },
     { task: "Run 1 km", xp: 15 },
     { task: "Walk for 30 minutes", xp: 10 }
   ];
-
-  // We'll no longer use a separate miniTasks array.
-  // Instead, bonus mini task XP is fixed:
-  const MINI_TASK_BONUS_XP = 10;
-  let miniTaskAvailable = false; // flag for mini task availability
 
   let currentUser = null;
   let taskInterval = null;
@@ -59,10 +49,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Update user stats: level up, rank, and assign title based on XP and level
   function updateUserStats(user) {
+    // Level up: every (current level * 50) XP needed to level up
     while (user.xp >= user.level * 50) {
       user.xp -= user.level * 50;
       user.level++;
     }
+    // Rank determination
     if (user.level < 5) {
       user.rank = "E Rank";
     } else if (user.level < 9) {
@@ -70,6 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       user.rank = "S Rank";
     }
+    // Title assignment (inspired by Solo Leveling)
     if (user.level === 1) {
       user.title = "Novice Hunter";
     } else if (user.level < 5) {
@@ -97,7 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateLeaderboard() {
     const users = loadUsers();
     const userArray = Object.values(users)
-      .filter(user => user.username && user.username !== "Kirmada")
+      .filter(user => user.username !== "Kirmada")
       .sort((a, b) => {
         if (b.level === a.level) return b.xp - a.xp;
         return b.level - a.level;
@@ -113,13 +106,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // Admin Panel: List all users (except admin) with options to delete, award XP, or assign an urgent task
   function updateAdminPanel() {
     const users = loadUsers();
-    const userArray = Object.values(users).filter(user => user.username && user.username !== "Kirmada");
+    const userArray = Object.values(users).filter(user => user.username !== "Kirmada");
     adminUsersList.innerHTML = "";
     userArray.forEach(user => {
       const userDiv = document.createElement("div");
       userDiv.className = "admin-user";
       userDiv.innerHTML = `<strong>${user.username}</strong> - Level: ${user.level}, XP: ${user.xp}`;
       
+      // Delete user button
       const deleteBtn = document.createElement("button");
       deleteBtn.textContent = "Delete User";
       deleteBtn.addEventListener("click", () => {
@@ -131,249 +125,10 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       userDiv.appendChild(deleteBtn);
       
+      // Award XP button
       const awardBtn = document.createElement("button");
       awardBtn.textContent = "Award XP";
       awardBtn.addEventListener("click", () => {
         const xpAmount = parseInt(prompt(`Enter XP amount to award to ${user.username}:`));
         if (!isNaN(xpAmount)) {
-          awardXP(user.username, xpAmount);
-          updateAdminPanel();
-          updateLeaderboard();
-        }
-      });
-      userDiv.appendChild(awardBtn);
       
-      const urgentBtn = document.createElement("button");
-      urgentBtn.textContent = "Assign Urgent Task";
-      urgentBtn.addEventListener("click", () => {
-        assignUrgentTask(user.username);
-        updateAdminPanel();
-        updateLeaderboard();
-        alert(`Urgent task assigned to ${user.username} by Kirmada!`);
-      });
-      userDiv.appendChild(urgentBtn);
-      
-      adminUsersList.appendChild(userDiv);
-    });
-  }
-
-  function deleteUser(username) {
-    let users = loadUsers();
-    delete users[username];
-    saveUsers(users);
-    alert(`User ${username} deleted.`);
-  }
-
-  function awardXP(username, xpAmount) {
-    let users = loadUsers();
-    if (users[username]) {
-      users[username].xp += xpAmount;
-      updateUserStats(users[username]);
-      saveUsers(users);
-      alert(`Awarded ${xpAmount} XP to ${username}.`);
-    }
-  }
-
-  function assignUrgentTask(username) {
-    let users = loadUsers();
-    if (users[username]) {
-      const urgentTask = {
-        task: "URGENT: Complete your urgent quest immediately! (Message from Kirmada)",
-        xp: 50,
-        assignedAt: Date.now(),
-        completed: false,
-        urgent: true
-      };
-      users[username].dailyTask = urgentTask;
-      saveUsers(users);
-    }
-  }
-
-  // DAILY TASK HANDLING
-
-  // Assign a new daily task (and clear mini task)
-  function assignDailyTask() {
-    const now = Date.now();
-    if (!currentUser.dailyTask || now - currentUser.dailyTask.assignedAt > TASK_DURATION) {
-      const taskObj = dailyTasks[Math.floor(Math.random() * dailyTasks.length)];
-      currentUser.dailyTask = {
-        task: taskObj.task,
-        xp: taskObj.xp,
-        assignedAt: now,
-        completed: false
-      };
-      // Clear mini task
-      miniTaskAvailable = false;
-      miniTaskDisplay.textContent = "";
-      completeMiniTaskBtn.style.display = "none";
-      saveCurrentUser();
-    }
-    displayDailyTask();
-  }
-  
-  function displayDailyTask() {
-    const now = Date.now();
-    const remaining = TASK_DURATION - (now - currentUser.dailyTask.assignedAt);
-    if (remaining <= 0) {
-      if (!currentUser.dailyTask.completed) {
-        currentUser.xp = Math.max(0, currentUser.xp - 5);
-        alert("You missed your daily task! You lost 5 XP.");
-        updateUserStats(currentUser);
-        saveCurrentUser();
-        updateProfileDisplay();
-      }
-      // Daily task is done – new task will appear after timer reset.
-      alert("Daily task completed! New task will appear after the timer resets.");
-      // Allow mini task bonus only if daily task was completed
-      if (currentUser.dailyTask.completed) {
-        miniTaskAvailable = true;
-        miniTaskDisplay.textContent = "Bonus Mini Task: Click the button for extra 10 XP!";
-        completeMiniTaskBtn.style.display = "inline-block";
-      }
-      // Reset the daily task after timer expires
-      currentUser.dailyTask = null;
-      assignDailyTask();
-      return;
-    }
-    dailyTaskDisplay.textContent = `Daily Task: ${currentUser.dailyTask.task} (XP Reward: ${currentUser.dailyTask.xp})`;
-    taskTimerDisplay.textContent = formatTime(remaining);
-    if (taskInterval) clearInterval(taskInterval);
-    taskInterval = setInterval(() => {
-      const now = Date.now();
-      const remaining = TASK_DURATION - (now - currentUser.dailyTask.assignedAt);
-      if (remaining <= 0) {
-        clearInterval(taskInterval);
-        displayDailyTask();
-      } else {
-        taskTimerDisplay.textContent = formatTime(remaining);
-      }
-    }, 1000);
-  }
-  
-  function formatTime(ms) {
-    const totalSeconds = Math.floor(ms / 1000);
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-    return `${hours}h ${minutes}m ${seconds}s`;
-  }
-
-  function saveCurrentUser() {
-    let users = loadUsers();
-    users[currentUser.username] = currentUser;
-    saveUsers(users);
-  }
-
-  // --- Authentication Events ---
-
-  // Register new user
-  registerBtn.addEventListener("click", () => {
-    const username = authName.value.trim();
-    const password = authPassword.value.trim();
-    if (!username || !password) {
-      alert("Please enter both a username and a password.");
-      return;
-    }
-    let users = loadUsers();
-    if (users[username]) {
-      alert("User already registered! Please use the login button.");
-      return;
-    }
-    users[username] = {
-      username,
-      password,
-      level: 1,
-      xp: 0,
-      rank: "E Rank",
-      title: "Novice Hunter",
-      dailyTask: null
-    };
-    saveUsers(users);
-    alert("Registered new user! Now please log in.");
-  });
-
-  // Login existing user (with admin check for Kirmada)
-  loginBtn.addEventListener("click", () => {
-    const username = authName.value.trim();
-    const password = authPassword.value.trim();
-    if (!username || !password) {
-      alert("Please enter both a username and a password.");
-      return;
-    }
-    let users = loadUsers();
-    if (!users[username]) {
-      alert("User not found! Please register first.");
-      return;
-    }
-    if (users[username].password !== password) {
-      alert("Incorrect password. Please try again.");
-      return;
-    }
-    currentUser = users[username];
-    updateUserStats(currentUser);
-    updateProfileDisplay();
-    assignDailyTask();
-    updateLeaderboard();
-
-    authSection.style.display = "none";
-    profileSection.style.display = "block";
-    tasksSection.style.display = "block";
-    leaderboardSection.style.display = "block";
-
-    // Show admin panel if logged in as admin "Kirmada"
-    if (currentUser.username === "Kirmada") {
-      adminSection.style.display = "block";
-      updateAdminPanel();
-    } else {
-      adminSection.style.display = "none";
-    }
-  });
-
-  // Logout event
-  logoutBtn.addEventListener("click", () => {
-    currentUser = null;
-    authSection.style.display = "block";
-    profileSection.style.display = "none";
-    tasksSection.style.display = "none";
-    leaderboardSection.style.display = "none";
-    adminSection.style.display = "none";
-    authName.value = "";
-    authPassword.value = "";
-  });
-
-  // Complete Daily Task Event with confirmation
-  completeTaskBtn.addEventListener("click", () => {
-    if (!currentUser.dailyTask || currentUser.dailyTask.completed) return;
-    const confirmComplete = confirm("Are you sure you've completed the daily task? Great job, you're motivated to keep going!");
-    if (confirmComplete) {
-      currentUser.dailyTask.completed = true;
-      currentUser.xp += currentUser.dailyTask.xp;
-      updateUserStats(currentUser);
-      alert("Daily task completed! New task will appear after the timer resets.");
-      saveCurrentUser();
-      updateProfileDisplay();
-      updateLeaderboard();
-      // Now allow the mini task bonus
-      miniTaskAvailable = true;
-      miniTaskDisplay.textContent = "Bonus Mini Task: Click the button for extra 10 XP!";
-      completeMiniTaskBtn.style.display = "inline-block";
-    }
-  });
-
-  // Complete Mini Task Event (only available after daily task completed)
-  completeMiniTaskBtn.addEventListener("click", () => {
-    if (!miniTaskAvailable) {
-      alert("Mini task not available.");
-      return;
-    }
-    miniTaskAvailable = false;
-    currentUser.xp += MINI_TASK_BONUS_XP;
-    updateUserStats(currentUser);
-    alert("Mini task completed! You earned an extra 10 XP. New daily task will appear after the timer resets.");
-    completeMiniTaskBtn.style.display = "none";
-    miniTaskDisplay.textContent = "";
-    saveCurrentUser();
-    updateProfileDisplay();
-    updateLeaderboard();
-  });
-});
