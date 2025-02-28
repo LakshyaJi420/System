@@ -53,4 +53,9 @@ button:hover {
   border-radius: 5px;
 }
 
-/* Additional animations can be added here if desired */
+/* Footer Style */
+footer {
+  margin-top: 40px;
+  font-size: 0.8em;
+  color: #cccccc;
+}
