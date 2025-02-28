@@ -1,134 +1,81 @@
-Document.addEventListener("DOMContentLoaded", () => {
-  // Element References
-  const authSection = document.getElementById("auth-section");
-  const authName = document.getElementById("authName");
-  const authPassword = document.getElementById("authPassword");
-  const registerBtn = document.getElementById("registerBtn");
-  const loginBtn = document.getElementById("loginBtn");
+// User Data (Stored in localStorage)
+let currentUser = JSON.parse(localStorage.getItem('currentUser')) || {
+    id: Date.now(),
+    nickname: 'Guest',
+    level: 1,
+    xp: 0,
+    rank: 'F',
+    avatar: 'images/default-avatar.png',
+    isAdmin: false
+};
 
-  const profileSection = document.getElementById("profile-section");
-  const welcomeMsg = document.getElementById("welcomeMsg");
-  const levelDisplay = document.getElementById("level");
-  const xpDisplay = document.getElementById("xp");
-  const rankDisplay = document.getElementById("rank");
-  const titleDisplay = document.getElementById("title");
-  const logoutBtn = document.getElementById("logoutBtn");
+// Admin Credentials (Hardcoded)
+const ADMIN_USER = 'Kirmada';
+const ADMIN_PASS = 'ramram';
 
-  const tasksSection = document.getElementById("tasks-section");
-  const dailyTaskDisplay = document.getElementById("dailyTask");
-  const taskTimerDisplay = document.getElementById("taskTimer");
-  const completeTaskBtn = document.getElementById("completeTaskBtn");
+// Initialize
+function init() {
+    document.getElementById('nickname').textContent = currentUser.nickname;
+    document.getElementById('level').textContent = currentUser.level;
+    document.getElementById('xp').textContent = currentUser.xp;
+    document.getElementById('rank').textContent = currentUser.rank;
+    document.getElementById('avatarImg').src = currentUser.avatar;
+    updateLeaderboard();
+}
 
-  const leaderboardSection = document.getElementById("leaderboard-section");
-  const leaderboardList = document.getElementById("leaderboardList");
-
-  const adminSection = document.getElementById("admin-section");
-  const adminUsersList = document.getElementById("adminUsersList");
-
-  // Constants
-  const TASK_DURATION = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
-
-  // Sample Daily Tasks (quests)
-  const dailyTasks = [
-    { task: "Do 10 push-ups", xp: 10 },
-    { task: "Run 1 km", xp: 15 },
-    { task: "Walk for 30 minutes", xp: 10 }
-  ];
-
-  let currentUser = null;
-  let taskInterval = null;
-
-  // Utility functions to work with localStorage
-  function saveUsers(users) {
-    localStorage.setItem("users", JSON.stringify(users));
-  }
-  
-  function loadUsers() {
-    return JSON.parse(localStorage.getItem("users")) || {};
-  }
-
-  // Update user stats: level up, rank, and assign title based on XP and level
-  function updateUserStats(user) {
-    // Level up: every (current level * 50) XP needed to level up
-    while (user.xp >= user.level * 50) {
-      user.xp -= user.level * 50;
-      user.level++;
+// Complete Task
+function completeTask(taskType, xp) {
+    currentUser.xp += xp;
+    if (currentUser.xp >= 100) {
+        currentUser.level++;
+        currentUser.xp -= 100;
+        alert(`🎉 Level Up! You're now Level ${currentUser.level}`);
     }
-    // Rank determination
-    if (user.level < 5) {
-      user.rank = "E Rank";
-    } else if (user.level < 9) {
-      user.rank = "A Rank";
+    updateRank();
+    saveUser();
+    init();
+}
+
+// Update Rank (F → E → D → C → B → A → S)
+function updateRank() {
+    const ranks = ['F', 'E', 'D', 'C', 'B', 'A', 'S'];
+    const rankIndex = Math.min(Math.floor(currentUser.level / 5), ranks.length - 1);
+    currentUser.rank = ranks[rankIndex];
+}
+
+// Admin Functions
+function showAdminModal() {
+    document.getElementById('adminModal').style.display = 'block';
+}
+
+function adminLogin() {
+    const username = document.getElementById('adminUser').value;
+    const password = document.getElementById('adminPass').value;
+    
+    if (username === ADMIN_USER && password === ADMIN_PASS) {
+        currentUser.isAdmin = true;
+        alert('⚡ GOD MODE ACTIVATED!');
     } else {
-      user.rank = "S Rank";
+        alert('❌ Invalid credentials!');
     }
-    // Title assignment (inspired by Solo Leveling)
-    if (user.level === 1) {
-      user.title = "Novice Hunter";
-    } else if (user.level < 5) {
-      user.title = "Rookie Hunter";
-    } else if (user.level < 9) {
-      user.title = "Seasoned Hunter";
-    } else if (user.level < 12) {
-      user.title = "Elite Hunter";
-    } else if (user.level < 15) {
-      user.title = "Elite Master";
-    } else {
-      user.title = "Monarch of Shadow";
-    }
-  }
+    document.getElementById('adminModal').style.display = 'none';
+}
 
-  function updateProfileDisplay() {
-    welcomeMsg.textContent = `Welcome, ${currentUser.username}!`;
-    levelDisplay.textContent = currentUser.level;
-    xpDisplay.textContent = currentUser.xp;
-    rankDisplay.textContent = currentUser.rank;
-    titleDisplay.textContent = currentUser.title;
-  }
+// Save to localStorage
+function saveUser() {
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+}
 
-  // Update global leaderboard (exclude admin "Kirmada")
-  function updateLeaderboard() {
-    const users = loadUsers();
-    const userArray = Object.values(users)
-      .filter(user => user.username !== "Kirmada")
-      .sort((a, b) => {
-        if (b.level === a.level) return b.xp - a.xp;
-        return b.level - a.level;
-      });
-    leaderboardList.innerHTML = "";
-    userArray.forEach(user => {
-      const li = document.createElement("li");
-      li.textContent = `${user.username} - Level: ${user.level}, XP: ${user.xp}, Rank: ${user.rank}, Title: ${user.title}`;
-      leaderboardList.appendChild(li);
-    });
-  }
+// Leaderboard (Simulated)
+function updateLeaderboard() {
+    // For simplicity, uses only the current user
+    const rankingList = document.getElementById('rankingList');
+    rankingList.innerHTML = `
+        <div class="rank-entry">
+            ${currentUser.nickname} - Level ${currentUser.level} (${currentUser.rank})
+        </div>
+    `;
+}
 
-  // Admin Panel: List all users (except admin) with options to delete, award XP, or assign an urgent task
-  function updateAdminPanel() {
-    const users = loadUsers();
-    const userArray = Object.values(users).filter(user => user.username !== "Kirmada");
-    adminUsersList.innerHTML = "";
-    userArray.forEach(user => {
-      const userDiv = document.createElement("div");
-      userDiv.className = "admin-user";
-      userDiv.innerHTML = `<strong>${user.username}</strong> - Level: ${user.level}, XP: ${user.xp}`;
-      
-      // Delete user button
-      const deleteBtn = document.createElement("button");
-      deleteBtn.textContent = "Delete User";
-      deleteBtn.addEventListener("click", () => {
-        if (confirm(`Are you sure you want to delete user ${user.username}?`)) {
-          deleteUser(user.username);
-          updateAdminPanel();
-          updateLeaderboard();
-        }
-      });
-      userDiv.appendChild(deleteBtn);
-      
-      // Award XP button
-      const awardBtn = document.createElement("button");
-      awardBtn.textContent = "Award XP";
-      awardBtn.addEventListener("click", () => {
-        const xpAmount = parseInt(prompt(`Enter XP amount to award to ${user.username}:`));
-        if (!isNaN(xpAmount)) {
-      
+// Initialize on load
+init();
