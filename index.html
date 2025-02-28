@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solo Leveling System</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Solo Leveling System</h1>
+  <div id="registration">
+    <input type="text" id="name" placeholder="Enter your name">
+    <input type="number" id="age" placeholder="Enter your age">
+    <input type="number" id="weight" placeholder="Enter your weight">
+    <input type="number" id="height" placeholder="Enter your height">
+    <button id="register-btn">Register</button>
+  </div>
+  <div id="content" style="display:none;">
+    <h2 id="welcome"></h2>
+    <button id="get-task-btn">Get Task</button>
+    <p id="task"></p>
+    <button id="complete-task-btn" style="display:none;">Complete Task</button>
+    <p id="feedback"></p>
+    <h3>Global Leaderboard</h3>
+    <ul id="leaderboard"></ul>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
