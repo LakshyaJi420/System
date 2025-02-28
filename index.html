@@ -1,21 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solo Leveling System</title>
-    <link rel="stylesheet" href="style.css"> <!-- Optional for UI Styling -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solo Leveling System</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <h1>Solo Leveling System</h1>
 
-    <div class="container">
-        <h2>Login / Register</h2>
-        <input type="text" id="username" placeholder="Enter your username">
-        <input type="password" id="password" placeholder="Enter your password">
-        <button id="doneBtn">Done</button>
+  <!-- Authentication Section -->
+  <div id="auth-section">
+    <h2>Authentication</h2>
+    <input type="text" id="authName" placeholder="Enter your username" />
+    <input type="password" id="authPassword" placeholder="Enter your password" />
+    <div>
+      <button id="registerBtn">Register</button>
+      <button id="loginBtn">Login</button>
     </div>
+  </div>
 
-    <script src="script.js"></script>
+  <!-- Profile Section -->
+  <div id="profile-section" style="display: none;">
+    <h2 id="welcomeMsg"></h2>
+    <p>Level: <span id="level"></span> (<span id="rank"></span>)</p>
+    <p>XP: <span id="xp"></span></p>
+    <p>Title: <span id="title"></span></p>
+    <button id="logoutBtn">Logout</button>
+  </div>
 
+  <!-- Daily Task Section -->
+  <div id="tasks-section" style="display: none;">
+    <h2>Daily Task</h2>
+    <p id="dailyTask"></p>
+    <p>Time remaining: <span id="taskTimer"></span></p>
+    <button id="completeTaskBtn">Complete Task</button>
+  </div>
+
+  <!-- Leaderboard Section -->
+  <div id="leaderboard-section" style="display: none;">
+    <h2>Global Leaderboard</h2>
+    <ul id="leaderboardList"></ul>
+  </div>
+
+  <!-- Footer with Contact Information -->
+  <footer>
+    <small>
+      Contact: <a href="mailto:lakshyatyagi178@gmail.com">lakshyatyagi178@gmail.com</a> | 
+      <a href="https://t.me/sololevelingsystem" target="_blank">Telegram</a>
+    </small>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
