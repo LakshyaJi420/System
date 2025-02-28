@@ -18,6 +18,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const dailyTaskDisplay = document.getElementById("dailyTask");
   const taskTimerDisplay = document.getElementById("taskTimer");
   const completeTaskBtn = document.getElementById("completeTaskBtn");
+  
+  const miniTaskDisplay = document.getElementById("miniTask");
+  const completeMiniTaskBtn = document.getElementById("completeMiniTaskBtn");
 
   const leaderboardSection = document.getElementById("leaderboard-section");
   const leaderboardList = document.getElementById("leaderboardList");
@@ -26,17 +29,26 @@ document.addEventListener("DOMContentLoaded", () => {
   const adminUsersList = document.getElementById("adminUsersList");
 
   // Constants
-  const TASK_DURATION = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
+  const TASK_DURATION = 12 * 60 * 60 * 1000; // 12 hours
 
-  // Sample Daily Tasks (quests)
+  // Extended Daily Tasks List
   const dailyTasks = [
-    { task: "Do 10 push-ups", xp: 10 },
+    { task: "Walk for 30 minutes", xp: 10 },
     { task: "Run 1 km", xp: 15 },
-    { task: "Walk for 30 minutes", xp: 10 }
+    { task: "Read a book for 30 minutes", xp: 20 },
+    { task: "Do 10 push-ups", xp: 10 }
+  ];
+
+  // Mini Tasks (Bonus, no time limit)
+  const miniTasks = [
+    { task: "Drink a glass of water", xp: 5 },
+    { task: "Stretch for 5 minutes", xp: 5 },
+    { task: "Take a deep breath and relax", xp: 3 }
   ];
 
   let currentUser = null;
   let taskInterval = null;
+  let currentMiniTask = null;
 
   // Utility functions to work with localStorage
   function saveUsers(users) {
@@ -49,12 +61,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Update user stats: level up, rank, and assign title based on XP and level
   function updateUserStats(user) {
-    // Level up: every (current level * 50) XP needed to level up
     while (user.xp >= user.level * 50) {
       user.xp -= user.level * 50;
       user.level++;
     }
-    // Rank determination
     if (user.level < 5) {
       user.rank = "E Rank";
     } else if (user.level < 9) {
@@ -62,7 +72,6 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       user.rank = "S Rank";
     }
-    // Title assignment (inspired by Solo Leveling)
     if (user.level === 1) {
       user.title = "Novice Hunter";
     } else if (user.level < 5) {
@@ -90,7 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateLeaderboard() {
     const users = loadUsers();
     const userArray = Object.values(users)
-      .filter(user => user.username !== "Kirmada")
+      .filter(user => user.username && user.username !== "Kirmada")
       .sort((a, b) => {
         if (b.level === a.level) return b.xp - a.xp;
         return b.level - a.level;
@@ -106,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Admin Panel: List all users (except admin) with options to delete, award XP, or assign an urgent task
   function updateAdminPanel() {
     const users = loadUsers();
-    const userArray = Object.values(users).filter(user => user.username !== "Kirmada");
+    const userArray = Object.values(users).filter(user => user.username && user.username !== "Kirmada");
     adminUsersList.innerHTML = "";
     userArray.forEach(user => {
       const userDiv = document.createElement("div");
@@ -172,7 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Assign an urgent task to a user (override their daily task)
+  // Assign an urgent task to a user (overrides their daily task)
   function assignUrgentTask(username) {
     let users = loadUsers();
     if (users[username]) {
@@ -188,17 +197,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Daily Task (Quest) Handling
+  // Daily Task Handling
   function assignDailyTask() {
     const now = Date.now();
     if (!currentUser.dailyTask || now - currentUser.dailyTask.assignedAt > TASK_DURATION) {
-      const task = dailyTasks[Math.floor(Math.random() * dailyTasks.length)];
+      const taskObj = dailyTasks[Math.floor(Math.random() * dailyTasks.length)];
       currentUser.dailyTask = {
-        task: task.task,
-        xp: task.xp,
+        task: taskObj.task,
+        xp: taskObj.xp,
         assignedAt: now,
         completed: false
       };
+      // Also assign a mini task when a new daily task is given
+      assignMiniTask();
       saveCurrentUser();
     }
     displayDailyTask();
@@ -215,10 +226,14 @@ document.addEventListener("DOMContentLoaded", () => {
         saveCurrentUser();
         updateProfileDisplay();
       }
+      // Reset daily task and remove mini task
+      currentUser.dailyTask = null;
+      currentMiniTask = null;
+      miniTaskDisplay.textContent = "";
       assignDailyTask();
       return;
     }
-    dailyTaskDisplay.textContent = `Task: ${currentUser.dailyTask.task} (XP Reward: ${currentUser.dailyTask.xp})`;
+    dailyTaskDisplay.textContent = `Daily Task: ${currentUser.dailyTask.task} (XP Reward: ${currentUser.dailyTask.xp})`;
     taskTimerDisplay.textContent = formatTime(remaining);
     if (taskInterval) clearInterval(taskInterval);
     taskInterval = setInterval(() => {
@@ -233,6 +248,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 1000);
   }
   
+  // Mini Task Handling (no time limit)
+  function assignMiniTask() {
+    // Randomly select a mini task from the miniTasks array
+    const mini = miniTasks[Math.floor(Math.random() * miniTasks.length)];
+    currentMiniTask = { task: mini.task, xp: mini.xp, completed: false };
+    miniTaskDisplay.textContent = `Mini Task: ${currentMiniTask.task} (Bonus XP: ${currentMiniTask.xp})`;
+  }
+  
+  // Format time in h m s
   function formatTime(ms) {
     const totalSeconds = Math.floor(ms / 1000);
     const hours = Math.floor(totalSeconds / 3600);
@@ -262,7 +286,7 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("User already registered! Please use the login button.");
       return;
     }
-    // Create new user object with default stats
+    // Create new user with default stats
     users[username] = {
       username,
       password,
@@ -276,7 +300,7 @@ document.addEventListener("DOMContentLoaded", () => {
     alert("Registered new user! Now please log in.");
   });
 
-  // Login existing user
+  // Login existing user (with admin check for Kirmada)
   loginBtn.addEventListener("click", () => {
     const username = authName.value.trim();
     const password = authPassword.value.trim();
@@ -305,7 +329,7 @@ document.addEventListener("DOMContentLoaded", () => {
     tasksSection.style.display = "block";
     leaderboardSection.style.display = "block";
 
-    // If the logged-in user is the admin "Kirmada", show the admin panel
+    // Show admin panel if logged in as admin "Kirmada"
     if (currentUser.username === "Kirmada") {
       adminSection.style.display = "block";
       updateAdminPanel();
@@ -326,19 +350,34 @@ document.addEventListener("DOMContentLoaded", () => {
     authPassword.value = "";
   });
 
-  // Complete Daily Task (Quest) Event with confirmation warning
+  // Complete Daily Task Event with confirmation
   completeTaskBtn.addEventListener("click", () => {
     if (!currentUser.dailyTask || currentUser.dailyTask.completed) return;
-    const confirmComplete = confirm("Are you sure you've completed the task? If you lie to yourself, you'll lose XP and weaken your stats!");
+    const confirmComplete = confirm("Are you sure you've completed the daily task? Great job, you're motivated to keep going!");
     if (confirmComplete) {
       currentUser.dailyTask.completed = true;
       currentUser.xp += currentUser.dailyTask.xp;
       updateUserStats(currentUser);
-      alert("Task completed! Great job and keep pushing forward!");
+      alert("Daily task completed! Keep up the great work!");
       saveCurrentUser();
       updateProfileDisplay();
       assignDailyTask();
       updateLeaderboard();
     }
+  });
+
+  // Complete Mini Task Event (no time limit)
+  completeMiniTaskBtn.addEventListener("click", () => {
+    if (!currentMiniTask || currentMiniTask.completed) {
+      alert("No mini task available.");
+      return;
+    }
+    currentMiniTask.completed = true;
+    currentUser.xp += currentMiniTask.xp;
+    updateUserStats(currentUser);
+    alert("Mini task completed! Bonus XP awarded. Keep pushing forward!");
+    saveCurrentUser();
+    updateProfileDisplay();
+    miniTaskDisplay.textContent = "Mini task completed!";
   });
 });
