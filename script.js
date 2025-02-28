@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
   
   // Assign a title and rank based on level
   function updateUserStats(user) {
-    // For simplicity: level up every 50 XP
+    // Level up logic: for simplicity, level up every 50 XP
     while (user.xp >= user.level * 50) {
       user.xp -= user.level * 50;
       user.level++;
@@ -163,7 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Registration Event
   registerBtn.addEventListener("click", () => {
     const name = authName.value.trim();
-    const password = authPassword.value;
+    const password = authPassword.value.trim();
     if (!name || !password) {
       alert("Please enter a name and password to register.");
       return;
@@ -173,6 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("User already exists! Please use the login button.");
       return;
     }
+    // Create a new user
     users[name] = {
       name,
       password,
@@ -190,7 +191,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Login Event
   loginBtn.addEventListener("click", () => {
     const name = authName.value.trim();
-    const password = authPassword.value;
+    const password = authPassword.value.trim();
     if (!name || !password) {
       alert("Please enter a name and password to login.");
       return;
@@ -205,6 +206,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     currentUser = users[name];
+    console.log("Before update:", currentUser);
     updateUserStats(currentUser);
     updateProfileDisplay();
     assignDailyTask();
