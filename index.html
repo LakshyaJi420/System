@@ -1,29 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Solo Leveling System</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <h1>Solo Leveling System</h1>
-  <div id="registration">
-    <input type="text" id="name" placeholder="Enter your name">
-    <input type="number" id="age" placeholder="Enter your age">
-    <input type="number" id="weight" placeholder="Enter your weight">
-    <input type="number" id="height" placeholder="Enter your height">
-    <button id="register-btn">Register</button>
+
+  <!-- Login/Register Section -->
+  <div id="login-section">
+    <h2>Login / Register</h2>
+    <input type="text" id="loginName" placeholder="Enter your name" />
+    <input type="password" id="loginPassword" placeholder="Enter a password" />
+    <button id="loginBtn">Login / Register</button>
   </div>
-  <div id="content" style="display:none;">
-    <h2 id="welcome"></h2>
-    <button id="get-task-btn">Get Task</button>
-    <p id="task"></p>
-    <button id="complete-task-btn" style="display:none;">Complete Task</button>
-    <p id="feedback"></p>
-    <h3>Global Leaderboard</h3>
-    <ul id="leaderboard"></ul>
+
+  <!-- Profile Section -->
+  <div id="profile-section" style="display: none;">
+    <h2 id="welcomeMsg"></h2>
+    <p>Level: <span id="level"></span> (<span id="rank"></span>)</p>
+    <p>XP: <span id="xp"></span></p>
+    <p>Title: <span id="title"></span></p>
+    <button id="logoutBtn">Logout</button>
   </div>
+
+  <!-- Daily Task Section -->
+  <div id="tasks-section" style="display: none;">
+    <h2>Daily Task</h2>
+    <p id="dailyTask"></p>
+    <p>Time remaining: <span id="taskTimer"></span></p>
+    <button id="completeTaskBtn">Complete Task</button>
+    <p id="taskWarning" class="warning" style="display: none;">
+      Warning: If you lie about completing the task, you'll lose XP and weaken your stats!
+    </p>
+  </div>
+
+  <!-- Leaderboard Section -->
+  <div id="leaderboard-section" style="display: none;">
+    <h2>Global Leaderboard</h2>
+    <ul id="leaderboardList"></ul>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>
