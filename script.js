@@ -1,173 +1,279 @@
-/* script.js */
+document.addEventListener("DOMContentLoaded", () => {
+  // --- Element References ---
+  // Authentication
+  const authSection = document.getElementById("auth-section");
+  const authName = document.getElementById("authName");
+  const authPassword = document.getElementById("authPassword");
+  const registerBtn = document.getElementById("registerBtn");
+  const loginBtn = document.getElementById("loginBtn");
 
-// Initialize user data (persisted in localStorage)
-let user = {
-  nickname: localStorage.getItem('nickname') || "Guest",
-  avatar: localStorage.getItem('avatar') || "default-avatar.png",
-  xp: parseInt(localStorage.getItem('xp')) || 0,
-  level: parseInt(localStorage.getItem('level')) || 1,
-};
+  // Main content container
+  const mainContent = document.getElementById("main-content");
 
-// Rank thresholds (example values)
-const ranks = [
-  { threshold: 0, rank: 'F' },
-  { threshold: 100, rank: 'E' },
-  { threshold: 200, rank: 'D' },
-  { threshold: 300, rank: 'C' },
-  { threshold: 400, rank: 'B' },
-  { threshold: 500, rank: 'A' },
-  { threshold: 600, rank: 'S' }
-];
+  // Sections
+  const profileSection = document.getElementById("profile-section");
+  const tasksSection = document.getElementById("tasks-section");
+  const leaderboardSection = document.getElementById("leaderboard-section");
+  const settingsSection = document.getElementById("settings-section");
 
-// Determine title based on level
-function getTitle(level) {
-  if (level >= 100) return "Monarch of Shadow";
-  if (level >= 50) return "Elite Master";
-  if (level >= 20) return "Seasoned Warrior";
-  return "Newbie";
-}
+  // Profile Elements
+  const welcomeMsg = document.getElementById("welcomeMsg");
+  const levelDisplay = document.getElementById("level");
+  const xpDisplay = document.getElementById("xp");
+  const rankDisplay = document.getElementById("rank");
+  const titleDisplay = document.getElementById("title");
 
-// Calculate level from XP (e.g., every 100 XP equals a new level)
-function calculateLevel(xp) {
-  return Math.floor(xp / 100) + 1;
-}
+  // Task Elements
+  const dailyTaskDisplay = document.getElementById("dailyTask");
+  const taskTimerDisplay = document.getElementById("taskTimer");
+  const completeTaskBtn = document.getElementById("completeTaskBtn");
 
-// Determine rank based on XP
-function getRank(xp) {
-  let rank = 'F';
-  for (let i = ranks.length - 1; i >= 0; i--) {
-    if (xp >= ranks[i].threshold) {
-      rank = ranks[i].rank;
-      break;
+  // Leaderboard
+  const leaderboardList = document.getElementById("leaderboardList");
+
+  // Settings Elements
+  const changeNameBtn = document.getElementById("changeNameBtn");
+  const changePasswordBtn = document.getElementById("changePasswordBtn");
+  const deleteAccountBtn = document.getElementById("deleteAccountBtn");
+  const settingsLogoutBtn = document.getElementById("logoutBtn");
+
+  // Navigation buttons
+  const navButtons = document.querySelectorAll(".nav-btn");
+
+  // --- Constants & Data ---
+  const TASK_DURATION = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
+  const dailyTasks = [
+    { task: "Read a book for 30 minutes", xp: 20 },
+    { task: "Run 1 km", xp: 15 },
+    { task: "Walk for 30 minutes", xp: 10 }
+  ];
+
+  let currentUser = null;
+  let taskInterval = null;
+
+  // --- Utility Functions ---
+  function saveUsers(users) {
+    localStorage.setItem("users", JSON.stringify(users));
+  }
+  function loadUsers() {
+    return JSON.parse(localStorage.getItem("users")) || {};
+  }
+  function saveCurrentUser() {
+    let users = loadUsers();
+    users[currentUser.username] = currentUser;
+    saveUsers(users);
+  }
+  function updateUserStats(user) {
+    while (user.xp >= user.level * 50) {
+      user.xp -= user.level * 50;
+      user.level++;
+    }
+    if (user.level < 5) {
+      user.rank = "E Rank";
+    } else if (user.level < 9) {
+      user.rank = "A Rank";
+    } else {
+      user.rank = "S Rank";
+    }
+    if (user.level === 1) {
+      user.title = "Novice Hunter";
+    } else if (user.level < 5) {
+      user.title = "Rookie Hunter";
+    } else if (user.level < 9) {
+      user.title = "Seasoned Hunter";
+    } else if (user.level < 12) {
+      user.title = "Elite Hunter";
+    } else if (user.level < 15) {
+      user.title = "Elite Master";
+    } else {
+      user.title = "Monarch of Shadow";
     }
   }
-  return rank;
-}
+  function updateProfileDisplay() {
+    welcomeMsg.textContent = `Welcome, ${currentUser.username}!`;
+    levelDisplay.textContent = currentUser.level;
+    xpDisplay.textContent = currentUser.xp;
+    rankDisplay.textContent = currentUser.rank;
+    titleDisplay.textContent = currentUser.title;
+  }
+  function updateLeaderboard() {
+    const users = loadUsers();
+    const userArray = Object.values(users)
+      .filter(user => user.username && user.username !== "Kirmada")
+      .sort((a, b) => {
+        if (b.level === a.level) return b.xp - a.xp;
+        return b.level - a.level;
+      });
+    leaderboardList.innerHTML = "";
+    userArray.forEach(user => {
+      const li = document.createElement("li");
+      li.textContent = `${user.username} - Level: ${user.level}, XP: ${user.xp}, Rank: ${user.rank}, Title: ${user.title}`;
+      leaderboardList.appendChild(li);
+    });
+  }
+  function formatTime(ms) {
+    const totalSeconds = Math.floor(ms / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    return `${hours}h ${minutes}m ${seconds}s`;
+  }
 
-// Update the user profile display
-function updateProfileDisplay() {
-  document.getElementById('nickname').innerText = user.nickname;
-  document.getElementById('avatar').src = user.avatar;
-  user.level = calculateLevel(user.xp);
-  document.getElementById('level').innerText = user.level;
-  document.getElementById('xp').innerText = user.xp;
-  document.getElementById('rank').innerText = getRank(user.xp);
-  document.getElementById('title').innerText = getTitle(user.level);
-}
-
-// Save user data to localStorage
-function saveUserData() {
-  localStorage.setItem('nickname', user.nickname);
-  localStorage.setItem('avatar', user.avatar);
-  localStorage.setItem('xp', user.xp);
-  localStorage.setItem('level', user.level);
-}
-
-// When a task checkbox is checked, add the corresponding XP
-document.querySelectorAll('.task-checkbox').forEach(checkbox => {
-  checkbox.addEventListener('change', function () {
-    if (this.checked) {
-      let xpToAdd = parseInt(this.closest('li').getAttribute('data-xp'));
-      user.xp += xpToAdd;
-      updateProfileDisplay();
-      saveUserData();
-      updateLeaderboard();
-      // Simple animation: flash background
-      this.closest('li').style.backgroundColor = "#d4edda";
-      setTimeout(() => {
-        this.closest('li').style.backgroundColor = "";
-      }, 500);
+  // --- Daily Task Handling ---
+  function assignDailyTask() {
+    const now = Date.now();
+    if (!currentUser.dailyTask || now - currentUser.dailyTask.assignedAt > TASK_DURATION) {
+      const taskObj = dailyTasks[Math.floor(Math.random() * dailyTasks.length)];
+      currentUser.dailyTask = {
+        task: taskObj.task,
+        xp: taskObj.xp,
+        assignedAt: now,
+        completed: false
+      };
+      saveCurrentUser();
     }
+    displayDailyTask();
+  }
+  function displayDailyTask() {
+    const now = Date.now();
+    const remaining = TASK_DURATION - (now - currentUser.dailyTask.assignedAt);
+    if (remaining <= 0) {
+      if (!currentUser.dailyTask.completed) {
+        currentUser.xp = Math.max(0, currentUser.xp - 5);
+        alert("You missed your daily task! You lost 5 XP.");
+        updateUserStats(currentUser);
+        saveCurrentUser();
+        updateProfileDisplay();
+      }
+      alert("Daily task completed! New task will appear after the timer resets.");
+      currentUser.dailyTask = null;
+      assignDailyTask();
+      return;
+    }
+    dailyTaskDisplay.textContent = `Task: ${currentUser.dailyTask.task} (XP: ${currentUser.dailyTask.xp})`;
+    taskTimerDisplay.textContent = formatTime(remaining);
+    if (taskInterval) clearInterval(taskInterval);
+    taskInterval = setInterval(() => {
+      const now = Date.now();
+      const remaining = TASK_DURATION - (now - currentUser.dailyTask.assignedAt);
+      if (remaining <= 0) {
+        clearInterval(taskInterval);
+        displayDailyTask();
+      } else {
+        taskTimerDisplay.textContent = formatTime(remaining);
+      }
+    }, 1000);
+  }
+
+  // --- Navigation ---
+  function showSection(sectionId) {
+    const sections = ["profile-section", "tasks-section", "leaderboard-section", "settings-section"];
+    sections.forEach(id => {
+      document.getElementById(id).style.display = (id === sectionId) ? "block" : "none";
+    });
+  }
+  navButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const sectionId = btn.getAttribute("data-section");
+      showSection(sectionId);
+    });
   });
-});
 
-// Reset all tasks (uncheck checkboxes)
-document.getElementById('reset-tasks').addEventListener('click', function () {
-  document.querySelectorAll('.task-checkbox').forEach(cb => (cb.checked = false));
-});
-
-// Update profile when user clicks "Update Profile"
-document.getElementById('update-profile').addEventListener('click', function () {
-  const newNickname = document.getElementById('nickname-input').value.trim();
-  const newAvatar = document.getElementById('avatar-input').value.trim();
-  if (newNickname) {
-    user.nickname = newNickname;
-  }
-  if (newAvatar) {
-    user.avatar = newAvatar;
-  }
-  updateProfileDisplay();
-  saveUserData();
-  updateLeaderboard();
-});
-
-// Simulated Leaderboard (using localStorage to store sample users)
-// In a real system, this data would come from a backend.
-function updateLeaderboard() {
-  const leaderboard = document.getElementById('leaderboard');
-  leaderboard.innerHTML = "";
-  let sampleUsers = JSON.parse(localStorage.getItem('sampleUsers')) || [];
-
-  // Add or update current user in sampleUsers
-  let exists = sampleUsers.some(u => u.nickname === user.nickname);
-  if (!exists) {
-    sampleUsers.push({ ...user });
-  } else {
-    sampleUsers = sampleUsers.map(u => u.nickname === user.nickname ? { ...user } : u);
-  }
-
-  // Sort users by XP in descending order
-  sampleUsers.sort((a, b) => b.xp - a.xp);
-  localStorage.setItem('sampleUsers', JSON.stringify(sampleUsers));
-
-  sampleUsers.forEach(u => {
-    let li = document.createElement('li');
-    li.innerText = `${u.nickname} - Level: ${calculateLevel(u.xp)} - XP: ${u.xp} - Rank: ${getRank(u.xp)}`;
-    leaderboard.appendChild(li);
-  });
-}
-
-// Admin Login & Controls
-document.getElementById('admin-login-btn').addEventListener('click', function () {
-  const username = document.getElementById('admin-username').value;
-  const password = document.getElementById('admin-password').value;
-  if (username === "Kirmada" && password === "ramram") {
-    alert("Admin login successful!");
-    document.getElementById('admin-controls').classList.remove('hidden');
-  } else {
-    alert("Incorrect admin credentials.");
-  }
-});
-
-// Admin Control: Add XP to current user (example: add 100 XP or a custom value)
-document.getElementById('admin-add-xp').addEventListener('click', function () {
-  const xpToAdd = parseInt(prompt("Enter XP to add:", "100"));
-  if (!isNaN(xpToAdd)) {
-    user.xp += xpToAdd;
-    updateProfileDisplay();
-    saveUserData();
-    updateLeaderboard();
-  }
-});
-
-// Admin Control: Delete user data (resets current user's info)
-document.getElementById('admin-delete-user').addEventListener('click', function () {
-  if (confirm("Are you sure you want to delete current user data?")) {
-    localStorage.removeItem('nickname');
-    localStorage.removeItem('avatar');
-    localStorage.removeItem('xp');
-    localStorage.removeItem('level');
-    user = {
-      nickname: "Guest",
-      avatar: "default-avatar.png",
+  // --- Authentication Events ---
+  registerBtn.addEventListener("click", () => {
+    const username = authName.value.trim();
+    const password = authPassword.value.trim();
+    if (!username || !password) {
+      alert("Please enter both a username and a password.");
+      return;
+    }
+    let users = loadUsers();
+    if (users[username]) {
+      alert("User already registered! Please use the login button.");
+      return;
+    }
+    users[username] = {
+      username,
+      password,
+      level: 1,
       xp: 0,
-      level: 1
+      rank: "E Rank",
+      title: "Novice Hunter",
+      dailyTask: null
     };
-    updateProfileDisplay();
-    updateLeaderboard();
-  }
-});
+    saveUsers(users);
+    alert("Registered new user! Now please log in.");
+  });
 
-// On page load, update displays
-updateProfileDisplay();
-updateLeaderboard();
+  loginBtn.addEventListener("click", () => {
+    const username = authName.value.trim();
+    const password = authPassword.value.trim();
+    if (!username || !password) {
+      alert("Please enter both a username and a password.");
+      return;
+    }
+    let users = loadUsers();
+    if (!users[username]) {
+      alert("User not found! Please register first.");
+      return;
+    }
+    if (users[username].password !== password) {
+      alert("Incorrect password. Please try again.");
+      return;
+    }
+    currentUser = users[username];
+    updateUserStats(currentUser);
+    updateProfileDisplay();
+    assignDailyTask();
+    updateLeaderboard();
+
+    authSection.style.display = "none";
+    mainContent.style.display = "block";
+    showSection("profile-section");
+  });
+
+  // --- Settings Events ---
+  settingsLogoutBtn.addEventListener("click", () => {
+    currentUser = null;
+    authSection.style.display = "block";
+    mainContent.style.display = "none";
+    authName.value = "";
+    authPassword.value = "";
+  });
+  changeNameBtn.addEventListener("click", () => {
+    const newName = prompt("Enter your new username:");
+    if (newName && newName.trim() !== "" && newName.trim() !== currentUser.username) {
+      let users = loadUsers();
+      if (users[newName]) {
+        alert("This username is already taken.");
+        return;
+      }
+      delete users[currentUser.username];
+      currentUser.username = newName.trim();
+      users[currentUser.username] = currentUser;
+      saveUsers(users);
+      alert("Username changed successfully!");
+      updateProfileDisplay();
+      updateLeaderboard();
+    }
+  });
+  changePasswordBtn.addEventListener("click", () => {
+    const newPassword = prompt("Enter your new password:");
+    if (newPassword && newPassword.trim() !== "") {
+      currentUser.password = newPassword.trim();
+      saveCurrentUser();
+      alert("Password changed successfully!");
+    }
+  });
+  deleteAccountBtn.addEventListener("click", () => {
+    if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+      let users = loadUsers();
+      delete users[currentUser.username];
+      saveUsers(users);
+      alert("Account deleted successfully.");
+      currentUser = null;
+      authSection.style.display = "block";
+      mainContent.style.display = "none";
+    }
+  });
+});
