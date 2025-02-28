@@ -47,14 +47,14 @@ document.addEventListener("DOMContentLoaded", () => {
     return JSON.parse(localStorage.getItem("users")) || {};
   }
 
-  // Update user stats: level up, rank, and assign title based on XP and level
+  // Update user stats: level up, rank, and title based on XP and level
   function updateUserStats(user) {
-    // Level up: every (current level * 50) XP needed to level up
+    // Level up: every (current level * 50) XP is needed
     while (user.xp >= user.level * 50) {
       user.xp -= user.level * 50;
       user.level++;
     }
-    // Rank determination
+    // Determine rank
     if (user.level < 5) {
       user.rank = "E Rank";
     } else if (user.level < 9) {
@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       user.rank = "S Rank";
     }
-    // Title assignment (inspired by Solo Leveling)
+    // Assign title (inspired by Solo Leveling)
     if (user.level === 1) {
       user.title = "Novice Hunter";
     } else if (user.level < 5) {
@@ -86,11 +86,11 @@ document.addEventListener("DOMContentLoaded", () => {
     titleDisplay.textContent = currentUser.title;
   }
 
-  // Update global leaderboard (exclude admin "Kirmada")
+  // Update the global leaderboard (filter out records without a proper username or admin)
   function updateLeaderboard() {
     const users = loadUsers();
     const userArray = Object.values(users)
-      .filter(user => user.username !== "Kirmada")
+      .filter(user => user.username && user.username !== "Kirmada")
       .sort((a, b) => {
         if (b.level === a.level) return b.xp - a.xp;
         return b.level - a.level;
@@ -103,10 +103,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Admin Panel: List all users (except admin) with options to delete, award XP, or assign an urgent task
+  // Admin Panel: List all non-admin users with options to delete, award XP, or assign an urgent task
   function updateAdminPanel() {
     const users = loadUsers();
-    const userArray = Object.values(users).filter(user => user.username !== "Kirmada");
+    const userArray = Object.values(users).filter(user => user.username && user.username !== "Kirmada");
     adminUsersList.innerHTML = "";
     userArray.forEach(user => {
       const userDiv = document.createElement("div");
@@ -172,7 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Assign an urgent task to a user (override their daily task)
+  // Assign an urgent task to a user (overrides their daily task)
   function assignUrgentTask(username) {
     let users = loadUsers();
     if (users[username]) {
@@ -262,7 +262,7 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("User already registered! Please use the login button.");
       return;
     }
-    // Create new user object with default stats
+    // Create new user with default stats
     users[username] = {
       username,
       password,
@@ -276,7 +276,7 @@ document.addEventListener("DOMContentLoaded", () => {
     alert("Registered new user! Now please log in.");
   });
 
-  // Login existing user
+  // Login existing user (with admin check for Kirmada)
   loginBtn.addEventListener("click", () => {
     const username = authName.value.trim();
     const password = authPassword.value.trim();
@@ -285,27 +285,42 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     let users = loadUsers();
-    if (!users[username]) {
-      alert("User not found! Please register first.");
-      return;
+    // Special handling for admin user "Kirmada"
+    if (username === "Kirmada" && password === "ram.ram") {
+      if (!users["Kirmada"]) {
+        users["Kirmada"] = {
+          username: "Kirmada",
+          password: "ram.ram",
+          level: 999,
+          xp: 99999,
+          rank: "Admin",
+          title: "Master Administrator",
+          dailyTask: null
+        };
+        saveUsers(users);
+      }
+      currentUser = users["Kirmada"];
+    } else {
+      if (!users[username]) {
+        alert("User not found! Please register first.");
+        return;
+      }
+      if (users[username].password !== password) {
+        alert("Incorrect password. Please try again.");
+        return;
+      }
+      currentUser = users[username];
     }
-    if (users[username].password !== password) {
-      alert("Incorrect password. Please try again.");
-      return;
-    }
-    currentUser = users[username];
     updateUserStats(currentUser);
     updateProfileDisplay();
     assignDailyTask();
     updateLeaderboard();
-
     // Hide authentication and show main sections
     authSection.style.display = "none";
     profileSection.style.display = "block";
     tasksSection.style.display = "block";
     leaderboardSection.style.display = "block";
-
-    // If the logged-in user is the admin "Kirmada", show the admin panel
+    // Show admin panel if logged in as admin
     if (currentUser.username === "Kirmada") {
       adminSection.style.display = "block";
       updateAdminPanel();
@@ -326,7 +341,7 @@ document.addEventListener("DOMContentLoaded", () => {
     authPassword.value = "";
   });
 
-  // Complete Daily Task (Quest) Event with confirmation warning
+  // Complete Daily Task (Quest) event with confirmation
   completeTaskBtn.addEventListener("click", () => {
     if (!currentUser.dailyTask || currentUser.dailyTask.completed) return;
     const confirmComplete = confirm("Are you sure you've completed the task? If you lie to yourself, you'll lose XP and weaken your stats!");
