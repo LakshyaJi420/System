@@ -1,66 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Solo Leveling System</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <title>Solo Leveling System</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Solo Leveling System</h1>
-
-  <!-- Authentication Section -->
-  <div id="auth-section">
-    <h2>Authentication</h2>
-    <input type="text" id="authName" placeholder="Enter your username" />
-    <input type="password" id="authPassword" placeholder="Enter your password" />
-    <div>
-      <button id="registerBtn">Register</button>
-      <button id="loginBtn">Login</button>
+    <!-- Admin Login Modal -->
+    <div id="adminModal" class="modal">
+        <div class="modal-content">
+            <input type="text" id="adminUser" placeholder="Username">
+            <input type="password" id="adminPass" placeholder="Password">
+            <button onclick="adminLogin()">Unlock God Mode</button>
+        </div>
     </div>
-  </div>
 
-  <!-- Profile Section -->
-  <div id="profile-section" style="display: none;">
-    <h2 id="welcomeMsg"></h2>
-    <p>Level: <span id="level"></span> (<span id="rank"></span>)</p>
-    <p>XP: <span id="xp"></span></p>
-    <p>Title: <span id="title"></span></p>
-    <button id="logoutBtn">Logout</button>
-  </div>
+    <!-- Header -->
+    <header>
+        <h1 class="neon-text">SOLO LEVELING SYSTEM</h1>
+        <button class="admin-btn" onclick="showAdminModal()">⚙️</button>
+        <div class="profile">
+            <img id="avatarImg" src="images/default-avatar.png" alt="Avatar">
+            <div>
+                <h2 id="nickname">Guest</h2>
+                <p>Rank: <span id="rank">F</span></p>
+                <p>Level: <span id="level">1</span> | XP: <span id="xp">0</span>/100</p>
+            </div>
+        </div>
+    </header>
 
-  <!-- Daily Task Section -->
-  <div id="tasks-section" style="display: none;">
-    <h2>Daily Task</h2>
-    <p id="dailyTask"></p>
-    <p>Time remaining: <span id="taskTimer"></span></p>
-    <button id="completeTaskBtn">Complete Daily Task</button>
-    <hr />
-    <h3>Mini Task (Bonus XP)</h3>
-    <p id="miniTask"></p>
-    <button id="completeMiniTaskBtn">Complete Mini Task</button>
-  </div>
+    <!-- Tasks -->
+    <div class="tasks">
+        <div class="task" onclick="completeTask('pushups', 50)">
+            <h3>💪 10 Push-Ups (50 XP)</h3>
+            <progress value="0" max="100"></progress>
+        </div>
+        <div class="task" onclick="completeTask('run', 70)">
+            <h3>🏃 Run 1 KM (70 XP)</h3>
+            <progress value="0" max="100"></progress>
+        </div>
+        <div class="task" onclick="completeTask('walk', 40)">
+            <h3>🚶 Walk 1 Hour (40 XP)</h3>
+            <progress value="0" max="100"></progress>
+        </div>
+    </div>
 
-  <!-- Global Leaderboard Section -->
-  <div id="leaderboard-section" style="display: none;">
-    <h2>Global Leaderboard</h2>
-    <ul id="leaderboardList"></ul>
-  </div>
+    <!-- Leaderboard -->
+    <div class="leaderboard">
+        <h2>🏆 Global Ranking</h2>
+        <div id="rankingList"></div>
+    </div>
 
-  <!-- Admin Panel (Visible only for admin "Kirmada") -->
-  <div id="admin-section" style="display: none;">
-    <h2>Admin Panel</h2>
-    <div id="adminUsersList"></div>
-  </div>
+    <!-- Footer -->
+    <footer>
+        Contact: lakshyatyagi178@gmail.com | t.me/Monarch_OfShadow
+    </footer>
 
-  <!-- Footer with Contact Information -->
-  <footer>
-    <small>
-      Contact: <a href="mailto:lakshyatyagi178@gmail.com">lakshyatyagi178@gmail.com</a> | 
-      <a href="https://t.me/sololevelingsystem" target="_blank">Telegram</a>
-    </small>
-  </footer>
-
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
