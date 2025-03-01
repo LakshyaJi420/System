@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-    loadTasks();
     checkAuth();
 });
 
@@ -15,7 +14,7 @@ function register() {
         return;
     }
 
-    users[username] = { password, level: 1, xp: 0, rank: "F", avatar: "images/default-avatar.png" };
+    users[username] = { password, level: 1, xp: 0, rank: "F" };
     localStorage.setItem("users", JSON.stringify(users));
     alert("Registration successful!");
 }
@@ -48,10 +47,15 @@ function checkAuth() {
     document.getElementById("profileLevel").innerText = currentUser.level;
     document.getElementById("profileXP").innerText = currentUser.xp;
     document.getElementById("profileRank").innerText = currentUser.rank;
-    document.getElementById("avatar").src = currentUser.avatar;
 
     if (username === "kirmada") {
         document.getElementById("adminSection").classList.remove("hidden");
+    }
+}
+
+function confirmTaskCompletion() {
+    if (confirm("Are you really done? If not, you're lying to yourself!")) {
+        alert("Task completed! XP awarded.");
     }
 }
 
@@ -61,18 +65,3 @@ function showSection(section) {
     document.getElementById("settingsSection").classList.add("hidden");
     document.getElementById(section).classList.remove("hidden");
 }
-
-function confirmTaskCompletion() {
-    if (confirm("Are you really done? If not, you're lying to yourself!")) {
-        alert("Task completed! XP awarded.");
-    }
-}
-
-function setAvatar() {
-    let avatarUrl = prompt("Enter avatar URL (leave blank to use default):") || "images/default-avatar.png";
-    document.getElementById("avatar").src = avatarUrl;
-    currentUser.avatar = avatarUrl;
-    localStorage.setItem("users", JSON.stringify(users));
-}
-
-document.getElementById("setAvatarBtn").addEventListener("click", setAvatar);
