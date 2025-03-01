@@ -24,7 +24,7 @@
 
   <!-- Main Screen (Post-Authentication) -->
   <div id="mainScreen" class="hidden">
-    <!-- Top Half: Background & Daily Tasks -->
+    <!-- Top Half: Background with Daily Tasks -->
     <div id="topHalf">
       <img id="rankBackground" src="images/f.jpg" alt="Rank Background">
       <div id="taskOverlay">
@@ -53,11 +53,11 @@
         <h3>Profile</h3>
         <img id="avatar" src="images/default-avatar.png" alt="Avatar">
         <button id="setAvatarBtn" class="action-btn">Set Avatar</button>
-        <p>Name: <span id="displayName"></span></p>
-        <p>Level: <span id="displayLevel"></span></p>
-        <p>XP: <span id="displayXP"></span></p>
-        <p>Rank: <span id="displayRank"></span></p>
-        <p>Title: <span id="displayTitle"></span></p>
+        <p>Name: <span id="profileName"></span></p>
+        <p>Level: <span id="profileLevel"></span></p>
+        <p>XP: <span id="profileXP"></span></p>
+        <p>Rank: <span id="profileRank"></span></p>
+        <p>Title: <span id="profileTitle"></span></p>
         <progress id="xpBar" value="0" max="100"></progress>
         <button id="openDiaryBtn" class="action-btn">Open Diary</button>
         <div id="diary" class="hidden">
@@ -84,7 +84,7 @@
       <!-- Admin Panel (Visible only for admin user) -->
       <div id="adminPanel" class="section hidden">
         <h3>Admin Controls</h3>
-        <button id="awardXPBtn" class="action-btn">Award XP</button>
+        <button id="awardXPBtn" class="action-btn">Give XP</button>
         <button id="deleteUserBtn" class="action-btn">Delete User</button>
         <button id="urgentQuestBtn" class="action-btn">Send Urgent Quest</button>
       </div>
