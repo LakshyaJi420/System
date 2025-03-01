@@ -1,68 +1,66 @@
 body {
+    background-color: black;
+    color: cyan;
     font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+h2, h3 {
+    color: cyan;
+}
+
+input, button {
+    display: block;
+    margin: 10px auto;
+    padding: 10px;
+    width: 80%;
+    max-width: 300px;
     background: black;
     color: cyan;
+    border: 2px solid cyan;
     text-align: center;
+}
+
+button {
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+button:hover {
+    background: cyan;
+    color: black;
 }
 
 .hidden {
     display: none;
 }
 
-#top-half {
-    height: 50vh;
+#backgroundContainer {
     position: relative;
 }
 
-#rank-bg {
+#rankBackground {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: 50vh;
 }
 
-#task-list {
+#taskSection {
     position: absolute;
-    top: 10%;
+    top: 10px;
     left: 50%;
     transform: translateX(-50%);
     background: rgba(0, 0, 0, 0.7);
     padding: 10px;
-    border-radius: 5px;
-}
-
-#bottom-half {
-    background: black;
-    height: 50vh;
-    padding-top: 20px;
-}
-
-.neon-line {
     border: 2px solid cyan;
-    box-shadow: 0 0 10px cyan;
-    margin: 10px auto;
 }
 
-button {
-    background: cyan;
-    color: black;
-    padding: 10px;
-    border: none;
-    cursor: pointer;
-    transition: 0.3s;
+#navigation {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
-button:hover {
-    background: blue;
-    color: white;
-}
-
-@keyframes flash {
-    0% { opacity: 0; }
-    50% { opacity: 1; }
-    100% { opacity: 0; }
-}
-
-@keyframes fade {
-    from { opacity: 0; }
-    to { opacity: 1; }
+#navigation button {
+    margin: 5px;
 }
