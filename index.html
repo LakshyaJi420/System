@@ -1,83 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Solo Leveling System</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solo Leveling System</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Authentication Section -->
-  <section id="auth-section">
-    <h2>Login / Register</h2>
-    <input type="text" id="authName" placeholder="Enter your username" />
-    <input type="password" id="authPassword" placeholder="Enter your password" />
-    <div class="auth-buttons">
-      <button id="registerBtn">Register</button>
-      <button id="loginBtn">Login</button>
+    <div id="auth-screen">
+        <h1>Welcome to the System</h1>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button id="loginBtn">Login</button>
+        <button id="registerBtn">Register</button>
+        <p class="contact">Contact: <a href="mailto:lakshyatyagi178@gmail.com">lakshyatyagi178@gmail.com</a> | 
+        <a href="https://t.me/sololevelingsystem">Telegram</a></p>
     </div>
-  </section>
 
-  <!-- Main Content Section (hidden until login) -->
-  <section id="main-content" class="hidden">
-    <!-- Profile Section -->
-    <section id="profile-section">
-      <h2>Profile</h2>
-      <img id="avatar" src="images/default-avatar.png" alt="Avatar" />
-      <button id="setAvatarBtn" class="action-btn">Set Avatar</button>
-      <p>Username: <span id="user-name"></span></p>
-      <p>Level: <span id="level"></span></p>
-      <p>XP: <span id="xp"></span></p>
-      <p>Rank: <span id="rank"></span></p>
-      <p>Title: <span id="title"></span></p>
-    </section>
+    <div id="main-screen" class="hidden">
+        <div id="top-half">
+            <img id="rank-bg" src="images/f.jpg" alt="Rank Background">
+            <div id="task-timer">Next tasks in: <span id="countdown"></span></div>
+            <div id="task-list">
+                <div class="task"><span id="task1"></span> <button class="complete-task">Complete</button></div>
+                <div class="task"><span id="task2"></span> <button class="complete-task">Complete</button></div>
+                <div class="task"><span id="task3"></span> <button class="complete-task">Complete</button></div>
+            </div>
+        </div>
 
-    <!-- Task Section -->
-    <section id="tasks-section">
-      <h2>Daily Task</h2>
-      <p id="dailyTask"></p>
-      <p>Time remaining: <span id="taskTimer"></span></p>
-      <button id="completeTaskBtn" class="action-btn">Complete Task</button>
-    </section>
+        <div id="bottom-half">
+            <hr class="neon-line">
+            <div id="buttons">
+                <button id="profileBtn">Profile</button>
+                <button id="leaderboardBtn">Leaderboard</button>
+                <button id="settingsBtn">Settings</button>
+            </div>
+            <button id="backBtn" class="hidden">Back</button>
 
-    <!-- Leaderboard Section -->
-    <section id="leaderboard-section">
-      <h2>Global Leaderboard</h2>
-      <ul id="leaderboardList"></ul>
-    </section>
+            <div id="profile" class="hidden">
+                <h2>Profile</h2>
+                <p>Name: <span id="displayName"></span></p>
+                <p>Level: <span id="level"></span></p>
+                <p>Rank: <span id="rank"></span></p>
+                <p>Title: <span id="title"></span></p>
+                <p>XP: <span id="xp"></span></p>
+                <progress id="xpBar" max="100"></progress>
+                <button id="setAvatarBtn">Set Avatar</button>
+                <div id="diary"><h3>Diary</h3><p id="diaryContent"></p></div>
+            </div>
 
-    <!-- Settings Section -->
-    <section id="settings-section">
-      <h2>Settings</h2>
-      <button id="changeNameBtn" class="action-btn">Change Name</button>
-      <button id="changePasswordBtn" class="action-btn">Change Password</button>
-      <button id="deleteAccountBtn" class="action-btn">Delete Account</button>
-      <button id="settingsLogoutBtn" class="action-btn">Logout</button>
-    </section>
+            <div id="leaderboard" class="hidden">
+                <h2>Leaderboard</h2>
+                <ul id="leaderboardList"></ul>
+            </div>
 
-    <!-- Admin Panel (visible only for admin user Kirmada) -->
-    <section id="admin-panel" class="hidden">
-      <h2>Admin Panel</h2>
-      <div id="adminControls"></div>
-    </section>
-  </section>
+            <div id="settings" class="hidden">
+                <h2>Settings</h2>
+                <button id="changeName">Change Name</button>
+                <button id="changePassword">Change Password</button>
+                <button id="deleteAccount">Delete Account</button>
+            </div>
+        </div>
+    </div>
 
-  <!-- Navigation Bar -->
-  <nav id="nav-bar" class="hidden">
-    <button class="nav-btn" data-section="profile-section">Profile</button>
-    <button class="nav-btn" data-section="tasks-section">Task</button>
-    <button class="nav-btn" data-section="leaderboard-section">Leaderboard</button>
-    <button class="nav-btn" data-section="settings-section">Settings</button>
-  </nav>
-
-  <!-- Footer -->
-  <footer>
-    <small>
-      Contact: <a href="mailto:lakshyatyagi178@gmail.com">lakshyatyagi178@gmail.com</a> |
-      <a href="https://t.me/sololevelingsystem" target="_blank">Telegram</a>
-    </small>
-  </footer>
-
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
