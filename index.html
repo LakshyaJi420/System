@@ -7,8 +7,10 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+    <!-- Authentication Screen -->
     <div id="authScreen">
-        <h2>Welcome to the System</h2>
+        <h2>Solo Leveling System</h2>
         <input type="text" id="username" placeholder="Username">
         <input type="password" id="password" placeholder="Password">
         <button onclick="register()">Register</button>
@@ -16,10 +18,10 @@
         <p>Contact: <a href="mailto:lakshyatyagi178@gmail.com">lakshyatyagi178@gmail.com</a> | <a href="https://t.me/sololevelingsystem">Telegram</a></p>
     </div>
 
+    <!-- Main Interface -->
     <div id="mainScreen" class="hidden">
-        <div id="backgroundContainer">
-            <img id="rankBackground" src="images/f.jpg" alt="Background">
-            <div id="taskSection">
+        <div id="topSection">
+            <div id="taskArea">
                 <h3>Daily Tasks</h3>
                 <p id="task1"></p>
                 <p id="task2"></p>
@@ -28,17 +30,15 @@
                 <p id="timer">Next tasks in: 12:00:00</p>
             </div>
         </div>
-        
-        <div id="content">
+
+        <div id="bottomSection">
             <div id="profileSection" class="hidden">
                 <h3>Profile</h3>
                 <img id="avatar" src="images/default-avatar.png" alt="Avatar">
-                <button id="setAvatarBtn">Set Avatar</button>
                 <p><strong>Name:</strong> <span id="profileName"></span></p>
                 <p><strong>Rank:</strong> <span id="profileRank"></span></p>
                 <p><strong>Level:</strong> <span id="profileLevel"></span></p>
                 <p><strong>XP:</strong> <span id="profileXP"></span></p>
-                <p><strong>Title:</strong> <span id="profileTitle"></span></p>
                 <progress id="xpBar" value="0" max="100"></progress>
                 <button onclick="openDiary()">Open Diary</button>
             </div>
@@ -64,6 +64,7 @@
             </div>
         </div>
 
+        <!-- Navigation Buttons -->
         <div id="navigation">
             <button onclick="showSection('profileSection')">Profile</button>
             <button onclick="showSection('leaderboardSection')">Leaderboard</button>
