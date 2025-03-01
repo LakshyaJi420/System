@@ -7,59 +7,67 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="auth-screen">
-        <h1>Welcome to the System</h1>
+    <div id="authScreen">
+        <h2>Welcome to the System</h2>
         <input type="text" id="username" placeholder="Username">
         <input type="password" id="password" placeholder="Password">
-        <button id="loginBtn">Login</button>
-        <button id="registerBtn">Register</button>
-        <p class="contact">Contact: <a href="mailto:lakshyatyagi178@gmail.com">lakshyatyagi178@gmail.com</a> | 
-        <a href="https://t.me/sololevelingsystem">Telegram</a></p>
+        <button onclick="register()">Register</button>
+        <button onclick="login()">Login</button>
+        <p>Contact: <a href="mailto:lakshyatyagi178@gmail.com">lakshyatyagi178@gmail.com</a> | <a href="https://t.me/sololevelingsystem">Telegram</a></p>
     </div>
 
-    <div id="main-screen" class="hidden">
-        <div id="top-half">
-            <img id="rank-bg" src="images/f.jpg" alt="Rank Background">
-            <div id="task-timer">Next tasks in: <span id="countdown"></span></div>
-            <div id="task-list">
-                <div class="task"><span id="task1"></span> <button class="complete-task">Complete</button></div>
-                <div class="task"><span id="task2"></span> <button class="complete-task">Complete</button></div>
-                <div class="task"><span id="task3"></span> <button class="complete-task">Complete</button></div>
+    <div id="mainScreen" class="hidden">
+        <div id="backgroundContainer">
+            <img id="rankBackground" src="images/f.jpg" alt="Background">
+            <div id="taskSection">
+                <h3>Daily Tasks</h3>
+                <p id="task1"></p>
+                <p id="task2"></p>
+                <p id="task3"></p>
+                <button id="completeTask" onclick="confirmTaskCompletion()">Complete Task</button>
+                <p id="timer">Next tasks in: 12:00:00</p>
             </div>
         </div>
-
-        <div id="bottom-half">
-            <hr class="neon-line">
-            <div id="buttons">
-                <button id="profileBtn">Profile</button>
-                <button id="leaderboardBtn">Leaderboard</button>
-                <button id="settingsBtn">Settings</button>
-            </div>
-            <button id="backBtn" class="hidden">Back</button>
-
-            <div id="profile" class="hidden">
-                <h2>Profile</h2>
-                <p>Name: <span id="displayName"></span></p>
-                <p>Level: <span id="level"></span></p>
-                <p>Rank: <span id="rank"></span></p>
-                <p>Title: <span id="title"></span></p>
-                <p>XP: <span id="xp"></span></p>
-                <progress id="xpBar" max="100"></progress>
+        
+        <div id="content">
+            <div id="profileSection" class="hidden">
+                <h3>Profile</h3>
+                <img id="avatar" src="images/default-avatar.png" alt="Avatar">
                 <button id="setAvatarBtn">Set Avatar</button>
-                <div id="diary"><h3>Diary</h3><p id="diaryContent"></p></div>
+                <p><strong>Name:</strong> <span id="profileName"></span></p>
+                <p><strong>Rank:</strong> <span id="profileRank"></span></p>
+                <p><strong>Level:</strong> <span id="profileLevel"></span></p>
+                <p><strong>XP:</strong> <span id="profileXP"></span></p>
+                <p><strong>Title:</strong> <span id="profileTitle"></span></p>
+                <progress id="xpBar" value="0" max="100"></progress>
+                <button onclick="openDiary()">Open Diary</button>
             </div>
 
-            <div id="leaderboard" class="hidden">
-                <h2>Leaderboard</h2>
+            <div id="leaderboardSection" class="hidden">
+                <h3>Leaderboard</h3>
                 <ul id="leaderboardList"></ul>
             </div>
 
-            <div id="settings" class="hidden">
-                <h2>Settings</h2>
-                <button id="changeName">Change Name</button>
-                <button id="changePassword">Change Password</button>
-                <button id="deleteAccount">Delete Account</button>
+            <div id="settingsSection" class="hidden">
+                <h3>Settings</h3>
+                <button onclick="changeName()">Change Name</button>
+                <button onclick="changePassword()">Change Password</button>
+                <button onclick="deleteAccount()">Delete Account</button>
             </div>
+
+            <div id="adminSection" class="hidden">
+                <h3>Admin Controls</h3>
+                <button onclick="addUser()">Add User</button>
+                <button onclick="deleteUser()">Delete User</button>
+                <button onclick="giveXP()">Give XP</button>
+                <button onclick="sendUrgentQuest()">Send Urgent Quest</button>
+            </div>
+        </div>
+
+        <div id="navigation">
+            <button onclick="showSection('profileSection')">Profile</button>
+            <button onclick="showSection('leaderboardSection')">Leaderboard</button>
+            <button onclick="showSection('settingsSection')">Settings</button>
         </div>
     </div>
 
