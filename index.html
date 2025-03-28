@@ -1,96 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Solo Leveling System</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Authentication Screen -->
-  <div id="authScreen">
-    <h2>Solo Leveling System</h2>
-    <input type="text" id="authUsername" placeholder="Username">
-    <input type="password" id="authPassword" placeholder="Password">
-    <div class="auth-buttons">
-      <button id="registerBtn" class="action-btn">Register</button>
-      <button id="loginBtn" class="action-btn">Login</button>
-    </div>
-    <p class="contact">
-      Contact: <a href="mailto:lakshyatyagi178@gmail.com">lakshyatyagi178@gmail.com</a> | 
-      <a href="https://t.me/sololevelingsystem" target="_blank">Telegram</a>
-    </p>
-  </div>
+    <div class="container">
+        <h2>Excel File Generator</h2>
+        
+        <label>Title:</label>
+        <input type="text" id="title" placeholder="Enter Title (optional)">
+        
+        <label>File Name:</label>
+        <input type="text" id="fileName" placeholder="Enter File Name">
+        
+        <label>Topics (comma separated):</label>
+        <input type="text" id="topics" placeholder="e.g. Date, Vehicle No., Driver, Rent, Balance">
+        
+        <button onclick="createTable()">Generate Table</button>
 
-  <!-- Main Screen (Post-Authentication) -->
-  <div id="mainScreen" class="hidden">
-    <!-- Top Half: Background with Daily Tasks -->
-    <div id="topHalf">
-      <img id="rankBackground" src="images/f.jpg" alt="Rank Background">
-      <div id="taskOverlay">
-        <div id="timer">Next tasks in: <span id="countdown">12:00:00</span></div>
-        <div id="dailyTasks">
-          <p class="task" data-index="0"></p>
-          <p class="task" data-index="1"></p>
-          <p class="task" data-index="2"></p>
-          <button id="completeTaskBtn" class="action-btn">Complete Task</button>
-        </div>
-      </div>
+        <div id="tableContainer"></div>
+        
+        <button onclick="exportToExcel()" style="display:none;" id="exportBtn">Export to Excel</button>
     </div>
 
-    <!-- Bottom Half: Interactive Section -->
-    <div id="bottomHalf">
-      <hr class="neon-line">
-      <div id="navButtons">
-        <button class="nav-btn" data-section="profileSection">Profile</button>
-        <button class="nav-btn" data-section="leaderboardSection">Leaderboard</button>
-        <button class="nav-btn" data-section="settingsSection">Settings</button>
-      </div>
-      <button id="backBtn" class="action-btn hidden">Back</button>
-
-      <!-- Profile Section -->
-      <div id="profileSection" class="section hidden">
-        <h3>Profile</h3>
-        <img id="avatar" src="images/default-avatar.png" alt="Avatar">
-        <button id="setAvatarBtn" class="action-btn">Set Avatar</button>
-        <p>Name: <span id="profileName"></span></p>
-        <p>Level: <span id="profileLevel"></span></p>
-        <p>XP: <span id="profileXP"></span></p>
-        <p>Rank: <span id="profileRank"></span></p>
-        <p>Title: <span id="profileTitle"></span></p>
-        <progress id="xpBar" value="0" max="100"></progress>
-        <button id="openDiaryBtn" class="action-btn">Open Diary</button>
-        <div id="diary" class="hidden">
-          <h4>Diary</h4>
-          <ul id="diaryList"></ul>
-        </div>
-      </div>
-
-      <!-- Leaderboard Section -->
-      <div id="leaderboardSection" class="section hidden">
-        <h3>Leaderboard</h3>
-        <ul id="leaderboardList"></ul>
-      </div>
-
-      <!-- Settings Section -->
-      <div id="settingsSection" class="section hidden">
-        <h3>Settings</h3>
-        <button id="changeNameBtn" class="action-btn">Change Name</button>
-        <button id="changePasswordBtn" class="action-btn">Change Password</button>
-        <button id="deleteAccountBtn" class="action-btn">Delete Account</button>
-        <button id="settingsLogoutBtn" class="action-btn">Logout</button>
-      </div>
-
-      <!-- Admin Panel (Visible only for admin user) -->
-      <div id="adminPanel" class="section hidden">
-        <h3>Admin Controls</h3>
-        <button id="awardXPBtn" class="action-btn">Give XP</button>
-        <button id="deleteUserBtn" class="action-btn">Delete User</button>
-        <button id="urgentQuestBtn" class="action-btn">Send Urgent Quest</button>
-      </div>
-    </div>
-  </div>
-
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
