@@ -1,91 +1,26 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Excel Generator</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        input, select, button { margin: 5px; padding: 8px; }
-        table { border-collapse: collapse; width: 100%; margin-top: 10px; }
-        th, td { border: 1px solid black; padding: 5px; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kirmada Tools</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+  </style>
 </head>
-<body>
-    <h2>Excel Generator</h2>
-    <label for="format">Choose Format:</label>
-    <select id="format">
-        <option value="default">Default</option>
-        <option value="simplified">Simplified</option>
-    </select><div id="input-fields"></div>
-<button onclick="addEntry()">Add Entry</button>
-<button onclick="exportToExcel()">Export to Excel</button>
-
-<table id="data-table">
-    <thead><tr id="table-header"></tr></thead>
-    <tbody></tbody>
-</table>
-
-<script>
-    const formats = {
-        default: ["Date", "Vehicle No.", "Owner", "From", "To", "Consignee", "Goods", "Rent", "Advance", "Balance", "Status"],
-        simplified: ["Date", "Consigner", "From", "Consignee", "To"]
-    };
-    let data = [];
-
-    function updateForm() {
-        const format = document.getElementById("format").value;
-        const fields = formats[format];
-        const inputDiv = document.getElementById("input-fields");
-        inputDiv.innerHTML = "";
-        fields.forEach(field => {
-            inputDiv.innerHTML += `<input type='text' id='${field}' placeholder='${field}' />`;
-        });
-        updateTableHeader(fields);
-    }
-
-    function updateTableHeader(fields) {
-        const headerRow = document.getElementById("table-header");
-        headerRow.innerHTML = "";
-        fields.forEach(field => {
-            headerRow.innerHTML += `<th>${field}</th>`;
-        });
-    }
-
-    function addEntry() {
-        const format = document.getElementById("format").value;
-        const fields = formats[format];
-        let entry = {};
-        fields.forEach(field => {
-            entry[field] = document.getElementById(field).value;
-        });
-        data.push(entry);
-        updateTable();
-    }
-
-    function updateTable() {
-        const tableBody = document.querySelector("#data-table tbody");
-        tableBody.innerHTML = "";
-        data.forEach(entry => {
-            let row = "<tr>";
-            Object.values(entry).forEach(value => {
-                row += `<td>${value}</td>`;
-            });
-            row += "</tr>";
-            tableBody.innerHTML += row;
-        });
-    }
-
-    function exportToExcel() {
-        let worksheet = XLSX.utils.json_to_sheet(data);
-        let workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-        XLSX.writeFile(workbook, "export.xlsx");
-    }
-
-    document.getElementById("format").addEventListener("change", updateForm);
-    updateForm();
-</script>
-
+<body class="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-center px-4">
+  <h1 class="text-4xl font-bold mb-4">Kirmada Tools Bot</h1>
+  <p class="text-gray-300 mb-8 text-center">Level up your digital world with free tools & daily rewards</p>
+  <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-3 w-full max-w-4xl">
+    <a href="https://t.me/KirmadaTheBot?start=youtube" class="bg-purple-700 hover:bg-purple-800 p-4 rounded-xl text-center">📹 YouTube Downloader</a>
+    <a href="https://t.me/KirmadaTheBot?start=insta" class="bg-blue-600 hover:bg-blue-700 p-4 rounded-xl text-center">📸 Insta Reel Saver</a>
+    <a href="https://t.me/KirmadaTheBot?start=pdf" class="bg-yellow-600 hover:bg-yellow-700 p-4 rounded-xl text-center">📄 PDF Tools</a>
+    <a href="https://t.me/KirmadaTheBot?start=refer" class="bg-green-600 hover:bg-green-700 p-4 rounded-xl text-center">🎁 Earn with Referrals</a>
+    <a href="https://t.me/sololevelingsystem" class="bg-red-600 hover:bg-red-700 p-4 rounded-xl text-center">📢 Join Our Telegram Channel</a>
+    <a href="https://lakshyaji420.github.io/System/" class="bg-gray-800 hover:bg-gray-700 p-4 rounded-xl text-center">🌐 Visit Our GitHub Page</a>
+  </div>
+  <footer class="mt-10 text-sm text-gray-500">Made with ❤️ by Kirmada</footer>
 </body>
 </html>
+
