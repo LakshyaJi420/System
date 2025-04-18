@@ -56,9 +56,9 @@
         }
         
         .input-section {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
             margin-bottom: 30px;
         }
         
@@ -81,13 +81,21 @@
             border-radius: 5px;
             background-color: rgba(255, 255, 255, 0.1);
             color: var(--text-color);
-            font-size: 1rem;
+            font-size: 0.95rem;
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         input:focus, select:focus {
             outline: none;
             border-color: var(--primary-color);
+        }
+        
+        .button-group {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 10px;
         }
         
         button {
@@ -100,7 +108,7 @@
             font-size: 1rem;
             font-weight: bold;
             transition: all 0.3s ease;
-            margin-top: 10px;
+            white-space: nowrap;
         }
         
         button:hover {
@@ -114,15 +122,24 @@
             padding: 20px;
             background-color: rgba(0, 0, 0, 0.3);
             border-radius: 5px;
-            display: none;
+            opacity: 0;
+            height: 0;
+            transition: all 0.5s ease;
+            overflow: hidden;
+        }
+        
+        .result.active {
+            opacity: 1;
+            height: auto;
         }
         
         .countdown {
-            font-size: 3rem;
+            font-size: 2.5rem;
             font-weight: bold;
             color: var(--primary-color);
             margin: 20px 0;
             font-family: 'Courier New', monospace;
+            word-break: break-word;
         }
         
         .progress-container {
@@ -142,19 +159,16 @@
         }
         
         .stats {
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
             gap: 15px;
+            margin-top: 20px;
         }
         
         .stat-box {
             background-color: rgba(0, 0, 0, 0.2);
             padding: 15px;
             border-radius: 5px;
-            flex: 1;
-            min-width: 120px;
         }
         
         .stat-value {
@@ -175,21 +189,49 @@
             opacity: 0.7;
         }
         
+        .loading {
+            display: none;
+            margin: 20px 0;
+        }
+        
+        .loader {
+            width: 25px;
+            height: 25px;
+            border: 3px solid #fff;
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            display: inline-block;
+            animation: rotation 1s linear infinite;
+        }
+        
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
         @media (max-width: 600px) {
             .container {
                 padding: 20px;
             }
             
             h1 {
-                font-size: 1.8rem;
-            }
-            
-            .countdown {
                 font-size: 2rem;
             }
             
-            .stats {
+            .countdown {
+                font-size: 1.8rem;
+            }
+            
+            .input-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
                 flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
             }
         }
         
@@ -209,13 +251,13 @@
     <div class="container">
         <h1>DEATH CLOCK</h1>
         <p class="description">
-            The Death Clock calculates your estimated time left to live based on your life expectancy.
-            It serves as a reminder of life's impermanence and encourages you to make the most of your time.
+            The Death Clock calculates your estimated time left to live based on various lifestyle factors.
+            It serves as a reminder to make the most of your time.
         </p>
         
         <div class="input-section">
             <div class="input-group">
-                <label for="birthdate">Your Birthdate</label>
+                <label for="birthdate">Birthdate</label>
                 <input type="date" id="birthdate" required>
             </div>
             
@@ -234,34 +276,72 @@
                     <option value="">Select Country</option>
                     <option value="USA">United States</option>
                     <option value="UK">United Kingdom</option>
-                    <option value="Canada">Canada</option>
-                    <option value="Australia">Australia</option>
-                    <option value="Germany">Germany</option>
-                    <option value="France">France</option>
                     <option value="Japan">Japan</option>
-                    <option value="China">China</option>
                     <option value="India">India</option>
+                    <option value="Germany">Germany</option>
+                    <option value="China">China</option>
                     <option value="Brazil">Brazil</option>
                     <option value="Russia">Russia</option>
-                    <option value="South Africa">South Africa</option>
-                    <option value="Mexico">Mexico</option>
-                    <option value="other">Other</option>
+                    <option value="Australia">Australia</option>
+                    <option value="Canada">Canada</option>
                 </select>
             </div>
             
             <div class="input-group">
-                <label for="lifestyle">Lifestyle</label>
-                <select id="lifestyle" required>
-                    <option value="">Select Lifestyle</option>
-                    <option value="very_healthy">Very Healthy</option>
-                    <option value="healthy">Healthy</option>
-                    <option value="average">Average</option>
-                    <option value="unhealthy">Unhealthy</option>
-                    <option value="very_unhealthy">Very Unhealthy</option>
+                <label for="smoking">Smoking</label>
+                <select id="smoking" required>
+                    <option value="none">Non-smoker</option>
+                    <option value="light">Light smoker (<10/day)</option>
+                    <option value="heavy">Heavy smoker (10+ day)</option>
                 </select>
             </div>
             
-            <button id="calculate-btn">CALCULATE MY DEATH CLOCK</button>
+            <div class="input-group">
+                <label for="alcohol">Alcohol</label>
+                <select id="alcohol" required>
+                    <option value="none">Non-drinker</option>
+                    <option value="moderate">Moderate drinker</option>
+                    <option value="heavy">Heavy drinker</option>
+                </select>
+            </div>
+            
+            <div class="input-group">
+                <label for="exercise">Exercise</label>
+                <select id="exercise" required>
+                    <option value="intense">Daily exercise</option>
+                    <option value="regular">3-4 times/week</option>
+                    <option value="occasional">1-2 times/week</option>
+                    <option value="sedentary">Sedentary</option>
+                </select>
+            </div>
+            
+            <div class="input-group">
+                <label for="diet">Diet</label>
+                <select id="diet" required>
+                    <option value="excellent">Mostly plant-based</option>
+                    <option value="good">Balanced</option>
+                    <option value="average">Some processed food</option>
+                    <option value="poor">Mostly processed food</option>
+                </select>
+            </div>
+            
+            <div class="input-group">
+                <label for="stress">Stress Level</label>
+                <select id="stress" required>
+                    <option value="low">Low stress</option>
+                    <option value="moderate">Moderate stress</option>
+                    <option value="high">High stress</option>
+                </select>
+            </div>
+            
+            <div class="button-group">
+                <button id="calculate-btn">CALCULATE</button>
+                <button id="reset-btn">RESET</button>
+            </div>
+        </div>
+        
+        <div class="loading" id="loading">
+            <span class="loader"></span>
         </div>
         
         <div class="result" id="result">
@@ -290,81 +370,136 @@
             </div>
             
             <p style="margin-top: 20px; font-style: italic;">
-                "Remembering that you are going to die is the best way I know to avoid the trap of thinking you have something to lose."
+                "Your time is limited, don't waste it living someone else's life."
                 <br>- Steve Jobs
             </p>
         </div>
         
         <div class="footer">
-            This is a conceptual tool. Actual lifespan may vary based on numerous factors.
+            * This is a conceptual tool using statistical averages. Consult healthcare professionals for personal advice.
         </div>
     </div>
 
     <script>
+        let updateInterval = null;
+        
         document.addEventListener('DOMContentLoaded', function() {
             const calculateBtn = document.getElementById('calculate-btn');
+            const resetBtn = document.getElementById('reset-btn');
             const resultDiv = document.getElementById('result');
-            const countdownDiv = document.getElementById('countdown');
-            const progressBar = document.getElementById('progress-bar');
+            const loadingDiv = document.getElementById('loading');
             
-            // Life expectancy data by country and gender (in years)
+            // Set max date for birthdate input to today
+            const birthdateInput = document.getElementById('birthdate');
+            const today = new Date().toISOString().split('T')[0];
+            birthdateInput.setAttribute('max', today);
+            
             const lifeExpectancyData = {
                 USA: { male: 76, female: 81 },
                 UK: { male: 79, female: 83 },
-                Canada: { male: 80, female: 84 },
-                Australia: { male: 81, female: 85 },
-                Germany: { male: 78, female: 83 },
-                France: { male: 79, female: 85 },
                 Japan: { male: 81, female: 87 },
-                China: { male: 75, female: 78 },
                 India: { male: 68, female: 70 },
+                Germany: { male: 78, female: 83 },
+                China: { male: 75, female: 78 },
                 Brazil: { male: 72, female: 79 },
                 Russia: { male: 68, female: 78 },
-                'South Africa': { male: 60, female: 64 },
-                Mexico: { male: 72, female: 78 },
-                other: { male: 70, female: 75 } // Default for other countries
+                Australia: { male: 81, female: 85 },
+                Canada: { male: 80, female: 84 },
+                other: { male: 70, female: 75 }
             };
             
-            // Lifestyle multipliers
-            const lifestyleMultipliers = {
-                very_healthy: 1.1,    // 10% longer
-                healthy: 1.05,         // 5% longer
-                average: 1.0,         // no change
-                unhealthy: 0.95,       // 5% shorter
-                very_unhealthy: 0.9    // 10% shorter
+            const lifestyleFactors = {
+                smoking: {
+                    none: 1.0,
+                    light: 0.95,
+                    heavy: 0.85
+                },
+                alcohol: {
+                    none: 1.0,
+                    moderate: 0.98,
+                    heavy: 0.90
+                },
+                exercise: {
+                    intense: 1.05,
+                    regular: 1.03,
+                    occasional: 1.0,
+                    sedentary: 0.95
+                },
+                diet: {
+                    excellent: 1.07,
+                    good: 1.03,
+                    average: 1.0,
+                    poor: 0.95
+                },
+                stress: {
+                    low: 1.03,
+                    moderate: 1.0,
+                    high: 0.96
+                }
             };
             
             calculateBtn.addEventListener('click', function() {
+                clearInterval(updateInterval);
+                loadingDiv.style.display = 'block';
+                resultDiv.classList.remove('active');
+                
+                setTimeout(() => {
+                    calculateLifeExpectancy();
+                    loadingDiv.style.display = 'none';
+                    resultDiv.classList.add('active');
+                }, 500);
+            });
+            
+            resetBtn.addEventListener('click', function() {
+                clearInterval(updateInterval);
+                document.querySelectorAll('input, select').forEach(element => {
+                    if (element.id === 'birthdate') element.value = '';
+                    else if (element.id !== 'reset-btn') element.selectedIndex = 0;
+                });
+                resultDiv.classList.remove('active');
+            });
+            
+            function calculateLifeExpectancy() {
                 const birthdate = document.getElementById('birthdate').value;
                 const gender = document.getElementById('gender').value;
                 const country = document.getElementById('country').value;
-                const lifestyle = document.getElementById('lifestyle').value;
                 
-                if (!birthdate || !gender || !country || !lifestyle) {
-                    alert('Please fill in all fields');
+                if (!birthdate || !gender || !country) {
+                    alert('Please fill in all required fields');
+                    loadingDiv.style.display = 'none';
                     return;
                 }
                 
-                // Calculate life expectancy
-                const baseLifeExpectancy = lifeExpectancyData[country] || lifeExpectancyData.other;
-                let lifeExpectancy = baseLifeExpectancy[gender];
+                // Get lifestyle factors
+                const smoking = document.getElementById('smoking').value;
+                const alcohol = document.getElementById('alcohol').value;
+                const exercise = document.getElementById('exercise').value;
+                const diet = document.getElementById('diet').value;
+                const stress = document.getElementById('stress').value;
                 
-                // Apply lifestyle multiplier
-                lifeExpectancy *= lifestyleMultipliers[lifestyle];
+                // Calculate base life expectancy
+                const baseData = lifeExpectancyData[country] || lifeExpectancyData.other;
+                let lifeExpectancy = baseData[gender];
+                
+                // Apply lifestyle adjustments
+                let lifestyleMultiplier = 1.0;
+                lifestyleMultiplier *= lifestyleFactors.smoking[smoking];
+                lifestyleMultiplier *= lifestyleFactors.alcohol[alcohol];
+                lifestyleMultiplier *= lifestyleFactors.exercise[exercise];
+                lifestyleMultiplier *= lifestyleFactors.diet[diet];
+                lifestyleMultiplier *= lifestyleFactors.stress[stress];
+                
+                lifeExpectancy *= lifestyleMultiplier;
                 
                 // Calculate death date
                 const birthDate = new Date(birthdate);
                 const deathDate = new Date(birthDate);
-                deathDate.setFullYear(birthDate.getFullYear() + Math.floor(lifeExpectancy));
-                deathDate.setMonth(birthDate.getMonth() + Math.round((lifeExpectancy % 1) * 12));
-                
-                // Show result
-                resultDiv.style.display = 'block';
+                deathDate.setFullYear(birthDate.getFullYear() + lifeExpectancy);
                 
                 // Start countdown
+                updateInterval = setInterval(() => updateCountdown(deathDate, birthDate), 1000);
                 updateCountdown(deathDate, birthDate);
-                setInterval(() => updateCountdown(deathDate, birthDate), 1000);
-            });
+            }
             
             function updateCountdown(deathDate, birthDate) {
                 const now = new Date();
@@ -372,48 +507,33 @@
                 const elapsedSeconds = (now - birthDate) / 1000;
                 const remainingSeconds = (deathDate - now) / 1000;
                 
-                // Calculate progress percentage
+                // Update progress bar
                 const progressPercentage = (elapsedSeconds / totalSeconds) * 100;
-                progressBar.style.width = `${Math.min(progressPercentage, 100)}%`;
+                document.getElementById('progress-bar').style.width = `${Math.min(progressPercentage, 100)}%`;
                 
-                // Calculate time units if still alive
+                // Update countdown if still alive
                 if (remainingSeconds > 0) {
-                    // Years
-                    const yearsLeft = Math.floor(remainingSeconds / (365.25 * 24 * 60 * 60));
+                    const years = Math.floor(remainingSeconds / (365.25 * 24 * 3600));
+                    const months = Math.floor((remainingSeconds % (365.25 * 24 * 3600)) / (30.44 * 24 * 3600));
+                    const days = Math.floor((remainingSeconds % (30.44 * 24 * 3600)) / (24 * 3600));
+                    const hours = Math.floor((remainingSeconds % (24 * 3600)) / 3600);
+                    const minutes = Math.floor((remainingSeconds % 3600) / 60);
+                    const seconds = Math.floor(remainingSeconds % 60);
                     
-                    // Months
-                    const monthsLeft = Math.floor((remainingSeconds % (365.25 * 24 * 60 * 60)) / (30.44 * 24 * 60 * 60));
-                    
-                    // Days
-                    const daysLeft = Math.floor((remainingSeconds % (30.44 * 24 * 60 * 60)) / (24 * 60 * 60));
-                    
-                    // Hours
-                    const hoursLeft = Math.floor((remainingSeconds % (24 * 60 * 60)) / (60 * 60));
-                    
-                    // Minutes
-                    const minutesLeft = Math.floor((remainingSeconds % (60 * 60)) / 60);
-                    
-                    // Seconds
-                    const secondsLeft = Math.floor(remainingSeconds % 60);
-                    
-                    // Update countdown display
-                    countdownDiv.textContent = `${yearsLeft}y ${monthsLeft}m ${daysLeft}d ${hoursLeft}h ${minutesLeft}m ${secondsLeft}s`;
-                    countdownDiv.classList.add('pulse');
+                    document.getElementById('countdown').textContent = 
+                        `${years}y ${months}m ${days}d ${hours}h ${minutes}m ${seconds}s`;
+                    document.getElementById('countdown').classList.add('pulse');
                     
                     // Update stats
-                    document.getElementById('years-left').textContent = yearsLeft;
-                    document.getElementById('months-left').textContent = yearsLeft * 12 + monthsLeft;
-                    document.getElementById('weeks-left').textContent = Math.floor(remainingSeconds / (7 * 24 * 60 * 60));
-                    document.getElementById('days-left').textContent = Math.floor(remainingSeconds / (24 * 60 * 60));
+                    document.getElementById('years-left').textContent = years;
+                    document.getElementById('months-left').textContent = years * 12 + months;
+                    document.getElementById('weeks-left').textContent = Math.floor(remainingSeconds / (604800));
+                    document.getElementById('days-left').textContent = Math.floor(remainingSeconds / 86400);
                 } else {
-                    countdownDiv.textContent = "TIME'S UP";
-                    countdownDiv.style.color = "#ff0000";
-                    progressBar.style.width = "100%";
-                    
-                    document.getElementById('years-left').textContent = "0";
-                    document.getElementById('months-left').textContent = "0";
-                    document.getElementById('weeks-left').textContent = "0";
-                    document.getElementById('days-left').textContent = "0";
+                    document.getElementById('countdown').textContent = "TIME'S UP";
+                    document.getElementById('countdown').style.color = "#ff0000";
+                    document.getElementById('countdown').classList.remove('pulse');
+                    clearInterval(updateInterval);
                 }
             }
         });
