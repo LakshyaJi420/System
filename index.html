@@ -1,36 +1,217 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>100 Year Clock Wheel</title>
-  <link rel="stylesheet" href="./style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>100 Year Clock</title>
+  <style>
+    *, ::before, ::after {
+      box-sizing: border-box;
+    }
+    :root {
+      --clr-bg: black;
+    }
+    body {
+      margin: 0;
+      font-family: system-ui;
+      background: radial-gradient(rgb(32, 6, 31), rgb(19, 18, 18));
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+    .card {
+      background: #111;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 0 20px #0ff4;
+      width: 100%;
+      max-width: 360px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    input, button {
+      padding: 0.6rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      outline: none;
+    }
+    button {
+      background: #0af;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #09c;
+    }
+    .hidden {
+      display: none !important;
+    }
+    a {
+      color: #0af;
+      text-decoration: none;
+    }
+    .clock {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 0.6rem;
+      padding: 1rem 0;
+    }
+    .clock-face {
+      background: #222;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #0af6;
+      text-align: center;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #0005;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      border-bottom: 1px solid #0af5;
+    }
+    .bottom-info {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.95rem;
+      color: #aaa;
+    }
+  </style>
 </head>
 <body>
+  <div id="auth-container">
+    <div id="login-section" class="card">
+      <h2>Login</h2>
+      <input type="text" id="login-username" placeholder="Username" />
+      <input type="password" id="login-password" placeholder="Password" />
+      <button onclick="login()">Login</button>
+      <p>Don't have an account? <a href="#" onclick="switchToRegister()">Register</a></p>
+    </div>
 
-<!-- LOGIN FORM -->
-<div id="auth">
-  <h2>Login / Register</h2>
-  <input type="text" id="username" placeholder="Username"><br>
-  <input type="password" id="password" placeholder="Password"><br>
-  <button onclick="register()">Register</button>
-  <button onclick="login()">Login</button>
-  <p id="authMessage"></p>
-</div>
+    <div id="register-section" class="card hidden">
+      <h2>Register</h2>
+      <input type="text" id="register-username" placeholder="Username" />
+      <input type="password" id="register-password" placeholder="Password" />
+      <input type="number" id="register-age" placeholder="Age" />
+      <button onclick="register()">Register</button>
+      <p>Already have an account? <a href="#" onclick="switchToLogin()">Login</a></p>
+    </div>
+  </div>
 
-<!-- CLOCK SECTION (Hidden until login) -->
-<div class="clock" data-date="2024-12-25" id="clockSection" style="display:none;">
-  <div><div data-clock="years" data-numbers="101" class="clock-face"></div></div>
-  <div><div data-clock="seconds" data-numbers="60" class="clock-face"></div></div>
-  <div><div data-clock="minutes" data-numbers="60" class="clock-face"></div></div>
-  <div><div data-clock="hours" data-numbers="24" class="clock-face"></div></div>
-  <div><div data-clock="days" data-numbers="31" class="clock-face"></div></div>
-  <div><div data-clock="months" data-numbers="12" class="clock-face"></div></div>
-  <div><div data-clock="day-names" data-numbers="7" class="clock-face"></div></div>
-  <button type="button" id="current-lang" class="current-lang-display">en</button>
-</div>
+  <div id="clock-container" class="hidden" style="width: 100%;">
+    <div class="topbar">
+      <span id="welcome-user"></span>
+      <button onclick="logout()">Logout</button>
+    </div>
 
-<dialog id="language-dialog">This has to work on GitHub page</dialog>
+    <div class="clock">
+      <div class="clock-face">Years: <span id="years"></span></div>
+      <div class="clock-face">Months: <span id="months"></span></div>
+      <div class="clock-face">Days: <span id="days"></span></div>
+      <div class="clock-face">Hours: <span id="hours"></span></div>
+      <div class="clock-face">Minutes: <span id="minutes"></span></div>
+      <div class="clock-face">Seconds: <span id="seconds"></span></div>
+    </div>
 
-<script src="./script.js"></script>
+    <div class="bottom-info">
+      Logged in as <strong id="user-name"></strong> | Age: <strong id="user-age"></strong>
+    </div>
+  </div>
+
+  <script>
+    const now = () => new Date();
+
+    function switchToRegister() {
+      document.getElementById("login-section").classList.add("hidden");
+      document.getElementById("register-section").classList.remove("hidden");
+    }
+
+    function switchToLogin() {
+      document.getElementById("register-section").classList.add("hidden");
+      document.getElementById("login-section").classList.remove("hidden");
+    }
+
+    function register() {
+      const username = document.getElementById("register-username").value.trim();
+      const password = document.getElementById("register-password").value;
+      const age = document.getElementById("register-age").value;
+
+      if (!username || !password || !age) return alert("Fill all fields!");
+
+      let users = JSON.parse(localStorage.getItem("users")) || {};
+
+      if (users[username]) return alert("Username already exists!");
+
+      users[username] = { password, age };
+      localStorage.setItem("users", JSON.stringify(users));
+      localStorage.setItem("currentUser", username);
+      showClock(username);
+    }
+
+    function login() {
+      const username = document.getElementById("login-username").value.trim();
+      const password = document.getElementById("login-password").value;
+
+      let users = JSON.parse(localStorage.getItem("users")) || {};
+
+      if (!users[username] || users[username].password !== password)
+        return alert("Invalid credentials!");
+
+      localStorage.setItem("currentUser", username);
+      showClock(username);
+    }
+
+    function logout() {
+      localStorage.removeItem("currentUser");
+      location.reload();
+    }
+
+    function showClock(username) {
+      document.getElementById("auth-container").classList.add("hidden");
+      document.getElementById("clock-container").classList.remove("hidden");
+
+      let users = JSON.parse(localStorage.getItem("users"));
+      const user = users[username];
+
+      document.getElementById("welcome-user").innerText = `Welcome, ${username}`;
+      document.getElementById("user-name").innerText = username;
+      document.getElementById("user-age").innerText = user.age;
+
+      updateClock();
+      setInterval(updateClock, 1000);
+    }
+
+    function updateClock() {
+      const start = new Date("2000-01-01");
+      const diff = now() - start;
+
+      const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365));
+      const months = now().getMonth() + 1;
+      const days = now().getDate();
+      const hours = now().getHours();
+      const minutes = now().getMinutes();
+      const seconds = now().getSeconds();
+
+      document.getElementById("years").innerText = years;
+      document.getElementById("months").innerText = months;
+      document.getElementById("days").innerText = days;
+      document.getElementById("hours").innerText = hours;
+      document.getElementById("minutes").innerText = minutes;
+      document.getElementById("seconds").innerText = seconds;
+    }
+
+    // Auto login if user exists
+    window.onload = () => {
+      const current = localStorage.getItem("currentUser");
+      if (current) showClock(current);
+    };
+  </script>
 </body>
 </html>
