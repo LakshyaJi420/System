@@ -1,43 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Jinwoo Shadow Bot Tools</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <title>100 Year Clock Wheel</title>
+  <link rel="stylesheet" href="./style.css">
+
 </head>
-<body class="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-center px-4">
-  <h1 class="text-4xl font-bold mb-4">Jinwoo Shadow Bot</h1>
-  <p class="text-gray-300 mb-8 text-center">
-    Embrace the darkness. Command your shadows. Discover powerful tools to rule your digital realm.
-  </p>
-  <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-3 w-full max-w-4xl">
-    <a href="https://t.me/Jinwoo_RoBot?start=chat" class="bg-purple-700 hover:bg-purple-800 p-4 rounded-xl text-center">
-      💬 Chat with Jinwoo
-    </a>
-    <a href="https://t.me/Jinwoo_RoBot?start=manage" class="bg-blue-600 hover:bg-blue-700 p-4 rounded-xl text-center">
-      ⚙️ Group Management
-    </a>
-    <a href="https://t.me/Jinwoo_RoBot?start=tools" class="bg-yellow-600 hover:bg-yellow-700 p-4 rounded-xl text-center">
-      🔧 Admin Tools
-    </a>
-    <a href="https://t.me/sololevelingsystem" class="bg-green-600 hover:bg-green-700 p-4 rounded-xl text-center">
-      📢 Join Our Channel
-    </a>
-    <a href="https://lakshyaji420.github.io/System/" class="bg-red-600 hover:bg-red-700 p-4 rounded-xl text-center">
-      🌐 Support Page
-    </a>
-    <a href="https://github.com/yourusername/yourproject" class="bg-gray-800 hover:bg-gray-700 p-4 rounded-xl text-center">
-      🖥️ GitHub Repository
-    </a>
+<body>
+<!-- partial:index.partial.html -->
+<div class="clock" data-date="2024-12-25">
+  <div>
+    <div data-clock="years" data-numbers="101" class="clock-face"></div>
   </div>
-  <footer class="mt-10 text-sm text-gray-500">
-    Crafted in darkness by the Shadow Monarch
-  </footer>
-</body>
-</html>
+  <div>
+    <div data-clock="seconds" data-numbers="60" class="clock-face"></div>
+  </div>
+  <div>
+    <div data-clock="minutes" data-numbers="60" class="clock-face"></div>
+  </div>
+  <div>
+    <div data-clock="hours" data-numbers="24" class="clock-face"></div>
+  </div>
+  <div>
+    <div data-clock="days" data-numbers="31" class="clock-face"></div>
+  </div>
+  <div>
+    <div data-clock="months" data-numbers="12" class="clock-face"></div>
+  </div>
+
+  <div>
+    <div data-clock="day-names" data-numbers="7" class="clock-face"></div>
+  </div>
+  <button type="button" id="current-lang" class="current-lang-display">en</button>
+</div>
+
+<dialog id="language-dialog">
