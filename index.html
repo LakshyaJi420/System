@@ -1,37 +1,36 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>100 Year Clock Wheel</title>
   <link rel="stylesheet" href="./style.css">
-
 </head>
 <body>
-<!-- partial:index.partial.html -->
-<div class="clock" data-date="2024-12-25">
-  <div>
-    <div data-clock="years" data-numbers="101" class="clock-face"></div>
-  </div>
-  <div>
-    <div data-clock="seconds" data-numbers="60" class="clock-face"></div>
-  </div>
-  <div>
-    <div data-clock="minutes" data-numbers="60" class="clock-face"></div>
-  </div>
-  <div>
-    <div data-clock="hours" data-numbers="24" class="clock-face"></div>
-  </div>
-  <div>
-    <div data-clock="days" data-numbers="31" class="clock-face"></div>
-  </div>
-  <div>
-    <div data-clock="months" data-numbers="12" class="clock-face"></div>
-  </div>
 
-  <div>
-    <div data-clock="day-names" data-numbers="7" class="clock-face"></div>
-  </div>
+<!-- LOGIN FORM -->
+<div id="auth">
+  <h2>Login / Register</h2>
+  <input type="text" id="username" placeholder="Username"><br>
+  <input type="password" id="password" placeholder="Password"><br>
+  <button onclick="register()">Register</button>
+  <button onclick="login()">Login</button>
+  <p id="authMessage"></p>
+</div>
+
+<!-- CLOCK SECTION (Hidden until login) -->
+<div class="clock" data-date="2024-12-25" id="clockSection" style="display:none;">
+  <div><div data-clock="years" data-numbers="101" class="clock-face"></div></div>
+  <div><div data-clock="seconds" data-numbers="60" class="clock-face"></div></div>
+  <div><div data-clock="minutes" data-numbers="60" class="clock-face"></div></div>
+  <div><div data-clock="hours" data-numbers="24" class="clock-face"></div></div>
+  <div><div data-clock="days" data-numbers="31" class="clock-face"></div></div>
+  <div><div data-clock="months" data-numbers="12" class="clock-face"></div></div>
+  <div><div data-clock="day-names" data-numbers="7" class="clock-face"></div></div>
   <button type="button" id="current-lang" class="current-lang-display">en</button>
 </div>
 
-<dialog id="language-dialog">
+<dialog id="language-dialog">This has to work on GitHub page</dialog>
+
+<script src="./script.js"></script>
+</body>
+</html>
