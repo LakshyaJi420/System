@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>100 Year Clock</title>
   <style>
-    *, ::before, ::after {
-      box-sizing: border-box;
-    }
+    *, ::before, ::after { box-sizing: border-box; }
     :root {
       --clr-bg: black;
+      --accent: #007bff;
+      --accent-dark: #0056b3;
     }
     body {
       margin: 0;
-      font-family: system-ui;
+      font-family: system-ui, sans-serif;
       background: radial-gradient(rgb(32, 6, 31), rgb(19, 18, 18));
       color: white;
       min-height: 100vh;
@@ -26,7 +26,7 @@
       background: #111;
       padding: 1.5rem;
       border-radius: 12px;
-      box-shadow: 0 0 20px #0ff4;
+      box-shadow: 0 0 20px rgba(0,123,255,0.4);
       width: 100%;
       max-width: 360px;
       display: flex;
@@ -41,31 +41,35 @@
       outline: none;
     }
     button {
-      background: #0af;
+      background: var(--accent);
       color: white;
       cursor: pointer;
     }
     button:hover {
-      background: #09c;
+      background: var(--accent-dark);
     }
     .hidden {
       display: none !important;
     }
     a {
-      color: #0af;
+      color: var(--accent);
       text-decoration: none;
+    }
+    a:hover {
+      color: var(--accent-dark);
     }
     .clock {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
       gap: 0.6rem;
       padding: 1rem 0;
+      width: 100%;
     }
     .clock-face {
       background: #222;
       padding: 1rem;
       border-radius: 8px;
-      box-shadow: 0 0 10px #0af6;
+      box-shadow: 0 0 10px rgba(0,123,255,0.4);
       text-align: center;
     }
     .topbar {
@@ -75,7 +79,7 @@
       background: #0005;
       padding: 0.5rem 1rem;
       font-size: 1rem;
-      border-bottom: 1px solid #0af5;
+      border-bottom: 1px solid rgba(0,123,255,0.5);
     }
     .bottom-info {
       text-align: center;
@@ -126,64 +130,58 @@
   </div>
 
   <script>
+    // Utility for “now”
     const now = () => new Date();
 
     function switchToRegister() {
       document.getElementById("login-section").classList.add("hidden");
       document.getElementById("register-section").classList.remove("hidden");
     }
-
     function switchToLogin() {
       document.getElementById("register-section").classList.add("hidden");
       document.getElementById("login-section").classList.remove("hidden");
     }
 
     function register() {
-      const username = document.getElementById("register-username").value.trim();
-      const password = document.getElementById("register-password").value;
-      const age = document.getElementById("register-age").value;
-
-      if (!username || !password || !age) return alert("Fill all fields!");
-
-      let users = JSON.parse(localStorage.getItem("users")) || {};
-
-      if (users[username]) return alert("Username already exists!");
-
-      users[username] = { password, age };
-      localStorage.setItem("users", JSON.stringify(users));
-      localStorage.setItem("currentUser", username);
-      showClock(username);
+      const u = document.getElementById("register-username").value.trim();
+      const p = document.getElementById("register-password").value;
+      const a = document.getElementById("register-age").value;
+      if (!u || !p || !a) return alert("Fill all fields!");
+      let db = JSON.parse(localStorage.getItem("clockUsers") || "{}");
+      if (db[u]) return alert("Username already exists!");
+      db[u] = { password: p, age: a };
+      localStorage.setItem("clockUsers", JSON.stringify(db));
+      localStorage.setItem("clockCurrentUser", u);
+      showClock(u);
     }
 
     function login() {
-      const username = document.getElementById("login-username").value.trim();
-      const password = document.getElementById("login-password").value;
-
-      let users = JSON.parse(localStorage.getItem("users")) || {};
-
-      if (!users[username] || users[username].password !== password)
+      const u = document.getElementById("login-username").value.trim();
+      const p = document.getElementById("login-password").value;
+      let db = JSON.parse(localStorage.getItem("clockUsers") || "{}");
+      if (!db[u] || db[u].password !== p)
         return alert("Invalid credentials!");
-
-      localStorage.setItem("currentUser", username);
-      showClock(username);
+      localStorage.setItem("clockCurrentUser", u);
+      showClock(u);
     }
 
     function logout() {
-      localStorage.removeItem("currentUser");
+      localStorage.removeItem("clockCurrentUser");
       location.reload();
     }
 
-    function showClock(username) {
+    function showClock(u) {
       document.getElementById("auth-container").classList.add("hidden");
       document.getElementById("clock-container").classList.remove("hidden");
-
-      let users = JSON.parse(localStorage.getItem("users"));
-      const user = users[username];
-
-      document.getElementById("welcome-user").innerText = `Welcome, ${username}`;
-      document.getElementById("user-name").innerText = username;
+      const db = JSON.parse(localStorage.getItem("clockUsers"));
+      const user = db[u];
+      document.getElementById("welcome-user").innerText = `Welcome, ${u}`;
+      document.getElementById("user-name").innerText = u;
       document.getElementById("user-age").innerText = user.age;
+      startClock();
+    }
 
+    function startClock() {
       updateClock();
       setInterval(updateClock, 1000);
     }
@@ -191,26 +189,18 @@
     function updateClock() {
       const start = new Date("2000-01-01");
       const diff = now() - start;
-
-      const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365));
-      const months = now().getMonth() + 1;
-      const days = now().getDate();
-      const hours = now().getHours();
-      const minutes = now().getMinutes();
-      const seconds = now().getSeconds();
-
-      document.getElementById("years").innerText = years;
-      document.getElementById("months").innerText = months;
-      document.getElementById("days").innerText = days;
-      document.getElementById("hours").innerText = hours;
-      document.getElementById("minutes").innerText = minutes;
-      document.getElementById("seconds").innerText = seconds;
+      document.getElementById("years").innerText   = Math.floor(diff / (1000*60*60*24*365));
+      document.getElementById("months").innerText  = now().getMonth() + 1;
+      document.getElementById("days").innerText    = now().getDate();
+      document.getElementById("hours").innerText   = now().getHours();
+      document.getElementById("minutes").innerText = now().getMinutes();
+      document.getElementById("seconds").innerText = now().getSeconds();
     }
 
-    // Auto login if user exists
+    // Auto-login if already set
     window.onload = () => {
-      const current = localStorage.getItem("currentUser");
-      if (current) showClock(current);
+      const cur = localStorage.getItem("clockCurrentUser");
+      if (cur) showClock(cur);
     };
   </script>
 </body>
