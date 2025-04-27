@@ -1,185 +1,177 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Focus Lock Pro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Focus Lock Pro Mobile</title>
   <style>
+    :root {
+      --bg-color: #0a0a0a;
+      --text-color: #ffffff;
+      --primary-color: #4CAF50;
+      --input-bg: #1e1e1e;
+      --border-radius: 8px;
+      --padding: 1rem;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: Arial, sans-serif;
-      background: #0a0a0a;
-      color: #ffffff;
+      background: var(--bg-color);
+      color: var(--text-color);
       text-align: center;
-      padding: 30px;
-      overflow-x: hidden;
-      overflow-y: auto;
+      padding: var(--padding);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    h1 {
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+    .container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     input, button, textarea {
-      padding: 12px;
-      margin: 8px;
-      border-radius: 8px;
+      width: 100%;
+      max-width: 320px;
+      background: var(--input-bg);
+      color: var(--text-color);
       border: none;
-      font-size: 16px;
+      border-radius: var(--border-radius);
+      padding: 0.75rem;
+      margin: 0.5rem 0;
+      font-size: 1rem;
     }
     button {
-      background-color: #4CAF50;
-      color: white;
-      cursor: pointer;
+      background: var(--primary-color);
+      color: #fff;
+      font-weight: bold;
     }
-    .lockscreen {
+    button:active { opacity: 0.8; }
+    .lockscreen, .verification {
       position: fixed;
       top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      background: black;
-      color: white;
+      width: 100%; height: 100%;
+      background: var(--bg-color);
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      font-size: 24px;
-      z-index: 99999;
-      pointer-events: all;
+      z-index: 9999;
+      padding: var(--padding);
     }
-    .hidden {
-      display: none;
+    .hidden { display: none; }
+    @media (orientation: landscape) {
+      h1 { font-size: 1.2rem; }
+      input, button, textarea { max-width: 480px; }
     }
   </style>
 </head>
 <body>
-
-<h1>Focus Lock Pro</h1>
-
-<div id="setup">
-  <p>Set Job and Lock Time:</p>
-  <input type="text" id="jobName" placeholder="Job Name (e.g., Lunch)"><br>
-  <textarea id="jobAnswer" placeholder="Expected answer after job (e.g., I ate lunch properly)" rows="3" cols="30"></textarea><br>
-  <input type="time" id="startTime"> to 
-  <input type="time" id="endTime"><br>
-  <button onclick="startLock()">Start Lock</button>
-</div>
-
-<div id="lockscreen" class="lockscreen hidden">
-  <div>
-    <p id="lockMessage">Phone is Locked...</p>
-    <input type="password" id="bypassInput" placeholder="Enter Secret Code">
+  <h1>Focus Lock Pro</h1>
+  <div id="setup" class="container">
+    <input type="text" id="jobName" placeholder="Job Name (e.g., Lunch)">
+    <textarea id="jobAnswer" placeholder="Expected answer (e.g., I ate lunch properly)" rows="3"></textarea>
+    <div style="display:flex; width:100%; max-width:320px; justify-content: space-between;">
+      <input type="time" id="startTime" style="width:48%;">
+      <input type="time" id="endTime" style="width:48%;">
+    </div>
+    <button onclick="startLock()">Start Lock</button>
+  </div>
+  <div id="lockscreen" class="lockscreen hidden">
+    <p style="margin-bottom:1rem; font-size:1.2rem;">🔒 Phone is Locked</p>
+    <input type="password" id="bypassInput" placeholder="Secret Code">
     <button onclick="bypassLock()">Unlock</button>
   </div>
-</div>
-
-<div id="verification" class="hidden">
-  <h2>Verification</h2>
-  <p id="verifyJobName"></p>
-  <p>What did you do?</p>
-  <textarea id="taskInput" rows="4" cols="40" placeholder="Type your answer..."></textarea><br>
-  <button onclick="submitTask()">Submit Answer</button>
-</div>
-
-<script>
-let lockActive = false;
-let bypassCode = "Kirmada";
-let expectedAnswer = "";
-let jobName = "";
-
-function startLock() {
+  <div id="verification" class="verification hidden">
+    <p id="verifyJobName" style="font-size:1.2rem; margin-bottom:1rem;"></p>
+    <textarea id="taskInput" rows="4" placeholder="Type your answer..."></textarea>
+    <button onclick="submitTask()">Submit Answer</button>
+  </div>
+  <script>
+    let lockActive = false;
+    const bypassCode = "Kirmada";
+    let expectedAnswer = "";
+    let jobName = "";function startLock() {
   jobName = document.getElementById('jobName').value.trim();
   expectedAnswer = document.getElementById('jobAnswer').value.trim();
   const start = document.getElementById('startTime').value;
   const end = document.getElementById('endTime').value;
-
-  if (!start || !end || !jobName || !expectedAnswer) {
+  if (!jobName || !expectedAnswer || !start || !end) {
     alert("Please fill all fields!");
     return;
   }
-
   const now = new Date();
-  const startTime = new Date(now.toDateString() + " " + start);
-  const endTime = new Date(now.toDateString() + " " + end);
-
+  const startTime = new Date(`${now.toDateString()} ${start}`);
+  const endTime = new Date(`${now.toDateString()} ${end}`);
   if (now >= startTime && now <= endTime) {
-    activateLock();
+    activateLock(endTime);
   } else if (now < startTime) {
-    const timeToStart = startTime - now;
-    setTimeout(activateLock, timeToStart);
+    setTimeout(() => activateLock(endTime), startTime - now);
     alert(`Lock will start at ${start}`);
   } else {
-    alert("End time already passed. Set a valid future time.");
+    alert("End time passed. Please set a future time.");
   }
 }
 
-function activateLock() {
-  document.getElementById('lockscreen').classList.remove('hidden');
+function activateLock(endTime) {
   lockActive = true;
-  preventExit();
-  checkLock();
-}
-
-function preventExit() {
+  document.getElementById('lockscreen').classList.remove('hidden');
   document.body.style.overflow = 'hidden';
-  document.addEventListener('keydown', function(e) {
-    e.preventDefault();
-  }, { passive: false });
-}
-
-function checkLock() {
-  if (!lockActive) return;
-
-  const now = new Date();
-  const end = document.getElementById('endTime').value;
-  const endTime = new Date(now.toDateString() + " " + end);
-
-  if (now >= endTime) {
-    lockActive = false;
-    document.getElementById('lockscreen').classList.add('hidden');
-    showVerification();
-  } else {
-    setTimeout(checkLock, 1000);
-  }
+  document.addEventListener('keydown', e => e.preventDefault(), {passive:false});
+  const timer = () => {
+    if (new Date() >= endTime && lockActive) {
+      lockActive = false;
+      document.getElementById('lockscreen').classList.add('hidden');
+      showVerification();
+    } else if (lockActive) {
+      setTimeout(timer, 1000);
+    }
+  };
+  timer();
 }
 
 function bypassLock() {
-  const input = document.getElementById('bypassInput').value;
-  if (input === bypassCode) {
+  if (document.getElementById('bypassInput').value === bypassCode) {
     lockActive = false;
     document.getElementById('lockscreen').classList.add('hidden');
     showVerification();
-    alert("Bypass Successful for Testing");
+    alert("Bypass Successful");
   } else {
     alert("Wrong Code!");
   }
 }
 
 function showVerification() {
-  document.getElementById('setup').style.display = 'none';
+  document.getElementById('setup').classList.add('hidden');
   document.getElementById('verification').classList.remove('hidden');
-  document.getElementById('verifyJobName').innerText = "Job: " + jobName;
+  document.getElementById('verifyJobName').innerText = `Job: ${jobName}`;
 }
 
 function submitTask() {
-  const userInput = document.getElementById('taskInput').value.trim();
-  if (userInput.length < 5) {
-    alert("Please write more about what you did!");
+  const input = document.getElementById('taskInput').value.trim();
+  if (input.length < 5) {
+    alert("Please write more!");
     return;
   }
-  const similarity = stringSimilarity(expectedAnswer, userInput);
-  if (similarity >= 0.7) {
-    alert("Good job! Task Verified!");
-    location.reload(); // Reset app
+  if (stringSimilarity(expectedAnswer, input) >= 0.7) {
+    alert("Task Verified! Good job!");
+    location.reload();
   } else {
-    alert(`Answer not matched enough (${Math.round(similarity*100)}%). Please try again.`);
+    alert("Answer not matched enough. Try again.");
   }
 }
 
-// Simple string similarity function (percentage of matching words)
-function stringSimilarity(str1, str2) {
-  const words1 = str1.toLowerCase().split(/\s+/);
-  const words2 = str2.toLowerCase().split(/\s+/);
-  let matches = 0;
-  words1.forEach(word => {
-    if (words2.includes(word)) matches++;
-  });
-  return matches / Math.max(words1.length, words2.length);
+function stringSimilarity(a,b) {
+  const w1 = a.toLowerCase().split(/\s+/);
+  const w2 = b.toLowerCase().split(/\s+/);
+  let matches=0;
+  w1.forEach(w=>{if(w2.includes(w))matches++;});
+  return matches / Math.max(w1.length,w2.length);
 }
-</script>
 
+  </script>
 </body>
 </html>
