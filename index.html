@@ -1,542 +1,185 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Death Clock - Your Life in Seconds</title>
-    <style>
-        :root {
-            --primary-color: #ff4757;
-            --secondary-color: #2f3542;
-            --text-color: #ffffff;
-            --bg-color: #1e272e;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
-        }
-        
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            text-align: center;
-        }
-        
-        .container {
-            max-width: 800px;
-            width: 100%;
-            padding: 30px;
-            background-color: rgba(47, 53, 66, 0.7);
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            color: var(--primary-color);
-            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-        }
-        
-        .description {
-            margin-bottom: 30px;
-            line-height: 1.6;
-            opacity: 0.9;
-        }
-        
-        .input-section {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-        
-        label {
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: var(--primary-color);
-        }
-        
-        input, select {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 5px;
-            background-color: rgba(255, 255, 255, 0.1);
-            color: var(--text-color);
-            font-size: 0.95rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-        
-        .button-group {
-            grid-column: 1 / -1;
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 10px;
-        }
-        
-        button {
-            padding: 12px 25px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-        
-        button:hover {
-            background-color: #ff6b81;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4);
-        }
-        
-        .result {
-            margin-top: 30px;
-            padding: 20px;
-            background-color: rgba(0, 0, 0, 0.3);
-            border-radius: 5px;
-            opacity: 0;
-            height: 0;
-            transition: all 0.5s ease;
-            overflow: hidden;
-        }
-        
-        .result.active {
-            opacity: 1;
-            height: auto;
-        }
-        
-        .countdown {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: var(--primary-color);
-            margin: 20px 0;
-            font-family: 'Courier New', monospace;
-            word-break: break-word;
-        }
-        
-        .progress-container {
-            width: 100%;
-            height: 10px;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
-            margin: 20px 0;
-            overflow: hidden;
-        }
-        
-        .progress-bar {
-            height: 100%;
-            background-color: var(--primary-color);
-            width: 0%;
-            transition: width 0.5s ease;
-        }
-        
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .stat-box {
-            background-color: rgba(0, 0, 0, 0.2);
-            padding: 15px;
-            border-radius: 5px;
-        }
-        
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--primary-color);
-            margin-bottom: 5px;
-        }
-        
-        .stat-label {
-            font-size: 0.8rem;
-            opacity: 0.8;
-        }
-        
-        .footer {
-            margin-top: 30px;
-            font-size: 0.8rem;
-            opacity: 0.7;
-        }
-        
-        .loading {
-            display: none;
-            margin: 20px 0;
-        }
-        
-        .loader {
-            width: 25px;
-            height: 25px;
-            border: 3px solid #fff;
-            border-bottom-color: transparent;
-            border-radius: 50%;
-            display: inline-block;
-            animation: rotation 1s linear infinite;
-        }
-        
-        @keyframes rotation {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-            }
-            
-            h1 {
-                font-size: 2rem;
-            }
-            
-            .countdown {
-                font-size: 1.8rem;
-            }
-            
-            .input-section {
-                grid-template-columns: 1fr;
-            }
-            
-            .button-group {
-                flex-direction: column;
-            }
-            
-            button {
-                width: 100%;
-            }
-        }
-        
-        /* Animation */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Focus Lock Pro</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0a0a0a;
+      color: #ffffff;
+      text-align: center;
+      padding: 30px;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+    input, button, textarea {
+      padding: 12px;
+      margin: 8px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+    .lockscreen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+      z-index: 99999;
+      pointer-events: all;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>DEATH CLOCK</h1>
-        <p class="description">
-            The Death Clock calculates your estimated time left to live based on various lifestyle factors.
-            It serves as a reminder to make the most of your time.
-        </p>
-        
-        <div class="input-section">
-            <div class="input-group">
-                <label for="birthdate">Birthdate</label>
-                <input type="date" id="birthdate" required>
-            </div>
-            
-            <div class="input-group">
-                <label for="gender">Gender</label>
-                <select id="gender" required>
-                    <option value="">Select Gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                </select>
-            </div>
-            
-            <div class="input-group">
-                <label for="country">Country</label>
-                <select id="country" required>
-                    <option value="">Select Country</option>
-                    <option value="USA">United States</option>
-                    <option value="UK">United Kingdom</option>
-                    <option value="Japan">Japan</option>
-                    <option value="India">India</option>
-                    <option value="Germany">Germany</option>
-                    <option value="China">China</option>
-                    <option value="Brazil">Brazil</option>
-                    <option value="Russia">Russia</option>
-                    <option value="Australia">Australia</option>
-                    <option value="Canada">Canada</option>
-                </select>
-            </div>
-            
-            <div class="input-group">
-                <label for="smoking">Smoking</label>
-                <select id="smoking" required>
-                    <option value="none">Non-smoker</option>
-                    <option value="light">Light smoker (<10/day)</option>
-                    <option value="heavy">Heavy smoker (10+ day)</option>
-                </select>
-            </div>
-            
-            <div class="input-group">
-                <label for="alcohol">Alcohol</label>
-                <select id="alcohol" required>
-                    <option value="none">Non-drinker</option>
-                    <option value="moderate">Moderate drinker</option>
-                    <option value="heavy">Heavy drinker</option>
-                </select>
-            </div>
-            
-            <div class="input-group">
-                <label for="exercise">Exercise</label>
-                <select id="exercise" required>
-                    <option value="intense">Daily exercise</option>
-                    <option value="regular">3-4 times/week</option>
-                    <option value="occasional">1-2 times/week</option>
-                    <option value="sedentary">Sedentary</option>
-                </select>
-            </div>
-            
-            <div class="input-group">
-                <label for="diet">Diet</label>
-                <select id="diet" required>
-                    <option value="excellent">Mostly plant-based</option>
-                    <option value="good">Balanced</option>
-                    <option value="average">Some processed food</option>
-                    <option value="poor">Mostly processed food</option>
-                </select>
-            </div>
-            
-            <div class="input-group">
-                <label for="stress">Stress Level</label>
-                <select id="stress" required>
-                    <option value="low">Low stress</option>
-                    <option value="moderate">Moderate stress</option>
-                    <option value="high">High stress</option>
-                </select>
-            </div>
-            
-            <div class="button-group">
-                <button id="calculate-btn">CALCULATE</button>
-                <button id="reset-btn">RESET</button>
-            </div>
-        </div>
-        
-        <div class="loading" id="loading">
-            <span class="loader"></span>
-        </div>
-        
-        <div class="result" id="result">
-            <div class="countdown" id="countdown">00:00:00:00:00</div>
-            <div class="progress-container">
-                <div class="progress-bar" id="progress-bar"></div>
-            </div>
-            
-            <div class="stats">
-                <div class="stat-box">
-                    <div class="stat-value" id="years-left">0</div>
-                    <div class="stat-label">YEARS LEFT</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value" id="months-left">0</div>
-                    <div class="stat-label">MONTHS LEFT</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value" id="weeks-left">0</div>
-                    <div class="stat-label">WEEKS LEFT</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value" id="days-left">0</div>
-                    <div class="stat-label">DAYS LEFT</div>
-                </div>
-            </div>
-            
-            <p style="margin-top: 20px; font-style: italic;">
-                "Your time is limited, don't waste it living someone else's life."
-                <br>- Steve Jobs
-            </p>
-        </div>
-        
-        <div class="footer">
-            * This is a conceptual tool using statistical averages. Consult healthcare professionals for personal advice.
-        </div>
-    </div>
 
-    <script>
-        let updateInterval = null;
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            const calculateBtn = document.getElementById('calculate-btn');
-            const resetBtn = document.getElementById('reset-btn');
-            const resultDiv = document.getElementById('result');
-            const loadingDiv = document.getElementById('loading');
-            
-            // Set max date for birthdate input to today
-            const birthdateInput = document.getElementById('birthdate');
-            const today = new Date().toISOString().split('T')[0];
-            birthdateInput.setAttribute('max', today);
-            
-            const lifeExpectancyData = {
-                USA: { male: 76, female: 81 },
-                UK: { male: 79, female: 83 },
-                Japan: { male: 81, female: 87 },
-                India: { male: 68, female: 70 },
-                Germany: { male: 78, female: 83 },
-                China: { male: 75, female: 78 },
-                Brazil: { male: 72, female: 79 },
-                Russia: { male: 68, female: 78 },
-                Australia: { male: 81, female: 85 },
-                Canada: { male: 80, female: 84 },
-                other: { male: 70, female: 75 }
-            };
-            
-            const lifestyleFactors = {
-                smoking: {
-                    none: 1.0,
-                    light: 0.95,
-                    heavy: 0.85
-                },
-                alcohol: {
-                    none: 1.0,
-                    moderate: 0.98,
-                    heavy: 0.90
-                },
-                exercise: {
-                    intense: 1.05,
-                    regular: 1.03,
-                    occasional: 1.0,
-                    sedentary: 0.95
-                },
-                diet: {
-                    excellent: 1.07,
-                    good: 1.03,
-                    average: 1.0,
-                    poor: 0.95
-                },
-                stress: {
-                    low: 1.03,
-                    moderate: 1.0,
-                    high: 0.96
-                }
-            };
-            
-            calculateBtn.addEventListener('click', function() {
-                clearInterval(updateInterval);
-                loadingDiv.style.display = 'block';
-                resultDiv.classList.remove('active');
-                
-                setTimeout(() => {
-                    calculateLifeExpectancy();
-                    loadingDiv.style.display = 'none';
-                    resultDiv.classList.add('active');
-                }, 500);
-            });
-            
-            resetBtn.addEventListener('click', function() {
-                clearInterval(updateInterval);
-                document.querySelectorAll('input, select').forEach(element => {
-                    if (element.id === 'birthdate') element.value = '';
-                    else if (element.id !== 'reset-btn') element.selectedIndex = 0;
-                });
-                resultDiv.classList.remove('active');
-            });
-            
-            function calculateLifeExpectancy() {
-                const birthdate = document.getElementById('birthdate').value;
-                const gender = document.getElementById('gender').value;
-                const country = document.getElementById('country').value;
-                
-                if (!birthdate || !gender || !country) {
-                    alert('Please fill in all required fields');
-                    loadingDiv.style.display = 'none';
-                    return;
-                }
-                
-                // Get lifestyle factors
-                const smoking = document.getElementById('smoking').value;
-                const alcohol = document.getElementById('alcohol').value;
-                const exercise = document.getElementById('exercise').value;
-                const diet = document.getElementById('diet').value;
-                const stress = document.getElementById('stress').value;
-                
-                // Calculate base life expectancy
-                const baseData = lifeExpectancyData[country] || lifeExpectancyData.other;
-                let lifeExpectancy = baseData[gender];
-                
-                // Apply lifestyle adjustments
-                let lifestyleMultiplier = 1.0;
-                lifestyleMultiplier *= lifestyleFactors.smoking[smoking];
-                lifestyleMultiplier *= lifestyleFactors.alcohol[alcohol];
-                lifestyleMultiplier *= lifestyleFactors.exercise[exercise];
-                lifestyleMultiplier *= lifestyleFactors.diet[diet];
-                lifestyleMultiplier *= lifestyleFactors.stress[stress];
-                
-                lifeExpectancy *= lifestyleMultiplier;
-                
-                // Calculate death date
-                const birthDate = new Date(birthdate);
-                const deathDate = new Date(birthDate);
-                deathDate.setFullYear(birthDate.getFullYear() + lifeExpectancy);
-                
-                // Start countdown
-                updateInterval = setInterval(() => updateCountdown(deathDate, birthDate), 1000);
-                updateCountdown(deathDate, birthDate);
-            }
-            
-            function updateCountdown(deathDate, birthDate) {
-                const now = new Date();
-                const totalSeconds = (deathDate - birthDate) / 1000;
-                const elapsedSeconds = (now - birthDate) / 1000;
-                const remainingSeconds = (deathDate - now) / 1000;
-                
-                // Update progress bar
-                const progressPercentage = (elapsedSeconds / totalSeconds) * 100;
-                document.getElementById('progress-bar').style.width = `${Math.min(progressPercentage, 100)}%`;
-                
-                // Update countdown if still alive
-                if (remainingSeconds > 0) {
-                    const years = Math.floor(remainingSeconds / (365.25 * 24 * 3600));
-                    const months = Math.floor((remainingSeconds % (365.25 * 24 * 3600)) / (30.44 * 24 * 3600));
-                    const days = Math.floor((remainingSeconds % (30.44 * 24 * 3600)) / (24 * 3600));
-                    const hours = Math.floor((remainingSeconds % (24 * 3600)) / 3600);
-                    const minutes = Math.floor((remainingSeconds % 3600) / 60);
-                    const seconds = Math.floor(remainingSeconds % 60);
-                    
-                    document.getElementById('countdown').textContent = 
-                        `${years}y ${months}m ${days}d ${hours}h ${minutes}m ${seconds}s`;
-                    document.getElementById('countdown').classList.add('pulse');
-                    
-                    // Update stats
-                    document.getElementById('years-left').textContent = years;
-                    document.getElementById('months-left').textContent = years * 12 + months;
-                    document.getElementById('weeks-left').textContent = Math.floor(remainingSeconds / (604800));
-                    document.getElementById('days-left').textContent = Math.floor(remainingSeconds / 86400);
-                } else {
-                    document.getElementById('countdown').textContent = "TIME'S UP";
-                    document.getElementById('countdown').style.color = "#ff0000";
-                    document.getElementById('countdown').classList.remove('pulse');
-                    clearInterval(updateInterval);
-                }
-            }
-        });
-    </script>
+<h1>Focus Lock Pro</h1>
+
+<div id="setup">
+  <p>Set Job and Lock Time:</p>
+  <input type="text" id="jobName" placeholder="Job Name (e.g., Lunch)"><br>
+  <textarea id="jobAnswer" placeholder="Expected answer after job (e.g., I ate lunch properly)" rows="3" cols="30"></textarea><br>
+  <input type="time" id="startTime"> to 
+  <input type="time" id="endTime"><br>
+  <button onclick="startLock()">Start Lock</button>
+</div>
+
+<div id="lockscreen" class="lockscreen hidden">
+  <div>
+    <p id="lockMessage">Phone is Locked...</p>
+    <input type="password" id="bypassInput" placeholder="Enter Secret Code">
+    <button onclick="bypassLock()">Unlock</button>
+  </div>
+</div>
+
+<div id="verification" class="hidden">
+  <h2>Verification</h2>
+  <p id="verifyJobName"></p>
+  <p>What did you do?</p>
+  <textarea id="taskInput" rows="4" cols="40" placeholder="Type your answer..."></textarea><br>
+  <button onclick="submitTask()">Submit Answer</button>
+</div>
+
+<script>
+let lockActive = false;
+let bypassCode = "Kirmada";
+let expectedAnswer = "";
+let jobName = "";
+
+function startLock() {
+  jobName = document.getElementById('jobName').value.trim();
+  expectedAnswer = document.getElementById('jobAnswer').value.trim();
+  const start = document.getElementById('startTime').value;
+  const end = document.getElementById('endTime').value;
+
+  if (!start || !end || !jobName || !expectedAnswer) {
+    alert("Please fill all fields!");
+    return;
+  }
+
+  const now = new Date();
+  const startTime = new Date(now.toDateString() + " " + start);
+  const endTime = new Date(now.toDateString() + " " + end);
+
+  if (now >= startTime && now <= endTime) {
+    activateLock();
+  } else if (now < startTime) {
+    const timeToStart = startTime - now;
+    setTimeout(activateLock, timeToStart);
+    alert(`Lock will start at ${start}`);
+  } else {
+    alert("End time already passed. Set a valid future time.");
+  }
+}
+
+function activateLock() {
+  document.getElementById('lockscreen').classList.remove('hidden');
+  lockActive = true;
+  preventExit();
+  checkLock();
+}
+
+function preventExit() {
+  document.body.style.overflow = 'hidden';
+  document.addEventListener('keydown', function(e) {
+    e.preventDefault();
+  }, { passive: false });
+}
+
+function checkLock() {
+  if (!lockActive) return;
+
+  const now = new Date();
+  const end = document.getElementById('endTime').value;
+  const endTime = new Date(now.toDateString() + " " + end);
+
+  if (now >= endTime) {
+    lockActive = false;
+    document.getElementById('lockscreen').classList.add('hidden');
+    showVerification();
+  } else {
+    setTimeout(checkLock, 1000);
+  }
+}
+
+function bypassLock() {
+  const input = document.getElementById('bypassInput').value;
+  if (input === bypassCode) {
+    lockActive = false;
+    document.getElementById('lockscreen').classList.add('hidden');
+    showVerification();
+    alert("Bypass Successful for Testing");
+  } else {
+    alert("Wrong Code!");
+  }
+}
+
+function showVerification() {
+  document.getElementById('setup').style.display = 'none';
+  document.getElementById('verification').classList.remove('hidden');
+  document.getElementById('verifyJobName').innerText = "Job: " + jobName;
+}
+
+function submitTask() {
+  const userInput = document.getElementById('taskInput').value.trim();
+  if (userInput.length < 5) {
+    alert("Please write more about what you did!");
+    return;
+  }
+  const similarity = stringSimilarity(expectedAnswer, userInput);
+  if (similarity >= 0.7) {
+    alert("Good job! Task Verified!");
+    location.reload(); // Reset app
+  } else {
+    alert(`Answer not matched enough (${Math.round(similarity*100)}%). Please try again.`);
+  }
+}
+
+// Simple string similarity function (percentage of matching words)
+function stringSimilarity(str1, str2) {
+  const words1 = str1.toLowerCase().split(/\s+/);
+  const words2 = str2.toLowerCase().split(/\s+/);
+  let matches = 0;
+  words1.forEach(word => {
+    if (words2.includes(word)) matches++;
+  });
+  return matches / Math.max(words1.length, words2.length);
+}
+</script>
+
 </body>
 </html>
