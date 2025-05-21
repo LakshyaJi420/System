@@ -1,177 +1,159 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Focus Lock Pro Mobile</title>
+  <title>Live Face Swap Filter v1.1</title>
+  <meta name="viewport" content="width=640, initial-scale=1, user-scalable=no">
   <style>
-    :root {
-      --bg-color: #0a0a0a;
-      --text-color: #ffffff;
-      --primary-color: #4CAF50;
-      --input-bg: #1e1e1e;
-      --border-radius: 8px;
-      --padding: 1rem;
+    body, html { margin:0; padding:0; background:#181a1b; font-family:sans-serif; color:#fff; }
+    #topbar {
+      position: absolute; top:0; left:0; width:100%; background:rgba(30,30,30,0.96); z-index:20;
+      display:flex; align-items:center; justify-content:space-between; padding:12px 20px;
+      box-sizing:border-box; min-width: 640px;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: Arial, sans-serif;
-      background: var(--bg-color);
-      color: var(--text-color);
-      text-align: center;
-      padding: var(--padding);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+    #uploadBtn {
+      padding:8px 18px; background:#00b894; border:none; color:#fff; font-weight:bold;
+      border-radius:4px; cursor:pointer; font-size:15px; margin-right:10px;
+      transition: background .2s;
     }
-    h1 {
-      margin-bottom: 1rem;
-      font-size: 1.5rem;
+    #uploadBtn:hover { background:#019875; }
+    #privacy {
+      font-size:14px; color:#b2bec3; margin-left:15px;
     }
-    .container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    #container {
+      position:relative; width:640px; height:480px; margin:80px auto 0 auto; box-shadow:0 4px 18px #000a;
+      border-radius:10px; overflow:hidden; background:#23272b;
     }
-    input, button, textarea {
-      width: 100%;
-      max-width: 320px;
-      background: var(--input-bg);
-      color: var(--text-color);
-      border: none;
-      border-radius: var(--border-radius);
-      padding: 0.75rem;
-      margin: 0.5rem 0;
-      font-size: 1rem;
+    video, canvas {
+      position:absolute; top:0; left:0; width:640px; height:480px; display:block; border-radius:10px;
     }
-    button {
-      background: var(--primary-color);
-      color: #fff;
-      font-weight: bold;
+    #footer {
+      text-align:center; color:#636e72; font-size:13px; margin-top:36px;
     }
-    button:active { opacity: 0.8; }
-    .lockscreen, .verification {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: var(--bg-color);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      padding: var(--padding);
-    }
-    .hidden { display: none; }
-    @media (orientation: landscape) {
-      h1 { font-size: 1.2rem; }
-      input, button, textarea { max-width: 480px; }
+    @media (max-width:700px) {
+      #container, video, canvas { width:100vw; height:75vw; max-width:100vw; max-height:75vw; min-width:0; }
+      #topbar { min-width: unset; }
     }
   </style>
 </head>
 <body>
-  <h1>Focus Lock Pro</h1>
-  <div id="setup" class="container">
-    <input type="text" id="jobName" placeholder="Job Name (e.g., Lunch)">
-    <textarea id="jobAnswer" placeholder="Expected answer (e.g., I ate lunch properly)" rows="3"></textarea>
-    <div style="display:flex; width:100%; max-width:320px; justify-content: space-between;">
-      <input type="time" id="startTime" style="width:48%;">
-      <input type="time" id="endTime" style="width:48%;">
+  <div id="topbar">
+    <div>
+      <button id="uploadBtn">Upload Source Face</button>
+      <span id="privacy">
+        <b>Privacy:</b> All processing is 100% local. No image or video leaves your device.
+      </span>
     </div>
-    <button onclick="startLock()">Start Lock</button>
+    <span style="font-weight:bold; letter-spacing:1px; font-size:15px;">Live Face Swap Filter</span>
   </div>
-  <div id="lockscreen" class="lockscreen hidden">
-    <p style="margin-bottom:1rem; font-size:1.2rem;">🔒 Phone is Locked</p>
-    <input type="password" id="bypassInput" placeholder="Secret Code">
-    <button onclick="bypassLock()">Unlock</button>
+  <div id="container">
+    <video id="video" width="640" height="480" autoplay muted playsinline></video>
+    <canvas id="overlay" width="640" height="480"></canvas>
   </div>
-  <div id="verification" class="verification hidden">
-    <p id="verifyJobName" style="font-size:1.2rem; margin-bottom:1rem;"></p>
-    <textarea id="taskInput" rows="4" placeholder="Type your answer..."></textarea>
-    <button onclick="submitTask()">Submit Answer</button>
+  <div id="footer">
+    &copy; 2025 Live Face Swap Filter &mdash; Powered by <a href="https://github.com/justadudewhohacks/face-api.js" target="_blank" style="color:#00b894;">face-api.js</a>
   </div>
+
+  <!-- Face-API -->
+  <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
   <script>
-    let lockActive = false;
-    const bypassCode = "Kirmada";
-    let expectedAnswer = "";
-    let jobName = "";function startLock() {
-  jobName = document.getElementById('jobName').value.trim();
-  expectedAnswer = document.getElementById('jobAnswer').value.trim();
-  const start = document.getElementById('startTime').value;
-  const end = document.getElementById('endTime').value;
-  if (!jobName || !expectedAnswer || !start || !end) {
-    alert("Please fill all fields!");
-    return;
-  }
-  const now = new Date();
-  const startTime = new Date(`${now.toDateString()} ${start}`);
-  const endTime = new Date(`${now.toDateString()} ${end}`);
-  if (now >= startTime && now <= endTime) {
-    activateLock(endTime);
-  } else if (now < startTime) {
-    setTimeout(() => activateLock(endTime), startTime - now);
-    alert(`Lock will start at ${start}`);
-  } else {
-    alert("End time passed. Please set a future time.");
-  }
-}
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('overlay');
+    const ctx = canvas.getContext('2d');
+    let srcImg = null, srcPts = null;
 
-function activateLock(endTime) {
-  lockActive = true;
-  document.getElementById('lockscreen').classList.remove('hidden');
-  document.body.style.overflow = 'hidden';
-  document.addEventListener('keydown', e => e.preventDefault(), {passive:false});
-  const timer = () => {
-    if (new Date() >= endTime && lockActive) {
-      lockActive = false;
-      document.getElementById('lockscreen').classList.add('hidden');
-      showVerification();
-    } else if (lockActive) {
-      setTimeout(timer, 1000);
+    // 1) On load, start camera immediately (prompts permission)
+    window.onload = () => {
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }})
+        .then(stream => video.srcObject = stream)
+        .catch(err => {
+          alert('Unable to access camera: ' + err.message);
+        });
+    };
+
+    // 2) Load models in parallel
+    Promise.all([
+      faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights'),
+      faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights')
+    ]).then(() => {
+      video.addEventListener('play', swapLoop);
+    });
+
+    // 3) User uploads source face
+    document.getElementById('uploadBtn').addEventListener('click', () => {
+      const input = document.createElement('input');
+      input.type = "file";
+      input.accept = "image/*";
+      input.onchange = async e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const dataURL = await new Promise(res => {
+          const r = new FileReader();
+          r.onload = () => res(r.result);
+          r.readAsDataURL(file);
+        });
+        srcImg = new Image();
+        srcImg.onload = async () => {
+          const det = await faceapi
+            .detectSingleFace(srcImg, new faceapi.TinyFaceDetectorOptions())
+            .withFaceLandmarks();
+          if (!det) return alert('No face found in the uploaded image.');
+          const lm = det.landmarks;
+          srcPts = [
+            averagePoint(lm.getLeftEye()),
+            averagePoint(lm.getRightEye()),
+            lm.getNose()[3]
+          ];
+        };
+        srcImg.src = dataURL;
+      };
+      input.click();
+    });
+
+    // 4) Main loop: detect live face, compute transform, draw
+    async function swapLoop() {
+      const size = { width: video.width, height: video.height };
+      faceapi.matchDimensions(canvas, size);
+
+      setInterval(async () => {
+        if (!srcImg || !srcPts) return;
+        const det = await faceapi
+          .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
+          .withFaceLandmarks();
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (!det) return;
+        const lm = det.landmarks;
+        const dstPts = [
+          averagePoint(lm.getLeftEye()),
+          averagePoint(lm.getRightEye()),
+          lm.getNose()[3]
+        ];
+        const M = getAffineTransform(srcPts, dstPts);
+        ctx.save();
+        ctx.setTransform(M.a, M.b, M.c, M.d, M.e, M.f);
+        ctx.drawImage(srcImg, 0, 0);
+        ctx.restore();
+      }, 100);
     }
-  };
-  timer();
-}
 
-function bypassLock() {
-  if (document.getElementById('bypassInput').value === bypassCode) {
-    lockActive = false;
-    document.getElementById('lockscreen').classList.add('hidden');
-    showVerification();
-    alert("Bypass Successful");
-  } else {
-    alert("Wrong Code!");
-  }
-}
-
-function showVerification() {
-  document.getElementById('setup').classList.add('hidden');
-  document.getElementById('verification').classList.remove('hidden');
-  document.getElementById('verifyJobName').innerText = `Job: ${jobName}`;
-}
-
-function submitTask() {
-  const input = document.getElementById('taskInput').value.trim();
-  if (input.length < 5) {
-    alert("Please write more!");
-    return;
-  }
-  if (stringSimilarity(expectedAnswer, input) >= 0.7) {
-    alert("Task Verified! Good job!");
-    location.reload();
-  } else {
-    alert("Answer not matched enough. Try again.");
-  }
-}
-
-function stringSimilarity(a,b) {
-  const w1 = a.toLowerCase().split(/\s+/);
-  const w2 = b.toLowerCase().split(/\s+/);
-  let matches=0;
-  w1.forEach(w=>{if(w2.includes(w))matches++;});
-  return matches / Math.max(w1.length,w2.length);
-}
-
+    // Helpers
+    function averagePoint(arr) {
+      const sum = arr.reduce((a, p) => ({ x: a.x + p.x, y: a.y + p.y }), { x: 0, y: 0 });
+      return { x: sum.x / arr.length, y: sum.y / arr.length };
+    }
+    function getAffineTransform(src, dst) {
+      const [x0,y0,x1,y1,x2,y2,u0,v0,u1,v1,u2,v2] =
+        [src[0].x,src[0].y,src[1].x,src[1].y,src[2].x,src[2].y,
+         dst[0].x,dst[0].y,dst[1].x,dst[1].y,dst[2].x,dst[2].y];
+      const denom = x0*(y1-y2)+x1*(y2-y0)+x2*(y0-y1);
+      const a = (u0*(y1-y2)+u1*(y2-y0)+u2*(y0-y1))/denom;
+      const b = (v0*(y1-y2)+v1*(y2-y0)+v2*(y0-y1))/denom;
+      const c = (u0*(x2-x1)+u1*(x0-x2)+u2*(x1-x0))/denom;
+      const d = (v0*(x2-x1)+v1*(x0-x2)+v2*(x1-x0))/denom;
+      const e = (u0*(x1*y2-x2*y1)+u1*(x2*y0-x0*y2)+u2*(x0*y1-x1*y0))/denom;
+      const f = (v0*(x1*y2-x2*y1)+v1*(x2*y0-x0*y2)+v2*(x0*y1-x1*y0))/denom;
+      return {a,b,c,d,e,f};
+    }
   </script>
 </body>
 </html>
