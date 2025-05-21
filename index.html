@@ -3,25 +3,195 @@
 <head>
   <meta charset="UTF-8">
   <title>Live Face Swap Filter v1.2</title>
-  <meta name="viewport" content="width=640, initial-scale=1, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
   <style>
-    /* ... (your existing styles) ... */
+    html, body {
+      margin: 0; padding: 0;
+      background: #181a1b;
+      font-family: sans-serif;
+      color: #fff;
+      height: 100%;
+      min-height: 100%;
+      box-sizing: border-box;
+    }
+    body {
+      min-height: 100vh;
+      min-width: 100vw;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: stretch;
+    }
+    #topbar {
+      width: 100%;
+      background: rgba(30,30,30,0.96);
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      box-sizing: border-box;
+      min-width: 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+    }
+    #uploadBtn {
+      padding: 8px 18px;
+      background: #00b894;
+      border: none;
+      color: #fff;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 15px;
+      margin-right: 10px;
+      transition: background .2s;
+    }
+    #uploadBtn:hover { background: #019875; }
+    #status {
+      font-size: 14px;
+      color: #00b894;
+      margin-left: 15px;
+    }
+    #privacy {
+      font-size: 14px;
+      color: #b2bec3;
+      margin-left: 15px;
+    }
+    #container {
+      position: relative;
+      width: 100vw;
+      max-width: 640px;
+      aspect-ratio: 4/3;
+      margin: 80px auto 0 auto;
+      box-shadow: 0 4px 18px #000a;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #23272b;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    video, canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      border-radius: 10px;
+      object-fit: cover;
+      max-width: 100vw;
+      max-height: 100vw;
+      pointer-events: none;
+      /* Prevent interaction */
+    }
+    #footer {
+      text-align: center;
+      color: #636e72;
+      font-size: 13px;
+      margin-top: 36px;
+      margin-bottom: 16px;
+    }
+    .loading {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      background: rgba(0,0,0,0.7);
+      padding: 15px 25px;
+      border-radius: 5px;
+      z-index: 100;
+    }
+    @media (max-width: 700px) {
+      #container {
+        width: 98vw;
+        max-width: 100vw;
+        aspect-ratio: 4/3;
+        margin-top: 65px;
+      }
+      #topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 8px 6vw 8px 6vw;
+        font-size: 90%;
+      }
+    }
+    @media (max-width: 480px) {
+      #container {
+        margin-top: 50px;
+        border-radius: 0;
+      }
+      #topbar {
+        padding: 8px 2vw 8px 2vw;
+      }
+      #footer {
+        margin-top: 16px;
+        font-size: 11px;
+      }
+    }
   </style>
 </head>
 <body>
-  <!-- ... (your existing HTML structure) ... -->
-  <!-- Face-API -->
+  <div id="topbar">
+    <div>
+      <button id="uploadBtn">Upload Source Face</button>
+      <span id="status">Ready to start...</span>
+      <span id="privacy">
+        <b>Privacy:</b> All processing is 100% local. No image or video leaves your device.
+      </span>
+    </div>
+    <span style="font-weight:bold; letter-spacing:1px; font-size:15px; margin-top: 6px;">Live Face Swap Filter</span>
+  </div>
+  <div id="container">
+    <div id="loading" class="loading" style="display:none;">Loading models...</div>
+    <video id="video" autoplay muted playsinline></video>
+    <canvas id="overlay"></canvas>
+  </div>
+  <div id="footer">
+    &copy; 2025 Live Face Swap Filter &mdash; Created by @thepawkit
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
   <script>
-    // ... (your existing JS) ...
-    // Replace just the modelUrl:
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('overlay');
+    const ctx = canvas.getContext('2d');
+    const statusEl = document.getElementById('status');
+    const loadingEl = document.getElementById('loading');
+    let srcImg = null, srcPts = null;
+    let isModelLoaded = false;
+
+    function updateStatus(message, isError = false) {
+      statusEl.style.color = isError ? '#ff6b6b' : '#00b894';
+      statusEl.textContent = message;
+      console.log(isError ? 'Error:' : 'Status:', message);
+    }
+
+    function resizeElements() {
+      // Maintain 4:3 aspect ratio, fit to container
+      const container = document.getElementById('container');
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+      video.width = canvas.width = width;
+      video.height = canvas.height = height;
+    }
+
+    window.addEventListener('resize', resizeElements);
+
     window.onload = async () => {
+      resizeElements();
       loadingEl.style.display = 'block';
       updateStatus('Requesting camera access...');
 
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } }
+          video: {
+            facingMode: "user",
+            width: { ideal: 640 },
+            height: { ideal: 480 }
+          }
         });
         video.srcObject = stream;
         updateStatus('Camera started successfully');
@@ -31,7 +201,7 @@
         return;
       }
 
-      // 2) Load models (use local weights folder)
+      // Load models from local weights folder
       try {
         updateStatus('Loading face detection models...');
         const modelUrl = './weights';
@@ -45,10 +215,124 @@
         video.addEventListener('play', swapLoop);
       } catch (err) {
         updateStatus('Error loading models: ' + err.message, true);
-        alert('Error loading face detection models. Please check your internet connection and reload.');
+        alert('Error loading face detection models. Please check your connection or weights folder.');
       }
     };
-    // ... (rest of code the same) ...
+
+    document.getElementById('uploadBtn').addEventListener('click', () => {
+      if (!isModelLoaded) {
+        updateStatus('Please wait for models to load...', true);
+        return;
+      }
+      const input = document.createElement('input');
+      input.type = "file";
+      input.accept = "image/*";
+      input.onchange = async e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        updateStatus('Processing uploaded image...');
+        try {
+          const dataURL = await new Promise(res => {
+            const r = new FileReader();
+            r.onload = () => res(r.result);
+            r.readAsDataURL(file);
+          });
+          srcImg = new Image();
+          srcImg.onload = async () => {
+            try {
+              updateStatus('Detecting face in uploaded image...');
+              const det = await faceapi
+                .detectSingleFace(srcImg, new faceapi.TinyFaceDetectorOptions())
+                .withFaceLandmarks();
+              if (!det) {
+                updateStatus('No face found in uploaded image. Please try another photo.', true);
+                srcImg = null;
+                return;
+              }
+              const lm = det.landmarks;
+              srcPts = [
+                averagePoint(lm.getLeftEye()),
+                averagePoint(lm.getRightEye()),
+                lm.getNose()[3]
+              ];
+              updateStatus('Source face ready! Face swap active.');
+            } catch (err) {
+              updateStatus('Error processing source image: ' + err.message, true);
+              srcImg = null;
+            }
+          };
+          srcImg.src = dataURL;
+        } catch (err) {
+          updateStatus('Error reading uploaded file: ' + err.message, true);
+        }
+      };
+      input.click();
+    });
+
+    async function swapLoop() {
+      resizeElements();
+      const size = { width: video.width, height: video.height };
+      faceapi.matchDimensions(canvas, size);
+
+      let lastDrawTime = 0;
+      const minDrawInterval = 50;
+
+      async function processFrame() {
+        const now = Date.now();
+        if (now - lastDrawTime < minDrawInterval) {
+          requestAnimationFrame(processFrame);
+          return;
+        }
+        lastDrawTime = now;
+        if (!srcImg || !srcPts) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          requestAnimationFrame(processFrame);
+          return;
+        }
+        try {
+          const det = await faceapi
+            .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
+            .withFaceLandmarks();
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          if (det) {
+            const lm = det.landmarks;
+            const dstPts = [
+              averagePoint(lm.getLeftEye()),
+              averagePoint(lm.getRightEye()),
+              lm.getNose()[3]
+            ];
+            const M = getAffineTransform(srcPts, dstPts);
+            ctx.save();
+            ctx.globalAlpha = 0.9;
+            ctx.setTransform(M.a, M.b, M.c, M.d, M.e, M.f);
+            ctx.drawImage(srcImg, 0, 0, canvas.width, canvas.height);
+            ctx.restore();
+          }
+        } catch (err) {
+          console.error('Frame processing error:', err);
+        }
+        requestAnimationFrame(processFrame);
+      }
+      processFrame();
+    }
+
+    function averagePoint(arr) {
+      const sum = arr.reduce((a, p) => ({ x: a.x + p.x, y: a.y + p.y }), { x: 0, y: 0 });
+      return { x: sum.x / arr.length, y: sum.y / arr.length };
+    }
+    function getAffineTransform(src, dst) {
+      const [x0,y0,x1,y1,x2,y2,u0,v0,u1,v1,u2,v2] =
+        [src[0].x,src[0].y,src[1].x,src[1].y,src[2].x,src[2].y,
+         dst[0].x,dst[0].y,dst[1].x,dst[1].y,dst[2].x,dst[2].y];
+      const denom = x0*(y1-y2)+x1*(y2-y0)+x2*(y0-y1);
+      const a = (u0*(y1-y2)+u1*(y2-y0)+u2*(y0-y1))/denom;
+      const b = (v0*(y1-y2)+v1*(y2-y0)+v2*(y0-y1))/denom;
+      const c = (u0*(x2-x1)+u1*(x0-x2)+u2*(x1-x0))/denom;
+      const d = (v0*(x2-x1)+v1*(x0-x2)+v2*(x1-x0))/denom;
+      const e = (u0*(x1*y2-x2*y1)+u1*(x2*y0-x0*y2)+u2*(x0*y1-x1*y0))/denom;
+      const f = (v0*(x1*y2-x2*y1)+v1*(x2*y0-x0*y2)+v2*(x0*y1-x1*y0))/denom;
+      return {a,b,c,d,e,f};
+    }
   </script>
 </body>
 </html>
