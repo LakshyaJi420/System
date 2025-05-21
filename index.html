@@ -91,10 +91,10 @@
     window.onload = async () => {
       loadingEl.style.display = 'block';
       updateStatus('Requesting camera access...');
-      
+
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ 
-          video: { 
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: {
             facingMode: "user",
             width: { ideal: 640 },
             height: { ideal: 480 }
@@ -111,9 +111,10 @@
       // 2) Load models
       try {
         updateStatus('Loading face detection models...');
+        const modelUrl = 'https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights';
         await Promise.all([
-          faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights'),
-          faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights')
+          faceapi.nets.tinyFaceDetector.loadFromUri(modelUrl),
+          faceapi.nets.faceLandmark68Net.loadFromUri(modelUrl)
         ]);
         isModelLoaded = true;
         loadingEl.style.display = 'none';
@@ -138,9 +139,9 @@
       input.onchange = async e => {
         const file = e.target.files[0];
         if (!file) return;
-        
+
         updateStatus('Processing uploaded image...');
-        
+
         try {
           const dataURL = await new Promise(res => {
             const r = new FileReader();
@@ -155,7 +156,7 @@
               const det = await faceapi
                 .detectSingleFace(srcImg, new faceapi.TinyFaceDetectorOptions())
                 .withFaceLandmarks();
-              
+
               if (!det) {
                 updateStatus('No face found in uploaded image. Please try another photo.', true);
                 srcImg = null;
@@ -207,9 +208,9 @@
           const det = await faceapi
             .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
             .withFaceLandmarks();
-          
+
           ctx.clearRect(0, 0, canvas.width, canvas.height);
-          
+
           if (det) {
             const lm = det.landmarks;
             const dstPts = [
@@ -217,7 +218,7 @@
               averagePoint(lm.getRightEye()),
               lm.getNose()[3]
             ];
-            
+
             const M = getAffineTransform(srcPts, dstPts);
             ctx.save();
             ctx.globalAlpha = 0.9; // Slightly transparent for better blending
