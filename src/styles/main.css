@@ -1,0 +1,247 @@
+:root {
+    --primary-color: #4a90e2;
+    --secondary-color: #2c3e50;
+    --background-color: #1a1a1a;
+    --text-color: #ffffff;
+    --border-radius: 8px;
+    --menu-background: rgba(0, 0, 0, 0.8);
+    --modal-background: rgba(0, 0, 0, 0.9);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    overflow: hidden;
+}
+
+#game-container {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+}
+
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--background-color);
+}
+
+/* Loading Screen */
+#loading-screen {
+    z-index: 1000;
+    background-color: var(--background-color);
+}
+
+.loader {
+    width: 50px;
+    height: 50px;
+    border: 5px solid var(--primary-color);
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Auth Screen */
+.auth-container {
+    background-color: var(--menu-background);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+/* Main Menu */
+.menu-container {
+    background-color: var(--menu-background);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    width: 100%;
+    max-width: 500px;
+}
+
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+/* Game Screen */
+#game-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#game-ui {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.top-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+    pointer-events: auto;
+}
+
+.player-stats {
+    display: flex;
+    gap: 2rem;
+}
+
+.game-controls {
+    display: flex;
+    gap: 1rem;
+}
+
+.chat-container {
+    position: absolute;
+    bottom: 1rem;
+    left: 1rem;
+    width: 300px;
+    height: 200px;
+    background-color: var(--modal-background);
+    border-radius: var(--border-radius);
+    pointer-events: auto;
+}
+
+#chat-messages {
+    height: calc(100% - 40px);
+    overflow-y: auto;
+    padding: 1rem;
+}
+
+.chat-input {
+    height: 40px;
+    display: flex;
+    padding: 0.5rem;
+    gap: 0.5rem;
+}
+
+.minimap {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    width: 200px;
+    height: 200px;
+    background-color: var(--modal-background);
+    border-radius: var(--border-radius);
+    pointer-events: auto;
+}
+
+/* Modals */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: var(--modal-background);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    width: 90%;
+    max-width: 500px;
+}
+
+/* Common Elements */
+button {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: var(--border-radius);
+    background-color: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #357abd;
+}
+
+input[type="text"],
+input[type="password"] {
+    padding: 0.8rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--border-radius);
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 1rem;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .top-bar {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .player-stats {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .chat-container {
+        width: calc(100% - 2rem);
+        height: 150px;
+    }
+
+    .minimap {
+        width: 150px;
+        height: 150px;
+    }
+}
