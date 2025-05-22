@@ -13,7 +13,10 @@
             <div class="modal-content">
                 <h2>Welcome to Territory Game</h2>
                 <input type="text" id="username" placeholder="Enter your username" required>
-                <button id="start-game">Start Game</button>
+                <input type="password" id="password" placeholder="Password (optional)">
+                <button id="play-guest">Play as Guest</button>
+                <button id="login">Login</button>
+                <button id="register">Register</button>
             </div>
         </div>
 
@@ -37,6 +40,15 @@
         <!-- Game Canvas -->
         <canvas id="game-canvas"></canvas>
 
+        <!-- Chat Container -->
+        <div id="chat-container" class="hidden">
+            <div id="chat-messages"></div>
+            <div class="chat-input-container">
+                <input type="text" id="chat-input" placeholder="Type a message...">
+                <button id="send-message">Send</button>
+            </div>
+        </div>
+
         <!-- Game UI Overlay -->
         <div id="game-ui" class="hidden">
             <div class="game-stats">
@@ -58,8 +70,9 @@
     </div>
 
     <script src="js/game.js"></script>
-    <script src="js/multiplayer.js"></script>
     <script src="js/ui.js"></script>
+    <script src="js/multiplayer.js"></script>
+    <script src="js/auth.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>
