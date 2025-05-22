@@ -3,13 +3,13 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - mainh  # Change this to match your default branch name
+      - mainh
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # Add this to grant write permissions
+      contents: write
     steps:
       - uses: actions/checkout@v2
 
@@ -19,3 +19,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./src
           publish_branch: gh-pages
+          force_orphan: true
