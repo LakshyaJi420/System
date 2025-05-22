@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - mainh
+      - mainh  # Your default branch
 
 jobs:
   deploy:
@@ -11,7 +11,14 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
@@ -20,3 +27,7 @@ jobs:
           publish_dir: ./src
           publish_branch: gh-pages
           force_orphan: true
+          enable_jekyll: false
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: 'Deploy to GitHub Pages'
