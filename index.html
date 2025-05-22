@@ -1,201 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Snapchat-Style Face Swap</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-  <style>
-    html, body {
-      margin: 0; padding: 0;
-      background: #1a1b1c;
-      color: #fff;
-      font-family: sans-serif;
-      min-height: 100vh;
-    }
-    #topbar {
-      position: fixed; width: 100%; left: 0; top: 0; z-index: 10;
-      background: #222b;
-      padding: 10px 0; text-align: center;
-      font-size: 1.2em; font-weight: bold;
-      letter-spacing: 1px;
-    }
-    #controls {
-      margin-top: 55px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 12px;
-    }
-    #uploadBtn {
-      background: #00b894;
-      color: #fff;
-      border: none;
-      padding: 8px 18px;
-      border-radius: 4px;
-      font-size: 1em;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    #status {
-      color: #00b894;
-      font-size: 1em;
-    }
-    #container {
-      width: 98vw; max-width: 600px;
-      aspect-ratio: 4/3;
-      margin: 28px auto 0 auto;
-      background: #222;
-      border-radius: 10px;
-      overflow: hidden;
-      position: relative;
-      box-shadow: 0 4px 18px #000a;
-    }
-    video, canvas {
-      position: absolute;
-      left: 0; top: 0; width: 100%; height: 100%;
-      object-fit: cover;
-      border-radius: 10px;
-    }
-    #footer {
-      text-align: center;
-      color: #aaa;
-      font-size: 13px;
-      margin: 36px 0 12px 0;
-    }
-    @media (max-width: 650px) {
-      #container { max-width: 100vw; }
-      #topbar { font-size: 1em; }
-    }
-    @media (max-width: 480px) {
-      #container { margin-top: 14vw; border-radius: 0; }
-      #footer { margin-top: 16px; font-size: 11px; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Territory Game</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-app.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-database.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-auth.js" defer></script>
 </head>
 <body>
-  <div id="topbar">Snapchat-Style Face Swap Filter</div>
-  <div id="controls">
-    <button id="uploadBtn">Upload Face</button>
-    <span id="status">Waiting for face...</span>
-  </div>
-  <div id="container">
-    <video id="video" autoplay muted playsinline></video>
-    <canvas id="overlay"></canvas>
-  </div>
-  <div id="footer">All processing is local. No webcam data leaves your device.</div>
-  <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
-  <script>
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('overlay');
-    const ctx = canvas.getContext('2d');
-    const statusEl = document.getElementById('status');
-    let srcImg = null, srcLandmarks = null;
-    let modelsLoaded = false;
+    <div id="game-container">
+        <!-- Login/Register Modal -->
+        <div id="auth-modal" class="modal">
+            <div class="modal-content">
+                <h2>Welcome to Territory Game</h2>
+                <input type="text" id="username" placeholder="Username" required>
+                <input type="password" id="password" placeholder="Password (optional)">
+                <button id="play-guest">Play as Guest</button>
+                <button id="login">Login</button>
+                <button id="register">Register</button>
+            </div>
+        </div>
 
-    function setStatus(msg, err = false) {
-      statusEl.textContent = msg;
-      statusEl.style.color = err ? "#ff5252" : "#00b894";
-    }
+        <!-- Game Menu -->
+        <div id="game-menu">
+            <h1>Territory Game</h1>
+            <div class="menu-buttons">
+                <button id="play-multiplayer">Play Multiplayer</button>
+                <button id="play-singleplayer">Play Single Player</button>
+                <button id="create-private">Create Private Game</button>
+                <div class="share-container">
+                    <button id="share-button" title="Share Game">
+                        <svg viewBox="0 0 24 24" width="24" height="24">
+                            <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92zM18 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM6 13c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm12 7.02c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
 
-    function resizeAll() {
-      const container = document.getElementById('container');
-      video.width = canvas.width = container.clientWidth;
-      video.height = canvas.height = container.clientHeight;
-    }
-    window.addEventListener('resize', resizeAll);
+        <!-- Game Canvas -->
+        <canvas id="game-canvas"></canvas>
 
-    async function setupCamera() {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } }
-        });
-        video.srcObject = stream;
-        setStatus("Camera started.");
-      } catch (err) {
-        setStatus("Camera error: " + err.message, true);
-      }
-    }
+        <!-- Chat Container -->
+        <div id="chat-container" class="hidden">
+            <div id="chat-messages"></div>
+            <div class="chat-input-container">
+                <input type="text" id="chat-input" placeholder="Type a message...">
+                <button id="send-message">Send</button>
+            </div>
+        </div>
 
-    async function loadModels() {
-      setStatus("Loading models...");
-      const modelUrl = "./weights";
-      await faceapi.nets.tinyFaceDetector.loadFromUri(modelUrl);
-      await faceapi.nets.faceLandmark68Net.loadFromUri(modelUrl);
-      modelsLoaded = true;
-      setStatus("Models loaded. Upload a face!");
-    }
+        <!-- Game UI Overlay -->
+        <div id="game-ui" class="hidden">
+            <div class="game-stats">
+                <span id="territory-size">Territory: 0%</span>
+                <span id="player-count">Players: 1</span>
+            </div>
+            <button id="exit-game">Exit Game</button>
+        </div>
+    </div>
 
-    document.getElementById('uploadBtn').onclick = () => {
-      if (!modelsLoaded) return setStatus("Wait for models!", true);
-      const input = document.createElement('input');
-      input.type = "file";
-      input.accept = "image/*";
-      input.onchange = async e => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const img = new Image();
-        img.onload = async () => {
-          // Detect landmarks on uploaded face
-          const det = await faceapi.detectSingleFace(img, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
-          if (!det) return setStatus("No face found in uploaded image.", true);
-          srcImg = img;
-          srcLandmarks = det.landmarks;
-          setStatus("Face uploaded! Move your face into view.");
-        };
-        img.src = URL.createObjectURL(file);
-      };
-      input.click();
-    };
-
-    async function renderLoop() {
-      resizeAll();
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      if (modelsLoaded && srcImg && srcLandmarks) {
-        const det = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
-        if (det) {
-          // Map source face to user face
-          const srcPts = srcLandmarks.getPositions();
-          const dstPts = det.landmarks.getPositions();
-          // We'll use eyes and nose tip for a fast affine transform
-          const srcTri = [srcPts[36], srcPts[45], srcPts[33]]; // left eye, right eye, nose
-          const dstTri = [dstPts[36], dstPts[45], dstPts[33]];
-          // Compute affine transform
-          const M = getAffineTransform(srcTri, dstTri);
-          ctx.save();
-          ctx.globalAlpha = 0.92;
-          ctx.setTransform(M.a, M.b, M.c, M.d, M.e, M.f);
-          ctx.drawImage(srcImg, 0, 0, canvas.width, canvas.height);
-          ctx.restore();
-          setStatus("Face swap active!");
-        } else {
-          setStatus("Move your face into view.");
-        }
-      }
-      requestAnimationFrame(renderLoop);
-    }
-
-    // Affine transform helper (maps 3 points from src to dst)
-    function getAffineTransform(srcTri, dstTri) {
-      // srcTri/dstTri: [{x,y}, {x,y}, {x,y}]
-      const [x0, y0, x1, y1, x2, y2] = [srcTri[0].x, srcTri[0].y, srcTri[1].x, srcTri[1].y, srcTri[2].x, srcTri[2].y];
-      const [u0, v0, u1, v1, u2, v2] = [dstTri[0].x, dstTri[0].y, dstTri[1].x, dstTri[1].y, dstTri[2].x, dstTri[2].y];
-      const denom = (x0*(y1 - y2) + x1*(y2 - y0) + x2*(y0 - y1));
-      const a = (u0*(y1 - y2) + u1*(y2 - y0) + u2*(y0 - y1)) / denom;
-      const b = (v0*(y1 - y2) + v1*(y2 - y0) + v2*(y0 - y1)) / denom;
-      const c = (u0*(x2 - x1) + u1*(x0 - x2) + u2*(x1 - x0)) / denom;
-      const d = (v0*(x2 - x1) + v1*(x0 - x2) + v2*(x1 - x0)) / denom;
-      const e = (u0*(x1*y2 - x2*y1) + u1*(x2*y0 - x0*y2) + u2*(x0*y1 - x1*y0)) / denom;
-      const f = (v0*(x1*y2 - x2*y1) + v1*(x2*y0 - x0*y2) + v2*(x0*y1 - x1*y0)) / denom;
-      return {a, b, c, d, e, f};
-    }
-
-    window.onload = async () => {
-      resizeAll();
-      await setupCamera();
-      await loadModels();
-      renderLoop();
-    };
-  </script>
+    <!-- Game Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/multiplayer.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="js/ui.js"></script>
 </body>
 </html>
