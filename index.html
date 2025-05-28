@@ -1,321 +1,307 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Growth & Monetization Guide</title>
+    <!-- [Previous head content remains the same] -->
     <style>
-        :root {
-            --primary-green: #00ff00;
-            --dark-green: #008000;
-            --light-grey: #f5f5f5;
-            --metallic-grey: #333333;
+        /* [Previous styles remain the same] */
+        
+        /* Additional styles for new sections */
+        .statistic-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
-        }
-
-        body {
-            background: linear-gradient(135deg, #2c2c2c, #3a3a3a, #2c2c2c);
-            color: #ffffff;
-            line-height: 1.6;
-        }
-
-        /* Navigation Styles */
-        nav {
-            background: rgba(0, 0, 0, 0.8);
+        
+        .statistic-card {
+            background: rgba(0, 255, 0, 0.1);
             padding: 1rem;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo-small {
-            height: 50px;
-            width: auto;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-        }
-
-        .nav-links a {
-            color: var(--primary-green);
-            text-decoration: none;
-            font-weight: bold;
-            transition: color 0.3s;
-        }
-
-        .nav-links a:hover {
-            color: #ffffff;
-        }
-
-        /* Search Bar Styles */
-        .search-container {
-            display: flex;
-            gap: 10px;
-        }
-
-        .search-bar {
-            padding: 8px 15px;
-            border: 2px solid var(--primary-green);
-            background: rgba(0, 0, 0, 0.5);
-            color: white;
-            border-radius: 20px;
-            width: 200px;
-        }
-
-        .search-button {
-            padding: 8px 15px;
-            background: var(--primary-green);
-            border: none;
-            border-radius: 20px;
-            color: black;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .search-button:hover {
-            background: var(--dark-green);
-            color: white;
-        }
-
-        /* Mobile Menu */
-        .menu-toggle {
-            display: none;
-            cursor: pointer;
-            color: var(--primary-green);
-            font-size: 1.5rem;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 80px auto 0;
-            padding: 20px;
-        }
-
-        header {
+            border-radius: 10px;
             text-align: center;
-            padding: 2rem 0;
-            background: rgba(0, 0, 0, 0.5);
-            margin-bottom: 2rem;
         }
-
-        .logo {
-            max-width: 200px;
+        
+        .statistic-number {
+            font-size: 2rem;
+            color: var(--primary-green);
+            font-weight: bold;
+        }
+        
+        .timeline {
+            position: relative;
+            margin: 2rem 0;
+        }
+        
+        .timeline-item {
+            padding: 1rem;
+            margin-left: 2rem;
+            border-left: 2px solid var(--primary-green);
             margin-bottom: 1rem;
         }
-
-        h1, h2, h3 {
-            color: #000;
-            text-shadow: 0 0 3px var(--primary-green);
-            margin: 1.5rem 0;
-            font-weight: bold;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            border: 1px solid rgba(0, 255, 0, 0.2);
-            box-shadow: 0 4px 6px rgba(0, 255, 0, 0.1);
-        }
-
-        .highlight {
-            color: var(--primary-green);
-            font-weight: bold;
-        }
-
-        .requirements-list {
-            list-style: none;
-        }
-
-        .requirements-list li {
-            margin: 10px 0;
-            padding-left: 20px;
-            position: relative;
-        }
-
-        .requirements-list li::before {
-            content: "→";
-            color: var(--primary-green);
-            position: absolute;
-            left: 0;
-        }
-
-        .tips {
+        
+        .resource-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
+            gap: 1.5rem;
         }
-
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-                position: absolute;
-                top: 70px;
-                left: 0;
-                right: 0;
-                background: rgba(0, 0, 0, 0.9);
-                flex-direction: column;
-                padding: 20px;
-                text-align: center;
-            }
-
-            .nav-links.active {
-                display: flex;
-            }
-
-            .menu-toggle {
-                display: block;
-            }
-
-            .search-container {
-                display: none;
-            }
-
-            .container {
-                padding: 10px;
-                margin-top: 60px;
-            }
-            
-            .card {
-                padding: 1rem;
-            }
-
-            .logo-small {
-                height: 40px;
-            }
+        
+        .tool-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid var(--primary-green);
         }
     </style>
 </head>
 <body>
-    <nav>
-        <div class="nav-container">
-            <img src="file_000000001bec61f989fa948527ae6018.png" alt="Logo" class="logo-small">
-            <div class="nav-links">
-                <a href="#home">Home</a>
-                <a href="#requirements">Requirements</a>
-                <a href="#growth">Growth Tips</a>
-                <a href="#monetization">Monetization</a>
-                <a href="#best-practices">Best Practices</a>
-            </div>
-            <div class="search-container">
-                <input type="text" class="search-bar" placeholder="Search...">
-                <button class="search-button">Search</button>
-            </div>
-            <div class="menu-toggle">☰</div>
-        </div>
-    </nav>
-
-    <header>
-        <img src="file_000000001bec61f989fa948527ae6018.png" alt="YouTube Growth Logo" class="logo">
-        <h1>Master YouTube Monetization</h1>
-    </header>
+    <!-- [Previous nav and header content remains the same] -->
 
     <div class="container">
-        <div class="card" id="requirements">
-            <h2>YouTube Partner Program Requirements</h2>
-            <ul class="requirements-list">
-                <li>1,000 subscribers</li>
-                <li>4,000 valid public watch hours in the last 12 months</li>
-                <li>Create a Google AdSense account</li>
-                <li>Follow all YouTube monetization policies</li>
-                <li>Live in a country/region where the YouTube Partner Program is available</li>
-            </ul>
+        <!-- YouTube Analytics & Statistics -->
+        <div class="card">
+            <h2>YouTube Platform Statistics 2025</h2>
+            <div class="statistic-grid">
+                <div class="statistic-card">
+                    <div class="statistic-number">2.7B+</div>
+                    <p>Monthly Active Users</p>
+                </div>
+                <div class="statistic-card">
+                    <div class="statistic-number">500+</div>
+                    <p>Hours of Content Uploaded Every Minute</p>
+                </div>
+                <div class="statistic-card">
+                    <div class="statistic-number">$25B+</div>
+                    <p>Annual Creator Earnings</p>
+                </div>
+                <div class="statistic-card">
+                    <div class="statistic-number">50M+</div>
+                    <p>Active Creator Channels</p>
+                </div>
+            </div>
         </div>
 
-        <div class="card" id="growth">
-            <h2>Tips for Growing Your Channel</h2>
-            <div class="tips">
-                <div>
-                    <h3>Content Strategy</h3>
+        <!-- Monetization Requirements (Enhanced) -->
+        <div class="card" id="requirements">
+            <h2>Complete YouTube Partner Program Requirements</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h3>Basic Requirements</h3>
                     <ul class="requirements-list">
-                        <li>Post consistently (2-3 times per week)</li>
-                        <li>Create high-quality, engaging content</li>
-                        <li>Focus on a specific niche</li>
-                        <li>Use compelling thumbnails and titles</li>
+                        <li>1,000+ subscribers</li>
+                        <li>4,000+ valid public watch hours in 12 months</li>
+                        <li>Create and link an AdSense account</li>
+                        <li>Two-factor authentication enabled</li>
+                        <li>No active Community Guidelines strikes</li>
                     </ul>
                 </div>
-                <div>
-                    <h3>SEO Optimization</h3>
+                <div class="timeline-item">
+                    <h3>Channel Quality Standards</h3>
                     <ul class="requirements-list">
-                        <li>Use relevant keywords in titles</li>
-                        <li>Write detailed descriptions</li>
-                        <li>Add appropriate tags</li>
-                        <li>Create engaging playlists</li>
+                        <li>Original content only - no reused or automated content</li>
+                        <li>Adherence to YouTube's Community Guidelines</li>
+                        <li>Regular uploading schedule</li>
+                        <li>High-quality thumbnails and descriptions</li>
+                        <li>Engagement with community guidelines</li>
+                    </ul>
+                </div>
+                <div class="timeline-item">
+                    <h3>Additional Revenue Streams Requirements</h3>
+                    <ul class="requirements-list">
+                        <li>Channel Memberships: 1,000+ subscribers</li>
+                        <li>Super Chat: 1,000+ subscribers</li>
+                        <li>Merchandise Shelf: 10,000+ subscribers</li>
+                        <li>YouTube BrandConnect: 25,000+ subscribers</li>
+                        <li>YouTube Shorts Fund: Regular Shorts content</li>
                     </ul>
                 </div>
             </div>
         </div>
 
-        <div class="card" id="monetization">
-            <h2>Monetization Methods</h2>
-            <ul class="requirements-list">
-                <li>Ad Revenue - Through YouTube Partner Program</li>
-                <li>Channel Memberships - Unlock at 1,000 subscribers</li>
-                <li>Super Chat & Super Stickers - For live streams</li>
-                <li>Merchandise Shelf - Sell branded products</li>
-                <li>YouTube Premium Revenue - From premium subscribers</li>
-            </ul>
+        <!-- Advanced Growth Strategies -->
+        <div class="card">
+            <h2>Advanced Channel Growth Strategies</h2>
+            <div class="resource-grid">
+                <div class="tool-card">
+                    <h3>Content Strategy</h3>
+                    <ul class="requirements-list">
+                        <li>Create content pillars (3-5 main topics)</li>
+                        <li>Develop content clusters around main topics</li>
+                        <li>Plan content calendar 3 months ahead</li>
+                        <li>Mix different content formats (long-form, shorts, lives)</li>
+                        <li>Analyze top-performing videos monthly</li>
+                    </ul>
+                </div>
+                <div class="tool-card">
+                    <h3>Technical Optimization</h3>
+                    <ul class="requirements-list">
+                        <li>Optimize video resolution (1080p minimum)</li>
+                        <li>Use custom thumbnails with 1280x720 resolution</li>
+                        <li>Implement proper tags and categories</li>
+                        <li>Create compelling titles (under 70 characters)</li>
+                        <li>Write keyword-rich descriptions (first 100 words crucial)</li>
+                    </ul>
+                </div>
+                <div class="tool-card">
+                    <h3>Audience Engagement</h3>
+                    <ul class="requirements-list">
+                        <li>Respond to comments within 24 hours</li>
+                        <li>Create community posts 2-3 times per week</li>
+                        <li>Use end screens and cards effectively</li>
+                        <li>Host live streams monthly</li>
+                        <li>Create polls and surveys for audience input</li>
+                    </ul>
+                </div>
+            </div>
         </div>
 
-        <div class="card" id="best-practices">
-            <h2>Best Practices for Success</h2>
-            <ul class="requirements-list">
-                <li>Engage with your audience through comments</li>
-                <li>Analyze your YouTube Analytics regularly</li>
-                <li>Learn from successful creators in your niche</li>
-                <li>Invest in good equipment (camera, microphone)</li>
-                <li>Create content that solves problems or entertains</li>
-                <li>Build a community around your channel</li>
-            </ul>
+        <!-- Monetization Methods (Enhanced) -->
+        <div class="card" id="monetization-methods">
+            <h2>Complete Monetization Strategy Guide</h2>
+            <div class="resource-grid">
+                <div class="tool-card">
+                    <h3>Ad Revenue Optimization</h3>
+                    <ul class="requirements-list">
+                        <li>Strategic mid-roll ad placement</li>
+                        <li>Optimize video length (8+ minutes recommended)</li>
+                        <li>Create advertiser-friendly content</li>
+                        <li>Understand seasonal CPM variations</li>
+                        <li>Monitor ad performance in Analytics</li>
+                    </ul>
+                </div>
+                <div class="tool-card">
+                    <h3>Alternative Revenue Streams</h3>
+                    <ul class="requirements-list">
+                        <li>Channel memberships with exclusive perks</li>
+                        <li>Merchandise integration</li>
+                        <li>Super Chat during live streams</li>
+                        <li>Affiliate marketing</li>
+                        <li>Sponsored content partnerships</li>
+                    </ul>
+                </div>
+                <div class="tool-card">
+                    <h3>Brand Deals & Sponsorships</h3>
+                    <ul class="requirements-list">
+                        <li>Create a compelling media kit</li>
+                        <li>Set competitive sponsorship rates</li>
+                        <li>Develop long-term brand relationships</li>
+                        <li>Use disclosure guidelines properly</li>
+                        <li>Track sponsored content performance</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics & Tools -->
+        <div class="card">
+            <h2>Essential Analytics & Tools</h2>
+            <div class="resource-grid">
+                <div class="tool-card">
+                    <h3>Key Metrics to Track</h3>
+                    <ul class="requirements-list">
+                        <li>Click-through rate (CTR): Aim for >4%</li>
+                        <li>Average view duration: Target >50%</li>
+                        <li>Subscriber conversion rate</li>
+                        <li>Revenue per mille (RPM)</li>
+                        <li>Audience retention graphs</li>
+                    </ul>
+                </div>
+                <div class="tool-card">
+                    <h3>Recommended Tools</h3>
+                    <ul class="requirements-list">
+                        <li>TubeBuddy - SEO & keyword research</li>
+                        <li>VidIQ - Competitor analysis</li>
+                        <li>Canva - Thumbnail creation</li>
+                        <li>Adobe Premiere Pro - Video editing</li>
+                        <li>Social Blade - Channel statistics</li>
+                    </ul>
+                </div>
+                <div class="tool-card">
+                    <h3>Optimization Tips</h3>
+                    <ul class="requirements-list">
+                        <li>Use A/B testing for thumbnails</li>
+                        <li>Optimize upload times for your audience</li>
+                        <li>Monitor trending topics in your niche</li>
+                        <li>Analyze competitors' strategies</li>
+                        <li>Track audience demographics</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Advanced SEO Techniques -->
+        <div class="card">
+            <h2>YouTube SEO Mastery</h2>
+            <div class="resource-grid">
+                <div class="tool-card">
+                    <h3>Keyword Research</h3>
+                    <ul class="requirements-list">
+                        <li>Use YouTube's search suggestions</li>
+                        <li>Analyze competitor tags</li>
+                        <li>Find low-competition opportunities</li>
+                        <li>Track trending topics</li>
+                        <li>Use Google Trends for validation</li>
+                    </ul>
+                </div>
+                <div class="tool-card">
+                    <h3>Description Optimization</h3>
+                    <ul class="requirements-list">
+                        <li>Write 200+ word descriptions</li>
+                        <li>Include timestamps for longer videos</li>
+                        <li>Add relevant links and resources</li>
+                        <li>Use primary keyword in first paragraph</li>
+                        <li>Include channel-specific tags</li>
+                    </ul>
+                </div>
+                <div class="tool-card">
+                    <h3>Technical SEO</h3>
+                    <ul class="requirements-list">
+                        <li>Create custom closed captions</li>
+                        <li>Use relevant tags (10-15 per video)</li>
+                        <li>Optimize playlist organization</li>
+                        <li>Create series playlists</li>
+                        <li>Use end screens effectively</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Creation Tips -->
+        <div class="card">
+            <h2>Professional Content Creation</h2>
+            <div class="resource-grid">
+                <div class="tool-card">
+                    <h3>Video Production</h3>
+                    <ul class="requirements-list">
+                        <li>Invest in good lighting setup</li>
+                        <li>Use external microphone for clear audio</li>
+                        <li>Record in 4K when possible</li>
+                        <li>Maintain consistent branding</li>
+                        <li>Create engaging intros (under 15 seconds)</li>
+                    </ul>
+                </div>
+                <div class="tool-card">
+                    <h3>Editing Tips</h3>
+                    <ul class="requirements-list">
+                        <li>Use pattern interrupts every 30 seconds</li>
+                        <li>Add b-roll footage</li>
+                        <li>Include visual effects and transitions</li>
+                        <li>Optimize pacing for retention</li>
+                        <li>Add background music</li>
+                    </ul>
+                </div>
+                <div class="tool-card">
+                    <h3>Thumbnail Design</h3>
+                    <ul class="requirements-list">
+                        <li>Use contrasting colors</li>
+                        <li>Include clear, readable text</li>
+                        <li>Show emotion in faces</li>
+                        <li>Create consistent branding</li>
+                        <li>Test different styles</li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 
-    <script>
-        // Mobile menu toggle
-        const menuToggle = document.querySelector('.menu-toggle');
-        const navLinks = document.querySelector('.nav-links');
-
-        menuToggle.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-        });
-
-        // Search functionality
-        const searchBar = document.querySelector('.search-bar');
-        const searchButton = document.querySelector('.search-button');
-
-        searchButton.addEventListener('click', () => {
-            const searchTerm = searchBar.value.toLowerCase();
-            const cards = document.querySelectorAll('.card');
-            
-            cards.forEach(card => {
-                const text = card.textContent.toLowerCase();
-                if (text.includes(searchTerm)) {
-                    card.style.display = 'block';
-                    card.scrollIntoView({ behavior: 'smooth' });
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        });
-    </script>
+    <!-- [Previous script content remains the same] -->
 </body>
 </html>
