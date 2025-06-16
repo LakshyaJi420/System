@@ -1,307 +1,657 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- [Previous head content remains the same] -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thunder Streaming</title>
     <style>
-        /* [Previous styles remain the same] */
-        
-        /* Additional styles for new sections */
-        .statistic-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-            margin: 1rem 0;
+        :root {
+            --thunder-dark: #0a0a1a;
+            --thunder-darker: #050510;
+            --thunder-blue: #1e88e5;
+            --thunder-lightning: #4fc3f7;
+            --thunder-text: #e0e0e0;
+            --thunder-text-dim: #b0b0b0;
         }
         
-        .statistic-card {
-            background: rgba(0, 255, 0, 0.1);
-            padding: 1rem;
-            border-radius: 10px;
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--thunder-dark);
+            color: var(--thunder-text);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(to right, var(--thunder-darker), var(--thunder-dark));
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
             text-align: center;
+            border-bottom: 2px solid var(--thunder-blue);
+            position: relative;
+            overflow: hidden;
         }
         
-        .statistic-number {
-            font-size: 2rem;
-            color: var(--primary-green);
+        header::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(to right, 
+                transparent, 
+                var(--thunder-lightning), 
+                transparent);
+            animation: lightning 8s infinite;
+        }
+        
+        @keyframes lightning {
+            0%, 100% { opacity: 0; }
+            2% { opacity: 1; }
+            4% { opacity: 0; }
+            50% { opacity: 0; }
+            52% { opacity: 0.5; }
+            54% { opacity: 0; }
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            background: linear-gradient(to right, var(--thunder-lightning), var(--thunder-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(31, 136, 229, 0.3);
+        }
+        
+        .tagline {
+            font-size: 0.9em;
+            color: var(--thunder-lightning);
+            letter-spacing: 1px;
+            margin-top: 5px;
+        }
+        
+        .search-container {
+            display: flex;
+            margin: 30px 0;
+            box-shadow: 0 0 15px rgba(31, 136, 229, 0.2);
+            border-radius: 50px;
+            overflow: hidden;
+        }
+        
+        #search-input {
+            flex: 1;
+            padding: 15px 25px;
+            font-size: 16px;
+            border: none;
+            background-color: rgba(10, 10, 26, 0.8);
+            color: var(--thunder-text);
+            border: 1px solid var(--thunder-blue);
+            border-right: none;
+        }
+        
+        #search-input:focus {
+            outline: none;
+            background-color: rgba(20, 20, 40, 0.8);
+        }
+        
+        #search-button {
+            padding: 15px 30px;
+            background: linear-gradient(to right, var(--thunder-blue), var(--thunder-lightning));
+            color: white;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        #search-button:hover {
+            background: linear-gradient(to right, var(--thunder-lightning), var(--thunder-blue));
+        }
+        
+        .categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+        
+        .category-btn {
+            padding: 10px 20px;
+            background-color: rgba(30, 136, 229, 0.1);
+            border: 1px solid var(--thunder-blue);
+            border-radius: 50px;
+            cursor: pointer;
+            color: var(--thunder-text);
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .category-btn:hover, .category-btn.active {
+            background-color: var(--thunder-blue);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(31, 136, 229, 0.3);
+        }
+        
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 25px;
+        }
+        
+        .movie-card {
+            background: linear-gradient(to bottom, #151530, #0a0a1a);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            position: relative;
+            border: 1px solid rgba(31, 136, 229, 0.2);
+        }
+        
+        .movie-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(31, 136, 229, 0.2);
+            border-color: var(--thunder-blue);
+        }
+        
+        .movie-poster {
+            width: 100%;
+            height: 330px;
+            object-fit: cover;
+            border-bottom: 1px solid rgba(31, 136, 229, 0.2);
+        }
+        
+        .movie-info {
+            padding: 15px;
+        }
+        
+        .movie-title {
+            margin: 0;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .movie-year {
+            color: var(--thunder-lightning);
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        .movie-card:hover .movie-title {
+            color: var(--thunder-lightning);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-content {
+            background: linear-gradient(to bottom, #151530, #0a0a1a);
+            margin: 2% auto;
+            padding: 25px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 1000px;
+            border: 1px solid var(--thunder-blue);
+            box-shadow: 0 0 30px rgba(31, 136, 229, 0.3);
+            position: relative;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 30px;
+            font-weight: bold;
+            color: var(--thunder-text-dim);
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+        
+        .close-modal:hover {
+            color: var(--thunder-lightning);
+            transform: rotate(90deg);
+        }
+        
+        .player-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            margin-top: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #000;
+        }
+        
+        .player-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .source-selector {
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .source-selector label {
+            font-weight: bold;
+            color: var(--thunder-lightning);
+        }
+        
+        #source-select {
+            flex: 1;
+            padding: 10px 15px;
+            background-color: rgba(10, 10, 26, 0.8);
+            border: 1px solid var(--thunder-blue);
+            color: var(--thunder-text);
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        #source-select:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(31, 136, 229, 0.3);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 18px;
+            color: var(--thunder-lightning);
+        }
+        
+        .movie-quality {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(0,0,0,0.7);
+            color: var(--thunder-lightning);
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 12px;
             font-weight: bold;
         }
         
-        .timeline {
-            position: relative;
-            margin: 2rem 0;
-        }
-        
-        .timeline-item {
-            padding: 1rem;
-            margin-left: 2rem;
-            border-left: 2px solid var(--primary-green);
-            margin-bottom: 1rem;
-        }
-        
-        .resource-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-        
-        .tool-card {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 1.5rem;
-            border-radius: 10px;
-            border: 1px solid var(--primary-green);
+        @media (max-width: 768px) {
+            .movies-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 15px;
+            }
+            
+            .movie-poster {
+                height: 220px;
+            }
+            
+            .modal-content {
+                width: 95%;
+                padding: 15px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- [Previous nav and header content remains the same] -->
-
+    <header>
+        <div class="container">
+            <h1>THUNDER STREAMING</h1>
+            <div class="tagline">Lightning-fast movies without the storm of ads</div>
+        </div>
+    </header>
+    
     <div class="container">
-        <!-- YouTube Analytics & Statistics -->
-        <div class="card">
-            <h2>YouTube Platform Statistics 2025</h2>
-            <div class="statistic-grid">
-                <div class="statistic-card">
-                    <div class="statistic-number">2.7B+</div>
-                    <p>Monthly Active Users</p>
-                </div>
-                <div class="statistic-card">
-                    <div class="statistic-number">500+</div>
-                    <p>Hours of Content Uploaded Every Minute</p>
-                </div>
-                <div class="statistic-card">
-                    <div class="statistic-number">$25B+</div>
-                    <p>Annual Creator Earnings</p>
-                </div>
-                <div class="statistic-card">
-                    <div class="statistic-number">50M+</div>
-                    <p>Active Creator Channels</p>
-                </div>
-            </div>
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Search for movies or TV shows...">
+            <button id="search-button">⚡ Search</button>
         </div>
-
-        <!-- Monetization Requirements (Enhanced) -->
-        <div class="card" id="requirements">
-            <h2>Complete YouTube Partner Program Requirements</h2>
-            <div class="timeline">
-                <div class="timeline-item">
-                    <h3>Basic Requirements</h3>
-                    <ul class="requirements-list">
-                        <li>1,000+ subscribers</li>
-                        <li>4,000+ valid public watch hours in 12 months</li>
-                        <li>Create and link an AdSense account</li>
-                        <li>Two-factor authentication enabled</li>
-                        <li>No active Community Guidelines strikes</li>
-                    </ul>
-                </div>
-                <div class="timeline-item">
-                    <h3>Channel Quality Standards</h3>
-                    <ul class="requirements-list">
-                        <li>Original content only - no reused or automated content</li>
-                        <li>Adherence to YouTube's Community Guidelines</li>
-                        <li>Regular uploading schedule</li>
-                        <li>High-quality thumbnails and descriptions</li>
-                        <li>Engagement with community guidelines</li>
-                    </ul>
-                </div>
-                <div class="timeline-item">
-                    <h3>Additional Revenue Streams Requirements</h3>
-                    <ul class="requirements-list">
-                        <li>Channel Memberships: 1,000+ subscribers</li>
-                        <li>Super Chat: 1,000+ subscribers</li>
-                        <li>Merchandise Shelf: 10,000+ subscribers</li>
-                        <li>YouTube BrandConnect: 25,000+ subscribers</li>
-                        <li>YouTube Shorts Fund: Regular Shorts content</li>
-                    </ul>
-                </div>
-            </div>
+        
+        <div class="categories">
+            <button class="category-btn active" data-category="all">All Content</button>
+            <button class="category-btn" data-category="movies">Movies</button>
+            <button class="category-btn" data-category="tv">TV Series</button>
+            <button class="category-btn" data-category="trending">Trending Now</button>
+            <button class="category-btn" data-category="top-imdb">Top IMDb</button>
         </div>
-
-        <!-- Advanced Growth Strategies -->
-        <div class="card">
-            <h2>Advanced Channel Growth Strategies</h2>
-            <div class="resource-grid">
-                <div class="tool-card">
-                    <h3>Content Strategy</h3>
-                    <ul class="requirements-list">
-                        <li>Create content pillars (3-5 main topics)</li>
-                        <li>Develop content clusters around main topics</li>
-                        <li>Plan content calendar 3 months ahead</li>
-                        <li>Mix different content formats (long-form, shorts, lives)</li>
-                        <li>Analyze top-performing videos monthly</li>
-                    </ul>
-                </div>
-                <div class="tool-card">
-                    <h3>Technical Optimization</h3>
-                    <ul class="requirements-list">
-                        <li>Optimize video resolution (1080p minimum)</li>
-                        <li>Use custom thumbnails with 1280x720 resolution</li>
-                        <li>Implement proper tags and categories</li>
-                        <li>Create compelling titles (under 70 characters)</li>
-                        <li>Write keyword-rich descriptions (first 100 words crucial)</li>
-                    </ul>
-                </div>
-                <div class="tool-card">
-                    <h3>Audience Engagement</h3>
-                    <ul class="requirements-list">
-                        <li>Respond to comments within 24 hours</li>
-                        <li>Create community posts 2-3 times per week</li>
-                        <li>Use end screens and cards effectively</li>
-                        <li>Host live streams monthly</li>
-                        <li>Create polls and surveys for audience input</li>
-                    </ul>
-                </div>
-            </div>
+        
+        <div id="content">
+            <div class="loading">⚡ Gathering the storm of entertainment...</div>
         </div>
-
-        <!-- Monetization Methods (Enhanced) -->
-        <div class="card" id="monetization-methods">
-            <h2>Complete Monetization Strategy Guide</h2>
-            <div class="resource-grid">
-                <div class="tool-card">
-                    <h3>Ad Revenue Optimization</h3>
-                    <ul class="requirements-list">
-                        <li>Strategic mid-roll ad placement</li>
-                        <li>Optimize video length (8+ minutes recommended)</li>
-                        <li>Create advertiser-friendly content</li>
-                        <li>Understand seasonal CPM variations</li>
-                        <li>Monitor ad performance in Analytics</li>
-                    </ul>
-                </div>
-                <div class="tool-card">
-                    <h3>Alternative Revenue Streams</h3>
-                    <ul class="requirements-list">
-                        <li>Channel memberships with exclusive perks</li>
-                        <li>Merchandise integration</li>
-                        <li>Super Chat during live streams</li>
-                        <li>Affiliate marketing</li>
-                        <li>Sponsored content partnerships</li>
-                    </ul>
-                </div>
-                <div class="tool-card">
-                    <h3>Brand Deals & Sponsorships</h3>
-                    <ul class="requirements-list">
-                        <li>Create a compelling media kit</li>
-                        <li>Set competitive sponsorship rates</li>
-                        <li>Develop long-term brand relationships</li>
-                        <li>Use disclosure guidelines properly</li>
-                        <li>Track sponsored content performance</li>
-                    </ul>
-                </div>
+    </div>
+    
+    <div id="player-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="source-selector">
+                <label for="source-select">Stream Source:</label>
+                <select id="source-select">
+                    <option value="">Select a thunder source...</option>
+                </select>
             </div>
-        </div>
-
-        <!-- Analytics & Tools -->
-        <div class="card">
-            <h2>Essential Analytics & Tools</h2>
-            <div class="resource-grid">
-                <div class="tool-card">
-                    <h3>Key Metrics to Track</h3>
-                    <ul class="requirements-list">
-                        <li>Click-through rate (CTR): Aim for >4%</li>
-                        <li>Average view duration: Target >50%</li>
-                        <li>Subscriber conversion rate</li>
-                        <li>Revenue per mille (RPM)</li>
-                        <li>Audience retention graphs</li>
-                    </ul>
-                </div>
-                <div class="tool-card">
-                    <h3>Recommended Tools</h3>
-                    <ul class="requirements-list">
-                        <li>TubeBuddy - SEO & keyword research</li>
-                        <li>VidIQ - Competitor analysis</li>
-                        <li>Canva - Thumbnail creation</li>
-                        <li>Adobe Premiere Pro - Video editing</li>
-                        <li>Social Blade - Channel statistics</li>
-                    </ul>
-                </div>
-                <div class="tool-card">
-                    <h3>Optimization Tips</h3>
-                    <ul class="requirements-list">
-                        <li>Use A/B testing for thumbnails</li>
-                        <li>Optimize upload times for your audience</li>
-                        <li>Monitor trending topics in your niche</li>
-                        <li>Analyze competitors' strategies</li>
-                        <li>Track audience demographics</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- Advanced SEO Techniques -->
-        <div class="card">
-            <h2>YouTube SEO Mastery</h2>
-            <div class="resource-grid">
-                <div class="tool-card">
-                    <h3>Keyword Research</h3>
-                    <ul class="requirements-list">
-                        <li>Use YouTube's search suggestions</li>
-                        <li>Analyze competitor tags</li>
-                        <li>Find low-competition opportunities</li>
-                        <li>Track trending topics</li>
-                        <li>Use Google Trends for validation</li>
-                    </ul>
-                </div>
-                <div class="tool-card">
-                    <h3>Description Optimization</h3>
-                    <ul class="requirements-list">
-                        <li>Write 200+ word descriptions</li>
-                        <li>Include timestamps for longer videos</li>
-                        <li>Add relevant links and resources</li>
-                        <li>Use primary keyword in first paragraph</li>
-                        <li>Include channel-specific tags</li>
-                    </ul>
-                </div>
-                <div class="tool-card">
-                    <h3>Technical SEO</h3>
-                    <ul class="requirements-list">
-                        <li>Create custom closed captions</li>
-                        <li>Use relevant tags (10-15 per video)</li>
-                        <li>Optimize playlist organization</li>
-                        <li>Create series playlists</li>
-                        <li>Use end screens effectively</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- Content Creation Tips -->
-        <div class="card">
-            <h2>Professional Content Creation</h2>
-            <div class="resource-grid">
-                <div class="tool-card">
-                    <h3>Video Production</h3>
-                    <ul class="requirements-list">
-                        <li>Invest in good lighting setup</li>
-                        <li>Use external microphone for clear audio</li>
-                        <li>Record in 4K when possible</li>
-                        <li>Maintain consistent branding</li>
-                        <li>Create engaging intros (under 15 seconds)</li>
-                    </ul>
-                </div>
-                <div class="tool-card">
-                    <h3>Editing Tips</h3>
-                    <ul class="requirements-list">
-                        <li>Use pattern interrupts every 30 seconds</li>
-                        <li>Add b-roll footage</li>
-                        <li>Include visual effects and transitions</li>
-                        <li>Optimize pacing for retention</li>
-                        <li>Add background music</li>
-                    </ul>
-                </div>
-                <div class="tool-card">
-                    <h3>Thumbnail Design</h3>
-                    <ul class="requirements-list">
-                        <li>Use contrasting colors</li>
-                        <li>Include clear, readable text</li>
-                        <li>Show emotion in faces</li>
-                        <li>Create consistent branding</li>
-                        <li>Test different styles</li>
-                    </ul>
-                </div>
+            <div class="player-container">
+                <iframe id="movie-player" allowfullscreen></iframe>
             </div>
         </div>
     </div>
-
-    <!-- [Previous script content remains the same] -->
+    
+    <script>
+        // Thunder Streaming Configuration
+        const TARGET_SITE = "https://multimovies.email/";
+        const PROXY_URL = "https://cors-anywhere.herokuapp.com/"; // Note: You'll need to set up your own proxy
+        
+        // DOM elements
+        const contentEl = document.getElementById('content');
+        const searchInput = document.getElementById('search-input');
+        const searchButton = document.getElementById('search-button');
+        const categoryBtns = document.querySelectorAll('.category-btn');
+        const modal = document.getElementById('player-modal');
+        const closeModal = document.querySelector('.close-modal');
+        const sourceSelect = document.getElementById('source-select');
+        const moviePlayer = document.getElementById('movie-player');
+        
+        // Global variables
+        let allMovies = [];
+        let currentCategory = 'all';
+        
+        // Initialize the Thunder
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchContent();
+            
+            // Event listeners
+            searchButton.addEventListener('click', handleSearch);
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleSearch();
+            });
+            
+            categoryBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    categoryBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentCategory = btn.dataset.category;
+                    filterContent();
+                });
+            });
+            
+            closeModal.addEventListener('click', () => {
+                modal.style.display = 'none';
+                moviePlayer.src = '';
+            });
+            
+            sourceSelect.addEventListener('change', (e) => {
+                if (e.target.value) {
+                    moviePlayer.src = e.target.value;
+                }
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                    moviePlayer.src = '';
+                }
+            });
+        });
+        
+        // Fetch content from the thunder clouds (multimovies.email)
+        async function fetchContent() {
+            try {
+                contentEl.innerHTML = `
+                    <div class="loading">
+                        <div>⚡ Gathering the storm of entertainment...</div>
+                        <div style="margin-top:20px;font-size:14px;color:var(--thunder-text-dim)">
+                            Loading content from multimovies.email
+                        </div>
+                    </div>
+                `;
+                
+                // In a real implementation, you would need to:
+                // 1. Set up a server-side proxy to scrape multimovies.email
+                // 2. Parse the HTML to extract movie data
+                // For this example, we'll use enhanced mock data
+                
+                // Simulate API delay (thunder takes time)
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // Enhanced mock data - in a real app, this would come from scraping multimovies.email
+                allMovies = [
+                    { 
+                        id: 1, 
+                        title: 'The Shawshank Redemption', 
+                        year: 1994, 
+                        category: 'movies', 
+                        quality: '4K',
+                        poster: 'https://m.media-amazon.com/images/M/MV5BNDE3ODcxYzMtY2YzZC00NmNlLWJiNDMtZDViZWM2MzIxZDYwXkEyXkFqcGdeQXVyNjAwNDUxODI@._V1_FMjpg_UX1000_.jpg', 
+                        sources: [
+                            { name: 'Thunder Server 1', url: 'https://example.com/embed1' },
+                            { name: 'Lightning Server 2', url: 'https://example.com/embed2' }
+                        ]
+                    },
+                    { 
+                        id: 2, 
+                        title: 'The Godfather', 
+                        year: 1972, 
+                        category: 'movies', 
+                        quality: '1080p',
+                        poster: 'https://m.media-amazon.com/images/M/MV5BM2MyNjYxNmUtYTAwNi00MTYxLWJmNWYtYzZlODY3ZTk3OTFlXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg', 
+                        sources: [
+                            { name: 'Thunder Server 1', url: 'https://example.com/embed1' }
+                        ] 
+                    },
+                    { 
+                        id: 3, 
+                        title: 'Breaking Bad', 
+                        year: 2008, 
+                        category: 'tv', 
+                        quality: '1080p',
+                        poster: 'https://m.media-amazon.com/images/M/MV5BYmQ4YWMxYjUtNjZmYi00MDQ1LWFjMjMtNjA5ZDdiYjdiODU5XkEyXkFqcGdeQXVyMTMzNDExODE5._V1_FMjpg_UX1000_.jpg', 
+                        sources: [
+                            { name: 'Storm Server 1', url: 'https://example.com/embed1' },
+                            { name: 'Cloud Server 2', url: 'https://example.com/embed2' },
+                            { name: 'Lightning Server 3', url: 'https://example.com/embed3' }
+                        ] 
+                    },
+                    { 
+                        id: 4, 
+                        title: 'Stranger Things', 
+                        year: 2016, 
+                        category: 'tv', 
+                        quality: '4K',
+                        poster: 'https://m.media-amazon.com/images/M/MV5BMDZkYmVhNjMtNWU4MC00MDQxLWE3MjYtZGMzZWI1ZjhlOWJmXkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_FMjpg_UX1000_.jpg', 
+                        sources: [
+                            { name: 'Thunder Server 1', url: 'https://example.com/embed1' }
+                        ] 
+                    },
+                    { 
+                        id: 5, 
+                        title: 'Inception', 
+                        year: 2010, 
+                        category: 'movies', 
+                        quality: '4K',
+                        poster: 'https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_FMjpg_UX1000_.jpg', 
+                        sources: [
+                            { name: 'Storm Server 1', url: 'https://example.com/embed1' },
+                            { name: 'Lightning Server 2', url: 'https://example.com/embed2' }
+                        ] 
+                    },
+                    { 
+                        id: 6, 
+                        title: 'The Dark Knight', 
+                        year: 2008, 
+                        category: 'movies', 
+                        quality: '4K',
+                        poster: 'https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_.jpg', 
+                        sources: [
+                            { name: 'Thunder Server 1', url: 'https://example.com/embed1' },
+                            { name: 'Cloud Server 2', url: 'https://example.com/embed2' }
+                        ] 
+                    },
+                    { 
+                        id: 7, 
+                        title: 'Game of Thrones', 
+                        year: 2011, 
+                        category: 'tv', 
+                        quality: '1080p',
+                        poster: 'https://m.media-amazon.com/images/M/MV5BYTRiNDQwYzAtMzVlZS00NTI5LWJjYjUtMzkwNTUzMWMxZTllXkEyXkFqcGdeQXVyNDIzMzcwNjc@._V1_.jpg', 
+                        sources: [
+                            { name: 'Storm Server 1', url: 'https://example.com/embed1' }
+                        ] 
+                    },
+                    { 
+                        id: 8, 
+                        title: 'Avengers: Endgame', 
+                        year: 2019, 
+                        category: 'movies', 
+                        quality: '4K',
+                        poster: 'https://m.media-amazon.com/images/M/MV5BMTc5MDE2ODcwNV5BMl5BanBnXkFtZTgwMzI2NzQ2NzM@._V1_.jpg', 
+                        sources: [
+                            { name: 'Lightning Server 1', url: 'https://example.com/embed1' },
+                            { name: 'Thunder Server 2', url: 'https://example.com/embed2' }
+                        ] 
+                    },
+                ];
+                
+                // Mark some as trending and top IMDb
+                allMovies[2].trending = true;
+                allMovies[3].trending = true;
+                allMovies[5].trending = true;
+                allMovies[0].topImdb = true;
+                allMovies[1].topImdb = true;
+                allMovies[5].topImdb = true;
+                
+                filterContent();
+            } catch (error) {
+                console.error('Thunder error:', error);
+                contentEl.innerHTML = `
+                    <div class="loading">
+                        ⚡ The storm couldn't be gathered
+                        <div style="margin-top:20px;font-size:14px;color:var(--thunder-text-dim)">
+                            Error loading from multimovies.email. Try again later.
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        // Filter content based on category and search term
+        function filterContent() {
+            const searchTerm = searchInput.value.toLowerCase();
+            
+            let filteredMovies = allMovies.filter(movie => {
+                const matchesCategory = 
+                    currentCategory === 'all' || 
+                    movie.category === currentCategory || 
+                    (currentCategory === 'trending' && movie.trending) ||
+                    (currentCategory === 'top-imdb' && movie.topImdb);
+                
+                const matchesSearch = 
+                    movie.title.toLowerCase().includes(searchTerm) || 
+                    movie.year.toString().includes(searchTerm);
+                
+                return matchesCategory && matchesSearch;
+            });
+            
+            displayContent(filteredMovies);
+        }
+        
+        // Display content in the thunder grid
+        function displayContent(movies) {
+            if (movies.length === 0) {
+                contentEl.innerHTML = `
+                    <div class="loading">
+                        ⚡ No content found in this storm
+                        <div style="margin-top:20px;font-size:14px;color:var(--thunder-text-dim)">
+                            Try a different search or category
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '<div class="movies-grid">';
+            
+            movies.forEach(movie => {
+                html += `
+                    <div class="movie-card" data-id="${movie.id}">
+                        ${movie.quality ? `<span class="movie-quality">${movie.quality}</span>` : ''}
+                        <img src="${movie.poster}" alt="${movie.title}" class="movie-poster" onerror="this.src='https://via.placeholder.com/300x450/151530/4fc3f7?text=THUNDER'">
+                        <div class="movie-info">
+                            <h3 class="movie-title">${movie.title}</h3>
+                            <p class="movie-year">${movie.year}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            contentEl.innerHTML = html;
+            
+            // Add click event to movie cards
+            document.querySelectorAll('.movie-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const movieId = parseInt(card.dataset.id);
+                    const movie = allMovies.find(m => m.id === movieId);
+                    if (movie) {
+                        showMoviePlayer(movie);
+                    }
+                });
+            });
+        }
+        
+        // Show the movie player with thunder effects
+        function showMoviePlayer(movie) {
+            // Populate sources dropdown
+            sourceSelect.innerHTML = '<option value="">Select a thunder source...</option>';
+            movie.sources.forEach((source, index) => {
+                sourceSelect.innerHTML += `<option value="${source.url}">${source.name}</option>`;
+            });
+            
+            // Show modal with thunder effect
+            modal.style.display = 'block';
+            
+            // Auto-select first source if available
+            if (movie.sources.length > 0) {
+                sourceSelect.value = movie.sources[0].url;
+                moviePlayer.src = movie.sources[0].url;
+            }
+        }
+        
+        // Handle search with thunder
+        function handleSearch() {
+            filterContent();
+        }
+    </script>
 </body>
 </html>
