@@ -459,7 +459,7 @@
     </div>
     
     <script>
-        // Thunder Streaming - Stealth Configuration
+        // Thunder Streaming - Working Configuration
         const DOMAIN_PREFIX = "multimovies";
         const DOMAIN_TLDS = [
             "email", "life", "letter", "in", "fun", "zone", 
@@ -486,7 +486,11 @@
         
         // Initialize the Thunder
         document.addEventListener('DOMContentLoaded', () => {
-            scanDomains();
+            // Load mock data immediately (in real app, this would be after domain scan)
+            loadMockData();
+            
+            // Simulate domain scanning
+            simulateDomainScan();
             
             // Event listeners
             searchButton.addEventListener('click', handleSearch);
@@ -517,92 +521,48 @@
             });
         });
         
-        // Scan domains to find an active one
-        async function scanDomains() {
-            if (isScanning) return;
-            isScanning = true;
-            
+        // Simulate domain scanning
+        function simulateDomainScan() {
             statusEl.innerHTML = `<i class="fas fa-satellite-dish fa-spin"></i> Searching for available servers...`;
             
-            // Try domains in random order
-            const shuffledTLDs = [...DOMAIN_TLDS].sort(() => 0.5 - Math.random());
-            
-            for (const tld of shuffledTLDs) {
-                const domain = `${DOMAIN_PREFIX}.${tld}`;
-                statusEl.innerHTML = `<i class="fas fa-satellite-dish fa-spin"></i> Testing: ${domain.replace(DOMAIN_PREFIX, "*****")}`;
+            setTimeout(() => {
+                statusEl.innerHTML = `<i class="fas fa-satellite-dish fa-spin"></i> Testing: *****.email`;
                 
-                try {
-                    // In a real implementation, this would actually check the domain
-                    // For demo purposes, we'll simulate a successful connection
-                    await new Promise(resolve => setTimeout(resolve, 300));
+                setTimeout(() => {
+                    statusEl.innerHTML = `<i class="fas fa-satellite-dish fa-spin"></i> Testing: *****.life`;
                     
-                    // Randomly select a domain to "work" for the demo
-                    if (Math.random() > 0.7 || tld === "email") {
-                        activeDomain = domain;
+                    setTimeout(() => {
                         statusEl.innerHTML = `<i class="fas fa-bolt"></i> Connected to lightning server!`;
-                        await fetchContent();
-                        isScanning = false;
-                        return;
-                    }
-                } catch (e) {
-                    console.log(`Domain ${domain} not available`);
-                }
-            }
+                        activeDomain = "multimovies.email";
+                    }, 800);
+                }, 800);
+            }, 800);
+        }
+        
+        // Load mock data
+        function loadMockData() {
+            contentEl.innerHTML = '<div class="loading">⚡ Gathering content from our lightning network...</div>';
+            trendingEl.innerHTML = '<div class="loading">Loading trending content...</div>';
             
-            statusEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Could not connect to servers. Try again later.`;
-            isScanning = false;
-        }
-        
-        // Fetch content from the active domain
-        async function fetchContent() {
-            try {
-                contentEl.innerHTML = '<div class="loading">⚡ Gathering content from our lightning network...</div>';
-                trendingEl.innerHTML = '<div class="loading">Loading trending content...</div>';
-                
-                // Simulate API delay
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                
-                // Enhanced mock data - in a real app, this would come from scraping the active domain
-                allMovies = [
-                    { id: 1, title: 'Oppenheimer', year: 2023, category: 'movies', rating: 8.8, trending: true, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BMDBmYTZjNjUtN2M1MS00MTQ2LTk2ODgtNzc2M2QyZGE5NTVjXkEyXkFqcGdeQXVyNzAwMjU2MTY@._V1_.jpg', source: getRandomServerUrl() },
-                    { id: 2, title: 'Barbie', year: 2023, category: 'movies', rating: 7.5, trending: true, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BNjU3N2QxNzYtMjk1NC00MTc4LTk1NTQtMmUxNTljM2I0NDA5XkEyXkFqcGdeQXVyODE5NzE3OTE@._V1_FMjpg_UX1000_.jpg', source: getRandomServerUrl() },
-                    { id: 3, title: 'John Wick: Chapter 4', year: 2023, category: 'movies', rating: 8.5, trending: true, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BMDExZGMyOTMtMDgyYi00NGIwLWJhMTEtOTdkZGFjNmZiMTEwXkEyXkFqcGdeQXVyMjM4NTM5NDY@._V1_FMjpg_UX1000_.jpg', source: getRandomServerUrl() },
-                    { id: 4, title: 'The Last of Us', year: 2023, category: 'tv', rating: 9.2, trending: true, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BZGUzYTI3M2EtZmM0Yy00NGUyLWI4ODEtN2Q3ZGJlYzhhZjU3XkEyXkFqcGdeQXVyNTM0NTU5NDU@._V1_.jpg', source: getRandomServerUrl() },
-                    { id: 5, title: 'Mission: Impossible 7', year: 2023, category: 'movies', rating: 8.1, trending: true, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BYzFiZjc1YzctMDY3Zi00NGE5LTlmNWEtN2Q3OWFjYjY1NGM2XkEyXkFqcGdeQXVyMTUyMTUzNjQ0._V1_.jpg', source: getRandomServerUrl() },
-                    { id: 6, title: 'Spider-Man: Across the Spider-Verse', year: 2023, category: 'movies', rating: 9.0, trending: true, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BMzI0NmVkMjEtYmY4MS00ZDMxLTlkZmEtMzU4MDQxYTMzMjU2XkEyXkFqcGdeQXVyMzQ0MzA0NTM@._V1_FMjpg_UX1000_.jpg', source: getRandomServerUrl() },
-                    { id: 7, title: 'Guardians of the Galaxy Vol. 3', year: 2023, category: 'movies', rating: 8.4, trending: true, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BMDgxOTdjMzYtZGQxMS00ZTAzLWI4Y2UtMTQzN2VlYjYyZWRiXkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_FMjpg_UX1000_.jpg', source: getRandomServerUrl() },
-                    { id: 8, title: 'Avatar: The Way of Water', year: 2022, category: 'movies', rating: 8.2, trending: false, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BYjhiNjBlODctY2ZiOC00YjVlLWFlNzAtNTVhNzM1YjI1NzMxXkEyXkFqcGdeQXVyMjQxNTE1MDA@._V1_FMjpg_UX1000_.jpg', source: getRandomServerUrl() },
-                    { id: 9, title: 'The Super Mario Bros. Movie', year: 2023, category: 'movies', rating: 7.6, trending: false, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BOTJhNzlmMjctNTU2Ny00NDM3LWE5ZWMtZTM5N2NiNGE0ZTY5XkEyXkFqcGdeQXVyMTA3MDk2NDg2._V1_FMjpg_UX1000_.jpg', source: getRandomServerUrl() },
-                    { id: 10, title: 'Extraction 2', year: 2023, category: 'movies', rating: 7.8, trending: false, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BMDZmODRkZDYtNzY5MC00ODk5LWEyM2UtMDRiMzFkODQyOTI1XkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_.jpg', source: getRandomServerUrl() },
-                    { id: 11, title: 'The Witcher', year: 2019, category: 'tv', rating: 8.9, trending: false, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BN2EyZjM3NzUtNWUzMi00MTgxLWI0NTctMzY4M2VlOTdjZWRiXkEyXkFqcGdeQXVyNDIzMzcwNjc@._V1_FMjpg_UX1000_.jpg', source: getRandomServerUrl() },
-                    { id: 12, title: 'Stranger Things', year: 2016, category: 'tv', rating: 9.0, trending: false, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BMDZkYmVhNjMtNWU4MC00MDQxLWE3MjYtZGMzZWI1ZjhlOWJmXkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_FMjpg_UX1000_.jpg', source: getRandomServerUrl() },
-                ];
-                
-                // Filter and display trending and all content
-                filterContent();
-                displayTrending();
-                
-            } catch (error) {
-                console.error('Thunder error:', error);
-                contentEl.innerHTML = `
-                    <div class="loading">
-                        ⚡ The storm couldn't be gathered
-                        <div style="margin-top:20px;font-size:14px;color:var(--thunder-text-dim)">
-                            Error loading content. Try again later.
-                        </div>
-                    </div>
-                `;
-            }
-        }
-        
-        function getRandomServerUrl() {
-            const servers = [
-                "https://server1.thunderstream.live/embed",
-                "https://lightning.thunderstream.live/play",
-                "https://storm.thunderstream.live/stream",
-                "https://cloud.thunderstream.live/video"
+            // Enhanced mock data
+            allMovies = [
+                { id: 1, title: 'Oppenheimer', year: 2023, category: 'movies', rating: 8.8, trending: true, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BMDBmYTZjNjUtN2M1MS00MTQ2LTk2ODgtNzc2M2QyZGE5NTVjXkEyXkFqcGdeQXVyNzAwMjU2MTY@._V1_.jpg', source: 'https://www.youtube.com/embed/uYPbbksJxIg?autoplay=1' },
+                { id: 2, title: 'Barbie', year: 2023, category: 'movies', rating: 7.5, trending: true, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BNjU3N2QxNzYtMjk1NC00MTc4LTk1NTQtMmUxNTljM2I0NDA5XkEyXkFqcGdeQXVyODE5NzE3OTE@._V1_FMjpg_UX1000_.jpg', source: 'https://www.youtube.com/embed/pBk4NYhWNMM?autoplay=1' },
+                { id: 3, title: 'John Wick: Chapter 4', year: 2023, category: 'movies', rating: 8.5, trending: true, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BMDExZGMyOTMtMDgyYi00NGIwLWJhMTEtOTdkZGFjNmZiMTEwXkEyXkFqcGdeQXVyMjM4NTM5NDY@._V1_FMjpg_UX1000_.jpg', source: 'https://www.youtube.com/embed/qEVUtrk8_B4?autoplay=1' },
+                { id: 4, title: 'The Last of Us', year: 2023, category: 'tv', rating: 9.2, trending: true, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BZGUzYTI3M2EtZmM0Yy00NGUyLWI4ODEtN2Q3ZGJlYzhhZjU3XkEyXkFqcGdeQXVyNTM0NTU5NDU@._V1_.jpg', source: 'https://www.youtube.com/embed/uLtkt8BonwM?autoplay=1' },
+                { id: 5, title: 'Mission: Impossible 7', year: 2023, category: 'movies', rating: 8.1, trending: true, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BYzFiZjc1YzctMDY3Zi00NGE5LTlmNWEtN2Q3OWFjYjY1NGM2XkEyXkFqcGdeQXVyMTUyMTUzNjQ0._V1_.jpg', source: 'https://www.youtube.com/embed/avz06PDqDbM?autoplay=1' },
+                { id: 6, title: 'Spider-Man: Across the Spider-Verse', year: 2023, category: 'movies', rating: 9.0, trending: true, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BMzI0NmVkMjEtYmY4MS00ZDMxLTlkZmEtMzU4MDQxYTMzMjU2XkEyXkFqcGdeQXVyMzQ0MzA0NTM@._V1_FMjpg_UX1000_.jpg', source: 'https://www.youtube.com/embed/cqGjhVJWtEg?autoplay=1' },
+                { id: 7, title: 'Guardians of the Galaxy Vol. 3', year: 2023, category: 'movies', rating: 8.4, trending: true, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BMDgxOTdjMzYtZGQxMS00ZTAzLWI4Y2UtMTQzN2VlYjYyZWRiXkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_FMjpg_UX1000_.jpg', source: 'https://www.youtube.com/embed/JqcncLPi9zw?autoplay=1' },
+                { id: 8, title: 'Avatar: The Way of Water', year: 2022, category: 'movies', rating: 8.2, trending: false, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BYjhiNjBlODctY2ZiOC00YjVlLWFlNzAtNTVhNzM1YjI1NzMxXkEyXkFqcGdeQXVyMjQxNTE1MDA@._V1_FMjpg_UX1000_.jpg', source: 'https://www.youtube.com/embed/d9MyW72ELq0?autoplay=1' },
+                { id: 9, title: 'The Super Mario Bros. Movie', year: 2023, category: 'movies', rating: 7.6, trending: false, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BOTJhNzlmMjctNTU2Ny00NDM3LWE5ZWMtZTM5N2NiNGE0ZTY5XkEyXkFqcGdeQXVyMTA3MDk2NDg2._V1_FMjpg_UX1000_.jpg', source: 'https://www.youtube.com/embed/TnGl01FkMMo?autoplay=1' },
+                { id: 10, title: 'Extraction 2', year: 2023, category: 'movies', rating: 7.8, trending: false, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BMDZmODRkZDYtNzY5MC00ODk5LWEyM2UtMDRiMzFkODQyOTI1XkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_.jpg', source: 'https://www.youtube.com/embed/Y274jZs5s7s?autoplay=1' },
+                { id: 11, title: 'The Witcher', year: 2019, category: 'tv', rating: 8.9, trending: false, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BN2EyZjM3NzUtNWUzMi00MTgxLWI0NTctMzY4M2VlOTdjZWRiXkEyXkFqcGdeQXVyNDIzMzcwNjc@._V1_FMjpg_UX1000_.jpg', source: 'https://www.youtube.com/embed/ndl1W4ltcmg?autoplay=1' },
+                { id: 12, title: 'Stranger Things', year: 2016, category: 'tv', rating: 9.0, trending: false, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BMDZkYmVhNjMtNWU4MC00MDQxLWE3MjYtZGMzZWI1ZjhlOWJmXkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_FMjpg_UX1000_.jpg', source: 'https://www.youtube.com/embed/yQEondeGvKo?autoplay=1' },
             ];
-            return servers[Math.floor(Math.random() * servers.length)] + "?id=" + Math.random().toString(36).substring(7);
+            
+            // Filter and display trending and all content
+            filterContent();
+            displayTrending();
         }
         
         // Filter content based on category and search term
@@ -612,7 +572,10 @@
             let filteredMovies = allMovies.filter(movie => {
                 const matchesCategory = 
                     currentCategory === 'all' || 
-                    movie.category === currentCategory;
+                    movie.category === currentCategory ||
+                    (currentCategory === 'action' && movie.title.toLowerCase().includes('action')) ||
+                    (currentCategory === 'comedy' && movie.title.toLowerCase().includes('comedy')) ||
+                    (currentCategory === 'sci-fi' && (movie.title.toLowerCase().includes('sci') || movie.title.toLowerCase().includes('star')));
                 
                 const matchesSearch = 
                     movie.title.toLowerCase().includes(searchTerm) || 
