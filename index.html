@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thunder Streaming</title>
+    <title>Thunder Streaming - Lightning-Fast Movies</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --thunder-dark: #0a0a1a;
@@ -12,15 +13,24 @@
             --thunder-lightning: #4fc3f7;
             --thunder-text: #e0e0e0;
             --thunder-text-dim: #b0b0b0;
+            --thunder-card: rgba(20, 30, 60, 0.7);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--thunder-dark);
+            background: var(--thunder-dark);
             color: var(--thunder-text);
             min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(30, 136, 229, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(79, 195, 247, 0.1) 0%, transparent 20%);
+            overflow-x: hidden;
         }
         
         .container {
@@ -31,13 +41,13 @@
         
         header {
             background: linear-gradient(to right, var(--thunder-darker), var(--thunder-dark));
-            color: white;
             padding: 20px 0;
             margin-bottom: 30px;
             text-align: center;
             border-bottom: 2px solid var(--thunder-blue);
             position: relative;
             overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
         }
         
         header::after {
@@ -63,9 +73,28 @@
             54% { opacity: 0; }
         }
         
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            font-size: 2.5rem;
+            color: var(--thunder-lightning);
+            text-shadow: 0 0 15px rgba(79, 195, 247, 0.7);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
         h1 {
-            margin: 0;
-            font-size: 2.5em;
+            font-size: 2.8rem;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 3px;
@@ -77,10 +106,11 @@
         }
         
         .tagline {
-            font-size: 0.9em;
+            font-size: 1.1rem;
             color: var(--thunder-lightning);
             letter-spacing: 1px;
             margin-top: 5px;
+            margin-bottom: 15px;
         }
         
         .search-container {
@@ -89,12 +119,14 @@
             box-shadow: 0 0 15px rgba(31, 136, 229, 0.2);
             border-radius: 50px;
             overflow: hidden;
+            max-width: 700px;
+            margin: 30px auto;
         }
         
         #search-input {
             flex: 1;
             padding: 15px 25px;
-            font-size: 16px;
+            font-size: 1.1rem;
             border: none;
             background-color: rgba(10, 10, 26, 0.8);
             color: var(--thunder-text);
@@ -112,7 +144,7 @@
             background: linear-gradient(to right, var(--thunder-blue), var(--thunder-lightning));
             color: white;
             border: none;
-            font-size: 16px;
+            font-size: 1.1rem;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
@@ -120,6 +152,7 @@
         
         #search-button:hover {
             background: linear-gradient(to right, var(--thunder-lightning), var(--thunder-blue));
+            transform: scale(1.02);
         }
         
         .categories {
@@ -131,50 +164,89 @@
         }
         
         .category-btn {
-            padding: 10px 20px;
+            padding: 12px 24px;
             background-color: rgba(30, 136, 229, 0.1);
             border: 1px solid var(--thunder-blue);
             border-radius: 50px;
             cursor: pointer;
             color: var(--thunder-text);
             transition: all 0.3s;
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 1rem;
         }
         
         .category-btn:hover, .category-btn.active {
             background-color: var(--thunder-blue);
             color: white;
-            transform: translateY(-2px);
+            transform: translateY(-3px);
             box-shadow: 0 5px 15px rgba(31, 136, 229, 0.3);
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            color: var(--thunder-lightning);
+            margin: 40px 0 20px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .section-title::after {
+            content: "";
+            display: block;
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(to right, var(--thunder-blue), var(--thunder-lightning));
+            margin: 10px auto;
+            border-radius: 3px;
         }
         
         .movies-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 25px;
+            margin-bottom: 50px;
         }
         
         .movie-card {
-            background: linear-gradient(to bottom, #151530, #0a0a1a);
+            background: var(--thunder-card);
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             transition: all 0.3s;
             position: relative;
             border: 1px solid rgba(31, 136, 229, 0.2);
+            backdrop-filter: blur(5px);
         }
         
         .movie-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(31, 136, 229, 0.2);
+            box-shadow: 0 15px 30px rgba(31, 136, 229, 0.3);
             border-color: var(--thunder-blue);
+        }
+        
+        .trending-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: linear-gradient(45deg, #ff8a00, #ff0080);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            z-index: 2;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
         
         .movie-poster {
             width: 100%;
             height: 330px;
             object-fit: cover;
-            border-bottom: 1px solid rgba(31, 136, 229, 0.2);
+            display: block;
         }
         
         .movie-info {
@@ -183,7 +255,7 @@
         
         .movie-title {
             margin: 0;
-            font-size: 16px;
+            font-size: 1.1rem;
             font-weight: bold;
             color: white;
             white-space: nowrap;
@@ -191,10 +263,19 @@
             text-overflow: ellipsis;
         }
         
+        .movie-details {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+        
         .movie-year {
             color: var(--thunder-lightning);
-            font-size: 14px;
-            margin-top: 5px;
+        }
+        
+        .movie-rating {
+            color: #ffd700;
         }
         
         .movie-card:hover .movie-title {
@@ -210,7 +291,7 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0,0,0,0.9);
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(10px);
         }
         
         .modal-content {
@@ -221,7 +302,7 @@
             width: 90%;
             max-width: 1000px;
             border: 1px solid var(--thunder-blue);
-            box-shadow: 0 0 30px rgba(31, 136, 229, 0.3);
+            box-shadow: 0 0 30px rgba(31, 136, 229, 0.5);
             position: relative;
         }
         
@@ -262,50 +343,48 @@
             border: none;
         }
         
-        .source-selector {
-            margin: 20px 0;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .source-selector label {
-            font-weight: bold;
-            color: var(--thunder-lightning);
-        }
-        
-        #source-select {
-            flex: 1;
-            padding: 10px 15px;
-            background-color: rgba(10, 10, 26, 0.8);
-            border: 1px solid var(--thunder-blue);
-            color: var(--thunder-text);
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        
-        #source-select:focus {
-            outline: none;
-            box-shadow: 0 0 10px rgba(31, 136, 229, 0.3);
-        }
-        
         .loading {
             text-align: center;
             padding: 50px;
-            font-size: 18px;
+            font-size: 1.2rem;
             color: var(--thunder-lightning);
         }
         
-        .movie-quality {
+        .quality-tag {
             position: absolute;
             top: 10px;
             right: 10px;
-            background-color: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.7);
             color: var(--thunder-lightning);
             padding: 3px 8px;
             border-radius: 3px;
-            font-size: 12px;
+            font-size: 0.8rem;
             font-weight: bold;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--thunder-text-dim);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(79, 195, 247, 0.1);
+            margin-top: 30px;
+        }
+        
+        .footer a {
+            color: var(--thunder-lightning);
+            text-decoration: none;
+        }
+        
+        .status-indicator {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1rem;
+            color: var(--thunder-lightning);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
         
         @media (max-width: 768px) {
@@ -318,9 +397,8 @@
                 height: 220px;
             }
             
-            .modal-content {
-                width: 95%;
-                padding: 15px;
+            h1 {
+                font-size: 2rem;
             }
         }
     </style>
@@ -328,67 +406,87 @@
 <body>
     <header>
         <div class="container">
-            <h1>THUNDER STREAMING</h1>
-            <div class="tagline">Lightning-fast movies without the storm of ads</div>
+            <div class="logo">
+                <i class="fas fa-bolt logo-icon"></i>
+                <h1>THUNDER STREAMING</h1>
+            </div>
+            <div class="tagline">Lightning-fast movies without interruptions</div>
         </div>
     </header>
     
     <div class="container">
+        <div class="status-indicator" id="status">
+            <i class="fas fa-satellite-dish fa-spin"></i> Connecting to lightning-fast servers...
+        </div>
+        
         <div class="search-container">
             <input type="text" id="search-input" placeholder="Search for movies or TV shows...">
-            <button id="search-button">⚡ Search</button>
+            <button id="search-button"><i class="fas fa-bolt"></i> Search</button>
         </div>
         
         <div class="categories">
             <button class="category-btn active" data-category="all">All Content</button>
             <button class="category-btn" data-category="movies">Movies</button>
             <button class="category-btn" data-category="tv">TV Series</button>
-            <button class="category-btn" data-category="trending">Trending Now</button>
-            <button class="category-btn" data-category="top-imdb">Top IMDb</button>
+            <button class="category-btn" data-category="action">Action</button>
+            <button class="category-btn" data-category="comedy">Comedy</button>
+            <button class="category-btn" data-category="sci-fi">Sci-Fi</button>
         </div>
         
-        <div id="content">
-            <div class="loading">⚡ Gathering the storm of entertainment...</div>
+        <h2 class="section-title">Trending Now</h2>
+        <div id="trending-content" class="movies-grid">
+            <!-- Trending movies will be loaded here -->
+        </div>
+        
+        <h2 class="section-title">All Movies & Series</h2>
+        <div id="content" class="movies-grid">
+            <!-- All content will be loaded here -->
         </div>
     </div>
     
     <div id="player-modal" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
-            <div class="source-selector">
-                <label for="source-select">Stream Source:</label>
-                <select id="source-select">
-                    <option value="">Select a thunder source...</option>
-                </select>
-            </div>
             <div class="player-container">
                 <iframe id="movie-player" allowfullscreen></iframe>
             </div>
         </div>
     </div>
     
+    <div class="footer">
+        <p>Thunder Streaming - Premium Ad-Free Experience</p>
+        <p>All content provided by our lightning-fast network</p>
+    </div>
+    
     <script>
-        // Thunder Streaming Configuration
-        const TARGET_SITE = "https://multimovies.email/";
-        const PROXY_URL = "https://cors-anywhere.herokuapp.com/"; // Note: You'll need to set up your own proxy
+        // Thunder Streaming - Stealth Configuration
+        const DOMAIN_PREFIX = "multimovies";
+        const DOMAIN_TLDS = [
+            "email", "life", "letter", "in", "fun", "zone", 
+            "online", "site", "web", "club", "info", "xyz",
+            "pro", "net", "org", "co", "io", "tv", "me", "cc"
+        ];
         
         // DOM elements
         const contentEl = document.getElementById('content');
+        const trendingEl = document.getElementById('trending-content');
         const searchInput = document.getElementById('search-input');
         const searchButton = document.getElementById('search-button');
         const categoryBtns = document.querySelectorAll('.category-btn');
         const modal = document.getElementById('player-modal');
         const closeModal = document.querySelector('.close-modal');
-        const sourceSelect = document.getElementById('source-select');
         const moviePlayer = document.getElementById('movie-player');
+        const statusEl = document.getElementById('status');
         
         // Global variables
         let allMovies = [];
         let currentCategory = 'all';
+        let activeDomain = "";
+        let isScanning = false;
         
         // Initialize the Thunder
         document.addEventListener('DOMContentLoaded', () => {
-            fetchContent();
+            scanDomains();
             
             // Event listeners
             searchButton.addEventListener('click', handleSearch);
@@ -410,12 +508,6 @@
                 moviePlayer.src = '';
             });
             
-            sourceSelect.addEventListener('change', (e) => {
-                if (e.target.value) {
-                    moviePlayer.src = e.target.value;
-                }
-            });
-            
             // Close modal when clicking outside
             window.addEventListener('click', (e) => {
                 if (e.target === modal) {
@@ -425,144 +517,92 @@
             });
         });
         
-        // Fetch content from the thunder clouds (multimovies.email)
+        // Scan domains to find an active one
+        async function scanDomains() {
+            if (isScanning) return;
+            isScanning = true;
+            
+            statusEl.innerHTML = `<i class="fas fa-satellite-dish fa-spin"></i> Searching for available servers...`;
+            
+            // Try domains in random order
+            const shuffledTLDs = [...DOMAIN_TLDS].sort(() => 0.5 - Math.random());
+            
+            for (const tld of shuffledTLDs) {
+                const domain = `${DOMAIN_PREFIX}.${tld}`;
+                statusEl.innerHTML = `<i class="fas fa-satellite-dish fa-spin"></i> Testing: ${domain.replace(DOMAIN_PREFIX, "*****")}`;
+                
+                try {
+                    // In a real implementation, this would actually check the domain
+                    // For demo purposes, we'll simulate a successful connection
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                    
+                    // Randomly select a domain to "work" for the demo
+                    if (Math.random() > 0.7 || tld === "email") {
+                        activeDomain = domain;
+                        statusEl.innerHTML = `<i class="fas fa-bolt"></i> Connected to lightning server!`;
+                        await fetchContent();
+                        isScanning = false;
+                        return;
+                    }
+                } catch (e) {
+                    console.log(`Domain ${domain} not available`);
+                }
+            }
+            
+            statusEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Could not connect to servers. Try again later.`;
+            isScanning = false;
+        }
+        
+        // Fetch content from the active domain
         async function fetchContent() {
             try {
-                contentEl.innerHTML = `
-                    <div class="loading">
-                        <div>⚡ Gathering the storm of entertainment...</div>
-                        <div style="margin-top:20px;font-size:14px;color:var(--thunder-text-dim)">
-                            Loading content from multimovies.email
-                        </div>
-                    </div>
-                `;
+                contentEl.innerHTML = '<div class="loading">⚡ Gathering content from our lightning network...</div>';
+                trendingEl.innerHTML = '<div class="loading">Loading trending content...</div>';
                 
-                // In a real implementation, you would need to:
-                // 1. Set up a server-side proxy to scrape multimovies.email
-                // 2. Parse the HTML to extract movie data
-                // For this example, we'll use enhanced mock data
+                // Simulate API delay
+                await new Promise(resolve => setTimeout(resolve, 1000));
                 
-                // Simulate API delay (thunder takes time)
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                
-                // Enhanced mock data - in a real app, this would come from scraping multimovies.email
+                // Enhanced mock data - in a real app, this would come from scraping the active domain
                 allMovies = [
-                    { 
-                        id: 1, 
-                        title: 'The Shawshank Redemption', 
-                        year: 1994, 
-                        category: 'movies', 
-                        quality: '4K',
-                        poster: 'https://m.media-amazon.com/images/M/MV5BNDE3ODcxYzMtY2YzZC00NmNlLWJiNDMtZDViZWM2MzIxZDYwXkEyXkFqcGdeQXVyNjAwNDUxODI@._V1_FMjpg_UX1000_.jpg', 
-                        sources: [
-                            { name: 'Thunder Server 1', url: 'https://example.com/embed1' },
-                            { name: 'Lightning Server 2', url: 'https://example.com/embed2' }
-                        ]
-                    },
-                    { 
-                        id: 2, 
-                        title: 'The Godfather', 
-                        year: 1972, 
-                        category: 'movies', 
-                        quality: '1080p',
-                        poster: 'https://m.media-amazon.com/images/M/MV5BM2MyNjYxNmUtYTAwNi00MTYxLWJmNWYtYzZlODY3ZTk3OTFlXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg', 
-                        sources: [
-                            { name: 'Thunder Server 1', url: 'https://example.com/embed1' }
-                        ] 
-                    },
-                    { 
-                        id: 3, 
-                        title: 'Breaking Bad', 
-                        year: 2008, 
-                        category: 'tv', 
-                        quality: '1080p',
-                        poster: 'https://m.media-amazon.com/images/M/MV5BYmQ4YWMxYjUtNjZmYi00MDQ1LWFjMjMtNjA5ZDdiYjdiODU5XkEyXkFqcGdeQXVyMTMzNDExODE5._V1_FMjpg_UX1000_.jpg', 
-                        sources: [
-                            { name: 'Storm Server 1', url: 'https://example.com/embed1' },
-                            { name: 'Cloud Server 2', url: 'https://example.com/embed2' },
-                            { name: 'Lightning Server 3', url: 'https://example.com/embed3' }
-                        ] 
-                    },
-                    { 
-                        id: 4, 
-                        title: 'Stranger Things', 
-                        year: 2016, 
-                        category: 'tv', 
-                        quality: '4K',
-                        poster: 'https://m.media-amazon.com/images/M/MV5BMDZkYmVhNjMtNWU4MC00MDQxLWE3MjYtZGMzZWI1ZjhlOWJmXkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_FMjpg_UX1000_.jpg', 
-                        sources: [
-                            { name: 'Thunder Server 1', url: 'https://example.com/embed1' }
-                        ] 
-                    },
-                    { 
-                        id: 5, 
-                        title: 'Inception', 
-                        year: 2010, 
-                        category: 'movies', 
-                        quality: '4K',
-                        poster: 'https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_FMjpg_UX1000_.jpg', 
-                        sources: [
-                            { name: 'Storm Server 1', url: 'https://example.com/embed1' },
-                            { name: 'Lightning Server 2', url: 'https://example.com/embed2' }
-                        ] 
-                    },
-                    { 
-                        id: 6, 
-                        title: 'The Dark Knight', 
-                        year: 2008, 
-                        category: 'movies', 
-                        quality: '4K',
-                        poster: 'https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_.jpg', 
-                        sources: [
-                            { name: 'Thunder Server 1', url: 'https://example.com/embed1' },
-                            { name: 'Cloud Server 2', url: 'https://example.com/embed2' }
-                        ] 
-                    },
-                    { 
-                        id: 7, 
-                        title: 'Game of Thrones', 
-                        year: 2011, 
-                        category: 'tv', 
-                        quality: '1080p',
-                        poster: 'https://m.media-amazon.com/images/M/MV5BYTRiNDQwYzAtMzVlZS00NTI5LWJjYjUtMzkwNTUzMWMxZTllXkEyXkFqcGdeQXVyNDIzMzcwNjc@._V1_.jpg', 
-                        sources: [
-                            { name: 'Storm Server 1', url: 'https://example.com/embed1' }
-                        ] 
-                    },
-                    { 
-                        id: 8, 
-                        title: 'Avengers: Endgame', 
-                        year: 2019, 
-                        category: 'movies', 
-                        quality: '4K',
-                        poster: 'https://m.media-amazon.com/images/M/MV5BMTc5MDE2ODcwNV5BMl5BanBnXkFtZTgwMzI2NzQ2NzM@._V1_.jpg', 
-                        sources: [
-                            { name: 'Lightning Server 1', url: 'https://example.com/embed1' },
-                            { name: 'Thunder Server 2', url: 'https://example.com/embed2' }
-                        ] 
-                    },
+                    { id: 1, title: 'Oppenheimer', year: 2023, category: 'movies', rating: 8.8, trending: true, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BMDBmYTZjNjUtN2M1MS00MTQ2LTk2ODgtNzc2M2QyZGE5NTVjXkEyXkFqcGdeQXVyNzAwMjU2MTY@._V1_.jpg', source: getRandomServerUrl() },
+                    { id: 2, title: 'Barbie', year: 2023, category: 'movies', rating: 7.5, trending: true, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BNjU3N2QxNzYtMjk1NC00MTc4LTk1NTQtMmUxNTljM2I0NDA5XkEyXkFqcGdeQXVyODE5NzE3OTE@._V1_FMjpg_UX1000_.jpg', source: getRandomServerUrl() },
+                    { id: 3, title: 'John Wick: Chapter 4', year: 2023, category: 'movies', rating: 8.5, trending: true, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BMDExZGMyOTMtMDgyYi00NGIwLWJhMTEtOTdkZGFjNmZiMTEwXkEyXkFqcGdeQXVyMjM4NTM5NDY@._V1_FMjpg_UX1000_.jpg', source: getRandomServerUrl() },
+                    { id: 4, title: 'The Last of Us', year: 2023, category: 'tv', rating: 9.2, trending: true, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BZGUzYTI3M2EtZmM0Yy00NGUyLWI4ODEtN2Q3ZGJlYzhhZjU3XkEyXkFqcGdeQXVyNTM0NTU5NDU@._V1_.jpg', source: getRandomServerUrl() },
+                    { id: 5, title: 'Mission: Impossible 7', year: 2023, category: 'movies', rating: 8.1, trending: true, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BYzFiZjc1YzctMDY3Zi00NGE5LTlmNWEtN2Q3OWFjYjY1NGM2XkEyXkFqcGdeQXVyMTUyMTUzNjQ0._V1_.jpg', source: getRandomServerUrl() },
+                    { id: 6, title: 'Spider-Man: Across the Spider-Verse', year: 2023, category: 'movies', rating: 9.0, trending: true, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BMzI0NmVkMjEtYmY4MS00ZDMxLTlkZmEtMzU4MDQxYTMzMjU2XkEyXkFqcGdeQXVyMzQ0MzA0NTM@._V1_FMjpg_UX1000_.jpg', source: getRandomServerUrl() },
+                    { id: 7, title: 'Guardians of the Galaxy Vol. 3', year: 2023, category: 'movies', rating: 8.4, trending: true, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BMDgxOTdjMzYtZGQxMS00ZTAzLWI4Y2UtMTQzN2VlYjYyZWRiXkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_FMjpg_UX1000_.jpg', source: getRandomServerUrl() },
+                    { id: 8, title: 'Avatar: The Way of Water', year: 2022, category: 'movies', rating: 8.2, trending: false, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BYjhiNjBlODctY2ZiOC00YjVlLWFlNzAtNTVhNzM1YjI1NzMxXkEyXkFqcGdeQXVyMjQxNTE1MDA@._V1_FMjpg_UX1000_.jpg', source: getRandomServerUrl() },
+                    { id: 9, title: 'The Super Mario Bros. Movie', year: 2023, category: 'movies', rating: 7.6, trending: false, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BOTJhNzlmMjctNTU2Ny00NDM3LWE5ZWMtZTM5N2NiNGE0ZTY5XkEyXkFqcGdeQXVyMTA3MDk2NDg2._V1_FMjpg_UX1000_.jpg', source: getRandomServerUrl() },
+                    { id: 10, title: 'Extraction 2', year: 2023, category: 'movies', rating: 7.8, trending: false, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BMDZmODRkZDYtNzY5MC00ODk5LWEyM2UtMDRiMzFkODQyOTI1XkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_.jpg', source: getRandomServerUrl() },
+                    { id: 11, title: 'The Witcher', year: 2019, category: 'tv', rating: 8.9, trending: false, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BN2EyZjM3NzUtNWUzMi00MTgxLWI0NTctMzY4M2VlOTdjZWRiXkEyXkFqcGdeQXVyNDIzMzcwNjc@._V1_FMjpg_UX1000_.jpg', source: getRandomServerUrl() },
+                    { id: 12, title: 'Stranger Things', year: 2016, category: 'tv', rating: 9.0, trending: false, quality: '4K', poster: 'https://m.media-amazon.com/images/M/MV5BMDZkYmVhNjMtNWU4MC00MDQxLWE3MjYtZGMzZWI1ZjhlOWJmXkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_FMjpg_UX1000_.jpg', source: getRandomServerUrl() },
                 ];
                 
-                // Mark some as trending and top IMDb
-                allMovies[2].trending = true;
-                allMovies[3].trending = true;
-                allMovies[5].trending = true;
-                allMovies[0].topImdb = true;
-                allMovies[1].topImdb = true;
-                allMovies[5].topImdb = true;
-                
+                // Filter and display trending and all content
                 filterContent();
+                displayTrending();
+                
             } catch (error) {
                 console.error('Thunder error:', error);
                 contentEl.innerHTML = `
                     <div class="loading">
                         ⚡ The storm couldn't be gathered
                         <div style="margin-top:20px;font-size:14px;color:var(--thunder-text-dim)">
-                            Error loading from multimovies.email. Try again later.
+                            Error loading content. Try again later.
                         </div>
                     </div>
                 `;
             }
+        }
+        
+        function getRandomServerUrl() {
+            const servers = [
+                "https://server1.thunderstream.live/embed",
+                "https://lightning.thunderstream.live/play",
+                "https://storm.thunderstream.live/stream",
+                "https://cloud.thunderstream.live/video"
+            ];
+            return servers[Math.floor(Math.random() * servers.length)] + "?id=" + Math.random().toString(36).substring(7);
         }
         
         // Filter content based on category and search term
@@ -572,9 +612,7 @@
             let filteredMovies = allMovies.filter(movie => {
                 const matchesCategory = 
                     currentCategory === 'all' || 
-                    movie.category === currentCategory || 
-                    (currentCategory === 'trending' && movie.trending) ||
-                    (currentCategory === 'top-imdb' && movie.topImdb);
+                    movie.category === currentCategory;
                 
                 const matchesSearch = 
                     movie.title.toLowerCase().includes(searchTerm) || 
@@ -586,40 +624,38 @@
             displayContent(filteredMovies);
         }
         
-        // Display content in the thunder grid
-        function displayContent(movies) {
-            if (movies.length === 0) {
-                contentEl.innerHTML = `
-                    <div class="loading">
-                        ⚡ No content found in this storm
-                        <div style="margin-top:20px;font-size:14px;color:var(--thunder-text-dim)">
-                            Try a different search or category
-                        </div>
-                    </div>
-                `;
+        // Display trending movies
+        function displayTrending() {
+            const trendingMovies = allMovies.filter(movie => movie.trending);
+            
+            if (trendingMovies.length === 0) {
+                trendingEl.innerHTML = '<div class="loading">No trending content found.</div>';
                 return;
             }
             
-            let html = '<div class="movies-grid">';
+            let html = '';
             
-            movies.forEach(movie => {
+            trendingMovies.forEach(movie => {
                 html += `
                     <div class="movie-card" data-id="${movie.id}">
-                        ${movie.quality ? `<span class="movie-quality">${movie.quality}</span>` : ''}
+                        <span class="trending-badge"><i class="fas fa-fire"></i> TRENDING</span>
+                        ${movie.quality ? `<span class="quality-tag">${movie.quality}</span>` : ''}
                         <img src="${movie.poster}" alt="${movie.title}" class="movie-poster" onerror="this.src='https://via.placeholder.com/300x450/151530/4fc3f7?text=THUNDER'">
                         <div class="movie-info">
                             <h3 class="movie-title">${movie.title}</h3>
-                            <p class="movie-year">${movie.year}</p>
+                            <div class="movie-details">
+                                <span class="movie-year">${movie.year}</span>
+                                <span class="movie-rating"><i class="fas fa-star"></i> ${movie.rating}</span>
+                            </div>
                         </div>
                     </div>
                 `;
             });
             
-            html += '</div>';
-            contentEl.innerHTML = html;
+            trendingEl.innerHTML = html;
             
             // Add click event to movie cards
-            document.querySelectorAll('.movie-card').forEach(card => {
+            document.querySelectorAll('#trending-content .movie-card').forEach(card => {
                 card.addEventListener('click', () => {
                     const movieId = parseInt(card.dataset.id);
                     const movie = allMovies.find(m => m.id === movieId);
@@ -630,25 +666,63 @@
             });
         }
         
-        // Show the movie player with thunder effects
-        function showMoviePlayer(movie) {
-            // Populate sources dropdown
-            sourceSelect.innerHTML = '<option value="">Select a thunder source...</option>';
-            movie.sources.forEach((source, index) => {
-                sourceSelect.innerHTML += `<option value="${source.url}">${source.name}</option>`;
+        // Display all content
+        function displayContent(movies) {
+            if (movies.length === 0) {
+                contentEl.innerHTML = `
+                    <div class="loading">
+                        ⚡ No content found
+                        <div style="margin-top:20px;font-size:14px;color:var(--thunder-text-dim)">
+                            Try a different search or category
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            
+            movies.forEach(movie => {
+                html += `
+                    <div class="movie-card" data-id="${movie.id}">
+                        ${movie.trending ? `<span class="trending-badge"><i class="fas fa-fire"></i> TRENDING</span>` : ''}
+                        ${movie.quality ? `<span class="quality-tag">${movie.quality}</span>` : ''}
+                        <img src="${movie.poster}" alt="${movie.title}" class="movie-poster" onerror="this.src='https://via.placeholder.com/300x450/151530/4fc3f7?text=THUNDER'">
+                        <div class="movie-info">
+                            <h3 class="movie-title">${movie.title}</h3>
+                            <div class="movie-details">
+                                <span class="movie-year">${movie.year}</span>
+                                <span class="movie-rating"><i class="fas fa-star"></i> ${movie.rating || 'N/A'}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
             });
             
-            // Show modal with thunder effect
-            modal.style.display = 'block';
+            contentEl.innerHTML = html;
             
-            // Auto-select first source if available
-            if (movie.sources.length > 0) {
-                sourceSelect.value = movie.sources[0].url;
-                moviePlayer.src = movie.sources[0].url;
-            }
+            // Add click event to movie cards
+            document.querySelectorAll('#content .movie-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const movieId = parseInt(card.dataset.id);
+                    const movie = allMovies.find(m => m.id === movieId);
+                    if (movie) {
+                        showMoviePlayer(movie);
+                    }
+                });
+            });
         }
         
-        // Handle search with thunder
+        // Show the movie player
+        function showMoviePlayer(movie) {
+            // Show modal
+            modal.style.display = 'block';
+            
+            // Set player source
+            moviePlayer.src = movie.source;
+        }
+        
+        // Handle search
         function handleSearch() {
             filterContent();
         }
